@@ -153,9 +153,9 @@ namespace ElVis
         checkedCudaCall(cuGLCtxCreate(&m_cudaContext, CU_CTX_BLOCKING_SYNC, curDevice));
 
         #ifdef _MSC_VER
-            std::string modulePath = GetCubinPath() + "/" + m_model->GetPTXPrefix() + "Cuda_generated_ElVisCuda.cu.obj.cubin.txt";
+            std::string modulePath = GetCubinPath() + "/cuda_compile_ptx_generated_ElVisCuda.cu.ptx";
         #else
-            std::string modulePath = GetCubinPath() + "/" + m_model->GetPTXPrefix() + "Cuda_generated_ElVisCuda.cu.o.cubin.txt";
+            std::string modulePath = GetCubinPath() + "/cuda_compile_ptx_generated_ElVisCuda.cu.ptx";
         #endif
         std::cout << "Loading module from " << modulePath << std::endl;
         checkedCudaCall(cuModuleLoad(&m_cudaModule, modulePath.c_str()));

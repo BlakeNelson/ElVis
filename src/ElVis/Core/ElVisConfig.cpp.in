@@ -13,9 +13,9 @@ namespace ElVis
     {
         #ifdef _MSC_VER
             #ifdef NDEBUG
-                static const std::string result("@ELVIS_CUBIN_DIR@/Release");
+                static const std::string result("@ELVIS_CUBIN_DIR@");
             #else
-                static const std::string result("@ELVIS_CUBIN_DIR@/Debug");
+                static const std::string result("@ELVIS_CUBIN_DIR@");
             #endif
         #else
             static const std::string result("@ELVIS_CUBIN_DIR@");
