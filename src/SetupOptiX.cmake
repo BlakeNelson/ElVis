@@ -43,11 +43,12 @@ IF( OptiX_FOUND )
 
     IF( CUDA_VERSION VERSION_LESS "5.0" )
         #INCLUDE_DIRECTORIES(${CUDA_TOOLKIT_INCLUDE})
-        SET(ELVIS_CUDA_INCLUDE ${CUDA_TOOLKIT_INCLUDE})
+        SET(ELVIS_CUDA_INCLUDE ${CUDA_TOOLKIT_INCLUDE} ${CUDA_SDK_ROOT_DIR}/common/inc)
     ELSE()
         #INCLUDE_DIRECTORIES(${CUDA_SAMPLE_DIR}/common/inc)
         SET(ELVIS_CUDA_INCLUDE ${CUDA_TOOLKIT_INCLUDE} ${CUDA_SAMPLE_DIR}/common/inc)
     ENDIF()
+
 
 # Add some useful default arguments to the nvcc flags.  This is an example of how we use
 # PASSED_FIRST_CONFIGURE.  Once you have configured, this variable is TRUE and following
