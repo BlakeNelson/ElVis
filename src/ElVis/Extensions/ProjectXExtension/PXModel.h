@@ -98,6 +98,19 @@ namespace ElVis
     virtual int DoGetNumberOfBoundarySurfaces() const;
     virtual void DoGetBoundarySurface(int surfaceIndex, std::string& name, std::vector<int>& faceIds);
 
+    virtual int DoGetModelDimension() const { return 3; }
+
+    virtual std::vector<optixu::GeometryInstance> DoGet2DPrimaryGeometry(Scene* scene, optixu::Context context, CUmodule module)
+    {
+        return std::vector<optixu::GeometryInstance>();
+    }
+
+    virtual optixu::Material DoGet2DPrimaryGeometryMaterial(SceneView* view)
+    {
+        return optixu::Material();
+    }
+
+
   private:
     static const std::string PXSimplexPtxFileName;
     static const std::string PXSimplexIntersectionProgramName;
