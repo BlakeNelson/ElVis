@@ -137,20 +137,17 @@ ELVIS_DEVICE
 #endif
 void PrintPatchGroup(PX_PatchGroup *patchGroup, PX_REAL *backgroundCoordBase, PX_REAL *knownPointBase){
   int i;
-  int threeDId;
 
   GEN_PRINTF("patchGroup length = %d, nPatch = %d\n",patchGroup->length, patchGroup->nPatch);
   GEN_PRINTF("patchGroup threeDId = %d\n",patchGroup->threeDId);
 
-  threeDId = patchGroup->threeDId;
-
   for(i=0; i<DIM3D*BACK_NBF; i++){
-    GEN_PRINTF("bgElem[%d] = %.8E, ",i,backgroundCoordBase[threeDId*BACK_NBF*DIM3D+i]);
+    GEN_PRINTF("bgElem[%d] = %.8E, ",i,backgroundCoordBase[patchGroup->threeDId*BACK_NBF*DIM3D+i]);
   }
   GEN_PRINTF("\n");
 
   for(i=0; i<DIM3D; i++){
-    GEN_PRINTF("known[%d] = %.8E, ",i,knownPointBase[threeDId*DIM3D+i]);
+    GEN_PRINTF("known[%d] = %.8E, ",i,knownPointBase[patchGroup->threeDId*DIM3D+i]);
   }
   GEN_PRINTF("knownType = %d\n",patchGroup->knownPointFlag);
   

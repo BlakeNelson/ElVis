@@ -43,6 +43,9 @@
 namespace ElVis
 {
 
+//    template<typename T, RTbuffertype BufferType>
+//    class OptiXBufferData;
+
     /// \brief An simplified interface for creating OptiX buffers.
     /// @param T the type to store in the buffer.
     /// @param BufferType one of   RT_BUFFER_INPUT, RT_BUFFER_OUTPUT, RT_BUFFER_INPUT_OUTPUT
@@ -160,6 +163,16 @@ namespace ElVis
             size_t m_height;
             optixu::Context m_context;
     };
+
+//    template<typename T, RTbuffertype BufferType>
+//    class OptiXBufferData
+//    {
+//        public:
+
+//        private:
+//            OptiXBuffer<T, BufferType>* m_baseBuffer;
+//            T* m_data;
+//    };
 }
 
 #endif

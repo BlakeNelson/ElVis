@@ -272,9 +272,9 @@ int GenericCLIInterface(int argc, char** argv,
         inFile.close();
     }
 
-    #ifdef __GNUC__
-    system("nvidia-smi");
-    #endif
+//    #ifdef __GNUC__
+//    system("nvidia-smi");
+//    #endif
 
     ElVis::PointLight* l = new ElVis::PointLight();
     ElVis::Color lightColor;
@@ -461,9 +461,9 @@ int GenericCLIInterface(int argc, char** argv,
     {
         ElVis::Stat runtimeStats(times, std::numeric_limits<ElVisFloat>::max(), numTests-1, .95);
         std::cout << "Average Time Per Run: " << runtimeStats.Mean << std::endl;
-        #ifdef __GNUC__
-        system("nvidia-smi");
-        #endif
+//        #ifdef __GNUC__
+//        system("nvidia-smi");
+//        #endif
 
     }
 

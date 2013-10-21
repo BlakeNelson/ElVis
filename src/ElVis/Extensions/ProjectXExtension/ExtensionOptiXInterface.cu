@@ -113,9 +113,8 @@ ELVIS_DEVICE ElVisError EvaluateFace(int faceId, const FaceReferencePoint& refPo
     ElVisFloat s = refPoint.y;
     PX_REAL phi[MAX_NBF_FACE];
     PX_REAL xref[2] = {r,s};
-    PX_REAL xreflocal[2];
     PX_REAL *nodeCoord = &PXSimplexFaceCoordinateBuffer[DIM3D*nbfQFace*faceId];
-    int i, d;
+    int i;
 
     // PX_FaceData * faceData = &PXSimplexFaceDataBuffer[faceId];
     // PXErrorDebug( PXFaceRef2ElemFaceRef<PX_REAL>( (enum PXE_Shape) faceData->shape, (int) faceData->orientation, xref, xreflocal) );
@@ -132,6 +131,7 @@ ELVIS_DEVICE ElVisError EvaluateFace(int faceId, const FaceReferencePoint& refPo
         result.z += nodeCoord[i*DIM3D+2]*phi[i];
     }
 #endif
+    return eNoError;
 }
 
 
@@ -164,12 +164,10 @@ RT_PROGRAM void PXSimplexContainsOriginByCheckingPoint(int PXSimplexId)
 
             int curPatchGroup;
             unsigned int localCutCellIndex = PXSimplexGlobalElemToCutCellBuffer[PXSimplexId];
-            char tempIntersectionFlag = 0;
             //rtPrintf("localCutCellIndex[%d] = %d\n",PXSimplexId,localCutCellIndex);
             PX_CutCellElVis* cutCell = (PX_CutCellElVis*)((char*)(&PXSimplexCutCellBuffer[0]) + localCutCellIndex);
 
             PX_REAL *localCoord;
-            int *patchList;
             PX_PatchGroup* patchGroup = GetFirstPatchGroup(cutCell);
             intersectionFoundFlag = 0;
             for(curPatchGroup=0; curPatchGroup<cutCell->nPatchGroup; curPatchGroup++){
@@ -501,9 +499,9 @@ ELVIS_DEVICE ElVisError EvaluateFaceJacobian(int faceId, const FaceReferencePoin
    T *gphir = gphi;
    T *gphis = gphir + MAX_NBF_FACE;
    T xref[2] = {r,s};
-   T xreflocal[2];
+   //T xreflocal[2];
    PX_REAL *nodeCoord = &PXSimplexFaceCoordinateBuffer[DIM3D*nbfQFace*faceId];
-   int i, d;
+   int i;
 
    // PX_FaceData * faceData = &PXSimplexFaceDataBuffer[faceId];
    // PXErrorDebug( PXFaceRef2ElemFaceRef<T>( (enum PXE_Shape) faceData->shape, (int) faceData->orientation, xref, xreflocal) );

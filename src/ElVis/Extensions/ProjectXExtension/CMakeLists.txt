@@ -67,16 +67,16 @@ SOURCE_GROUP("OptiX" FILES ${ProjectX_OPTIX_HEADER_ONLY} ${ProjectX_Extension_Op
 #################################
 # PX Cuda Source
 #################################
-SET(ProjectX_Cuda_Header_Only
-    ExtensionCudaInterface.cu
-)
+#SET(ProjectX_Cuda_Header_Only
+#    ExtensionCudaInterface.cu
+#)
 
-SET_SOURCE_FILES_PROPERTIES(${ProjectX_Cuda_Header_Only} PROPERTIES HEADER_FILE_ONLY ON)
+#SET_SOURCE_FILES_PROPERTIES(${ProjectX_Cuda_Header_Only} PROPERTIES HEADER_FILE_ONLY ON)
 
-SET(ProjectX_Extension_Cuda ${CMAKE_BINARY_DIR}/ElVis/${ProjectName}/Core/ElVisCuda.cu
-    )
+#SET(ProjectX_Extension_Cuda ${CMAKE_BINARY_DIR}/ElVis/${ProjectName}/Core/ElVisCuda.cu
+#    )
 
-SOURCE_GROUP("Cuda" FILES ${ProjectX_Cuda_Header_Only} ${ProjectX_Extension_Cuda})
+#SOURCE_GROUP("Cuda" FILES ${ProjectX_Cuda_Header_Only} ${ProjectX_Extension_Cuda})
 
 
 #################################3
@@ -94,10 +94,10 @@ ADD_ELVIS_OPTIX_LIBRARY(${ProjectName} ${ELVIS_BIN_DIR}
     ${ProjectX_Extension_OptiX}
 )
 
-ADD_ELVIS_CUDA_LIBRARY(${ProjectName}Cuda
-    ${ProjectX_Cuda_Header_Only}
-    ${ProjectX_Extension_Cuda}
-)
+#ADD_ELVIS_CUDA_LIBRARY(${ProjectName}Cuda
+#    ${ProjectX_Cuda_Header_Only}
+#    ${ProjectX_Extension_Cuda}
+#)
 
 TARGET_LINK_LIBRARIES(${ProjectName} ElVisCore )
 

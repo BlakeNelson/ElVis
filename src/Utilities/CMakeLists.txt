@@ -1,10 +1,10 @@
 
-SUBDIRS(
-    CodeGenerator
-    Stats
-    GenerateStaticTables
+#SUBDIRS(
+#    CodeGenerator
+    #Stats
+#    GenerateStaticTables
     #GenerateTestingJacobiVolumes
-)
+#)
 
 #IF( ELVIS_ENABLE_NEKTAR++_EXTENSION )
 #	SUBDIRS(

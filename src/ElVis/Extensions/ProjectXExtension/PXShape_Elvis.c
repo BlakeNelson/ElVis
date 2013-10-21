@@ -256,9 +256,6 @@ PXShapeUniformLagrange1d(const int porder, const DT * RESTRICT xref, DT * RESTRI
 {
   DT x;
   DT x2;
-  DT x3;
-  DT x4;
-  DT x5;
   
   x = xref[0];
 
@@ -329,10 +326,8 @@ PXShapeUniformLagrange1d(const int porder, const DT * RESTRICT xref, DT * RESTRI
 template <typename DT> ELVIS_DEVICE int
 PXShapeSpectralLagrange1d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 {
-  DT x;
-  DT xx, xxx, xxxx, xxxxx;
-  
-  x = xref[0];
+
+  DT x = xref[0];
 
   switch ( porder ) {
 #if GEOM_USE_P0
@@ -348,50 +343,58 @@ PXShapeSpectralLagrange1d(const int porder, const DT * RESTRICT xref, DT * RESTR
 #endif
 #if GEOM_USE_P2
   case 2:
-    xx = x*x;
-    phi[0] = 1.0 - 3.0*x + 2.0*xx;
-    phi[1] =       4.0*x - 4.0*xx;
-    phi[2] =     - 1.0*x + 2.0*xx;    
-    return 0;
+    {
+        DT xx = x*x;
+        phi[0] = 1.0 - 3.0*x + 2.0*xx;
+        phi[1] =       4.0*x - 4.0*xx;
+        phi[2] =     - 1.0*x + 2.0*xx;
+        return 0;
+    }
 #endif
 #if GEOM_USE_P3
   case 3:
-    xx = x*x;
-    xxx = xx*x;
-    phi[0] = ( 3.0 - 19.0*x + 32.0*xx - 16.0*xxx)*ONETHIRD;
-    phi[1] = (       24.0*x - 56.0*xx + 32.0*xxx)*ONETHIRD;
-    phi[2] = (     -  8.0*x + 40.0*xx - 32.0*xxx)*ONETHIRD;
-    phi[3] = (        3.0*x - 16.0*xx + 16.0*xxx)*ONETHIRD;
-    return 0;
+    {
+        DT xx = x*x;
+        DT xxx = xx*x;
+        phi[0] = ( 3.0 - 19.0*x + 32.0*xx - 16.0*xxx)*ONETHIRD;
+        phi[1] = (       24.0*x - 56.0*xx + 32.0*xxx)*ONETHIRD;
+        phi[2] = (     -  8.0*x + 40.0*xx - 32.0*xxx)*ONETHIRD;
+        phi[3] = (        3.0*x - 16.0*xx + 16.0*xxx)*ONETHIRD;
+        return 0;
+      }
 #endif
 #if GEOM_USE_P4
   case 4:
-    xx = x*x;
-    xxx = xx*x;
-    xxxx = xxx*x;
-    
-    phi[ 0] = 1.0 - 11.0*x + 34.0*xx - 40.0*xxx + 16.0*xxxx;
-    phi[ 1] =  4.0*x*( 2.0+SQUAREROOT2-4.0*x )*(1.0-3.0*x+2.0*xx );
-    phi[ 2] = -4.0*x + 36.0*xx - 64.0*xxx + 32.0*xxxx;
-    phi[ 3] = -4.0*x*(-2.0+SQUAREROOT2+4.0*x )*(1.0-3.0*x+2.0*xx);
-    phi[ 4] = -x + 10.0*xx - 24.0*xxx + 16.0*xxxx;
-    return 0;
+    {
+        DT xx = x*x;
+        DT xxx = xx*x;
+        DT xxxx = xxx*x;
+
+        phi[ 0] = 1.0 - 11.0*x + 34.0*xx - 40.0*xxx + 16.0*xxxx;
+        phi[ 1] =  4.0*x*( 2.0+SQUAREROOT2-4.0*x )*(1.0-3.0*x+2.0*xx );
+        phi[ 2] = -4.0*x + 36.0*xx - 64.0*xxx + 32.0*xxxx;
+        phi[ 3] = -4.0*x*(-2.0+SQUAREROOT2+4.0*x )*(1.0-3.0*x+2.0*xx);
+        phi[ 4] = -x + 10.0*xx - 24.0*xxx + 16.0*xxxx;
+        return 0;
+    }
 #endif
 #if GEOM_USE_P5
   case 5:
-    xx = x*x;
-    xxx = xx*x;
-    xxxx = xxx*x;
-    xxxxx = xxxx*x;
+    {
+        DT xx = x*x;
+        DT xxx = xx*x;
+        DT xxxx = xxx*x;
+        DT xxxxx = xxxx*x;
 
-    
-    phi[ 0] = 1.0 - 17.0*x + 83.2*xx - 169.6*xxx + 153.6*xxxx - 51.2*xxxxx;
-    phi[ 1] = -0.8*x*( 3.0+SQUAREROOT5-8.0*x)*(-5.0+25.0*x-36.0*xx+16.0*xxx);
-    phi[ 2] =  0.8*x*( 5.0+SQUAREROOT5-8.0*x)*(-1.0+13.0*x-28.0*xx+16.0*xxx);
-    phi[ 3] =  0.8*x*(-3.0+SQUAREROOT5+8.0*x)*(-5.0+25.0*x-36.0*xx+16.0*xxx);
-    phi[ 4] = -0.8*x*(-5.0+SQUAREROOT5+8.0*x)*(-1.0+13.0*x-28.0*xx+16.0*xxx);
-    phi[ 5] = x - 16.0*xx + 67.2*xxx - 102.4*xxxx + 51.2*xxxxx;
-    return 0;
+
+        phi[ 0] = 1.0 - 17.0*x + 83.2*xx - 169.6*xxx + 153.6*xxxx - 51.2*xxxxx;
+        phi[ 1] = -0.8*x*( 3.0+SQUAREROOT5-8.0*x)*(-5.0+25.0*x-36.0*xx+16.0*xxx);
+        phi[ 2] =  0.8*x*( 5.0+SQUAREROOT5-8.0*x)*(-1.0+13.0*x-28.0*xx+16.0*xxx);
+        phi[ 3] =  0.8*x*(-3.0+SQUAREROOT5+8.0*x)*(-5.0+25.0*x-36.0*xx+16.0*xxx);
+        phi[ 4] = -0.8*x*(-5.0+SQUAREROOT5+8.0*x)*(-1.0+13.0*x-28.0*xx+16.0*xxx);
+        phi[ 5] = x - 16.0*xx + 67.2*xxx - 102.4*xxxx + 51.2*xxxxx;
+        return 0;
+    }
 #endif
   default:
     return -1;
@@ -405,11 +408,9 @@ PXShapeSpectralLagrange1d(const int porder, const DT * RESTRICT xref, DT * RESTR
 template <typename DT> ELVIS_DEVICE int
 PXShapeHierarch2d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 {
-  DT x, y;
-  DT xx, xy, yy;
 
-  x = xref[0];
-  y = xref[1];
+  DT x = xref[0];
+  DT y = xref[1];
 
   if (porder <= 0)
     return -1;
@@ -431,7 +432,7 @@ PXShapeHierarch2d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 #endif
 #if GEOM_USE_P3 && GEOM_USE_P2 && GEOM_USE_P1  
   if (porder >= 3){
-    xy=x*y;
+    DT xy=x*y;
     
     phi[6] = -xy*SQUAREROOT10*(y-x);
     phi[7] = -(-1.0+x+y)*y*SQUAREROOT10*(-1.0+x+2.0*y);
@@ -442,9 +443,9 @@ PXShapeHierarch2d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 #endif
 #if GEOM_USE_P4 && GEOM_USE_P3 && GEOM_USE_P2 && GEOM_USE_P1
   if (porder >= 4){
-    yy=y*y;
-    xy=x*y;
-    xx=x*x;
+    DT yy=y*y;
+    DT xy=x*y;
+    DT xx=x*x;
     
     phi[10] = -xy*SQUAREROOT14*(5.0*yy-10.0*xy+5.0*xx-1.0)*0.25;
     phi[11] = (-1.0+x+y)*y*SQUAREROOT14*(4.0-10.0*x-20.0*y+5.0*xx+20.0*xy+20.0*yy)*0.25;
@@ -456,9 +457,9 @@ PXShapeHierarch2d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 #endif
 #if GEOM_USE_P5 && GEOM_USE_P4 && GEOM_USE_P3 && GEOM_USE_P2 && GEOM_USE_P1
   if (porder >= 5){
-    yy=y*y;
-    xy=x*y;
-    xx=x*x;
+    DT yy=y*y;
+    DT xy=x*y;
+    DT xx=x*x;
 
     phi[15] = -0.75*xy*SQUAREROOT2*(7.0*yy-14.0*xy+7.0*xx-3.0)*(y-x);
     phi[16] = -0.75*(-1.0+x+y)*y*SQUAREROOT2*(4.0-14.0*x-28.0*y+7.0*xx+28.0*xy+28.0*yy)*(-1.0+x+2.0*y);
@@ -470,9 +471,7 @@ PXShapeHierarch2d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
   }
 #endif
 
-  if (porder >= 6){
     return -1;
-  }
 } // PXShapeHierarch2d
 
 
@@ -481,14 +480,8 @@ PXShapeHierarch2d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 template <typename DT> ELVIS_DEVICE int
 PXShapeLagrange2d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 {
-  DT     x,         y;
-  DT    xx,    xy,    yy;
-  DT   xxx,   xxy,   xyy,   yyy;
-  DT  xxxx,  xxxy,  xxyy,  xyyy,  yyyy;
-  DT xxxxx, xxxxy, xxxyy, xxyyy, xyyyy, yyyyy;
-
-  x = xref[0];
-  y = xref[1];
+  DT x = xref[0];
+  DT y = xref[1];
 
   switch (porder) {
 #if GEOM_USE_P0    
@@ -505,141 +498,149 @@ PXShapeLagrange2d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 #endif
 #if GEOM_USE_P2
   case 2:
-    xx=x*x;
-    xy=x*y;
-    yy=y*y;
-    
-    phi[0] = 1.0-3.0*x-3.0*y+2.0*xx+4.0*xy+2.0*yy;
-    phi[1] = -x+2.0*xx;
-    phi[2] = -y+2.0*yy;
-    phi[3] = 4.0*xy;
-    phi[4] = 4.0*y-4.0*xy-4.0*yy;
-    phi[5] = 4.0*x-4.0*xx-4.0*xy;
-    return 0;
+    {
+        DT xx=x*x;
+        DT xy=x*y;
+        DT yy=y*y;
+
+        phi[0] = 1.0-3.0*x-3.0*y+2.0*xx+4.0*xy+2.0*yy;
+        phi[1] = -x+2.0*xx;
+        phi[2] = -y+2.0*yy;
+        phi[3] = 4.0*xy;
+        phi[4] = 4.0*y-4.0*xy-4.0*yy;
+        phi[5] = 4.0*x-4.0*xx-4.0*xy;
+        return 0;
+    }
 #endif
 #if GEOM_USE_P3
   case 3:
-    xx=x*x;
-    xy=x*y;
-    yy=y*y;
-    xxx=xx*x;
-    xxy=xx*y;
-    xyy=xy*y;
-    yyy=yy*y;
-    
-    phi[0] = 1.0-5.5*x-5.5*y +9.0*xx+18.0*xy +9.0*yy -4.5*xxx-13.5*xxy-13.5*xyy -4.5*yyy;
-    phi[1] =         x       -4.5*xx                 +4.5*xxx;
-    phi[2] =               y                -4.5*yy                  +4.5*yyy;
-    phi[3] =                         -4.5*xy                 +13.5*xxy;
-    phi[4] =                         -4.5*xy                          +13.5*xyy;
-    phi[5] =          -4.5*y         +4.5*xy+18.0*yy                  -13.5*xyy-13.5*yyy;
-    phi[6] =           9.0*y        -22.5*xy-22.5*yy         +13.5*xxy+27.0*xyy+13.5*yyy;
-    phi[7] =     9.0*x      -22.5*xx-22.5*xy        +13.5*xxx+27.0*xxy+13.5*xyy;
-    phi[8] =    -4.5*x      +18.0*xx +4.5*xy        -13.5*xxx-13.5*xxy;
-    phi[9] =                         27.0*xy                 -27.0*xxy-27.0*xyy;
-    return 0;
+    {
+        DT xx=x*x;
+        DT xy=x*y;
+        DT yy=y*y;
+        DT xxx=xx*x;
+        DT xxy=xx*y;
+        DT xyy=xy*y;
+        DT yyy=yy*y;
+
+        phi[0] = 1.0-5.5*x-5.5*y +9.0*xx+18.0*xy +9.0*yy -4.5*xxx-13.5*xxy-13.5*xyy -4.5*yyy;
+        phi[1] =         x       -4.5*xx                 +4.5*xxx;
+        phi[2] =               y                -4.5*yy                  +4.5*yyy;
+        phi[3] =                         -4.5*xy                 +13.5*xxy;
+        phi[4] =                         -4.5*xy                          +13.5*xyy;
+        phi[5] =          -4.5*y         +4.5*xy+18.0*yy                  -13.5*xyy-13.5*yyy;
+        phi[6] =           9.0*y        -22.5*xy-22.5*yy         +13.5*xxy+27.0*xyy+13.5*yyy;
+        phi[7] =     9.0*x      -22.5*xx-22.5*xy        +13.5*xxx+27.0*xxy+13.5*xyy;
+        phi[8] =    -4.5*x      +18.0*xx +4.5*xy        -13.5*xxx-13.5*xxy;
+        phi[9] =                         27.0*xy                 -27.0*xxy-27.0*xyy;
+        return 0;
+    }
 #endif
 #if GEOM_USE_P4	   
   case 4:
-    xx=x*x;
-    xy=x*y;
-    yy=y*y;
-    xxx=xx*x;
-    xxy=xx*y;
-    xyy=xy*y;
-    yyy=yy*y;
-    xxxx=xxx*x;
-    xxxy=xxx*y;
-    xxyy=xxy*y;
-    xyyy=xyy*y;
-    yyyy=yyy*y;
+    {
+        DT xx=x*x;
+        DT xy=x*y;
+        DT yy=y*y;
+        DT xxx=xx*x;
+        DT xxy=xx*y;
+        DT xyy=xy*y;
+        DT yyy=yy*y;
+        DT xxxx=xxx*x;
+        DT xxxy=xxx*y;
+        DT xxyy=xxy*y;
+        DT xyyy=xyy*y;
+        DT yyyy=yyy*y;
 
-    phi[0] = 1.0-25.0*ONETHIRD*x-25.0*ONETHIRD*y+70.0*ONETHIRD*xx+140.0*ONETHIRD*xy+70.0*ONETHIRD*yy-
-      80.0*ONETHIRD*xxx-80.0*xxy-80.0*xyy-80.0*ONETHIRD*yyy+32.0*ONETHIRD*xxxx+
-      128.0*ONETHIRD*xxxy+64.0*xxyy+128.0*ONETHIRD*xyyy+32.0*ONETHIRD*yyyy; 
-    phi[1] = -x+22.0*ONETHIRD*xx-16.0*xxx+32.0*ONETHIRD*xxxx; 
-    phi[2] = -y+22.0*ONETHIRD*yy-16.0*yyy+32.0*ONETHIRD*yyyy; 
-    phi[3] = 16.0*ONETHIRD*xy-32.0*xxy+128.0*ONETHIRD*xxxy; 
-    phi[4] = 4.0*xy-16.0*xxy-16.0*xyy+64.0*xxyy; 
-    phi[5] = 16.0*ONETHIRD*xy-32.0*xyy+128.0*ONETHIRD*xyyy; 
-    phi[6] = 16.0*ONETHIRD*y-16.0*ONETHIRD*xy-112.0*ONETHIRD*yy+32.0*xyy+224.0*ONETHIRD*yyy-128.0*ONETHIRD*xyyy-128.0*ONETHIRD*yyyy; 
-    phi[7] = -12.0*y+28.0*xy+76.0*yy-16.0*xxy-144.0*xyy-128.0*yyy+64.0*xxyy+128.0*xyyy+64.0*yyyy; 
-    phi[8] = 16.0*y-208.0*ONETHIRD*xy-208.0*ONETHIRD*yy+96.0*xxy+192.0*xyy+96.0*yyy-128.0*ONETHIRD*xxxy-
-      128.0*xxyy-128.0*xyyy-128.0*ONETHIRD*yyyy; 
-    phi[9] = 16.0*x-208.0*ONETHIRD*xx-208.0*ONETHIRD*xy+96.0*xxx+192.0*xxy+96.0*xyy-128.0*ONETHIRD*xxxx-
-      128.0*xxxy-128.0*xxyy-128.0*ONETHIRD*xyyy; 
-    phi[10] = -12.0*x+76.0*xx+28.0*xy-128.0*xxx-144.0*xxy-16.0*xyy+64.0*xxxx+128.0*xxxy+64.0*xxyy; 
-    phi[11] = 16.0*ONETHIRD*x-112.0*ONETHIRD*xx-16.0*ONETHIRD*xy+224.0*ONETHIRD*xxx+32.0*xxy-128.0*ONETHIRD*xxxx-128.0*ONETHIRD*xxxy; 
-    phi[12] = 96.0*xy-224.0*xxy-224.0*xyy+128.0*xxxy+256.0*xxyy+128.0*xyyy; 
-    phi[13] = -32.0*xy+160.0*xxy+32.0*xyy-128.0*xxxy-128.0*xxyy; 
-    phi[14] = -32.0*xy+32.0*xxy+160.0*xyy-128.0*xxyy-128.0*xyyy;
-    return 0;
+        phi[0] = 1.0-25.0*ONETHIRD*x-25.0*ONETHIRD*y+70.0*ONETHIRD*xx+140.0*ONETHIRD*xy+70.0*ONETHIRD*yy-
+          80.0*ONETHIRD*xxx-80.0*xxy-80.0*xyy-80.0*ONETHIRD*yyy+32.0*ONETHIRD*xxxx+
+          128.0*ONETHIRD*xxxy+64.0*xxyy+128.0*ONETHIRD*xyyy+32.0*ONETHIRD*yyyy;
+        phi[1] = -x+22.0*ONETHIRD*xx-16.0*xxx+32.0*ONETHIRD*xxxx;
+        phi[2] = -y+22.0*ONETHIRD*yy-16.0*yyy+32.0*ONETHIRD*yyyy;
+        phi[3] = 16.0*ONETHIRD*xy-32.0*xxy+128.0*ONETHIRD*xxxy;
+        phi[4] = 4.0*xy-16.0*xxy-16.0*xyy+64.0*xxyy;
+        phi[5] = 16.0*ONETHIRD*xy-32.0*xyy+128.0*ONETHIRD*xyyy;
+        phi[6] = 16.0*ONETHIRD*y-16.0*ONETHIRD*xy-112.0*ONETHIRD*yy+32.0*xyy+224.0*ONETHIRD*yyy-128.0*ONETHIRD*xyyy-128.0*ONETHIRD*yyyy;
+        phi[7] = -12.0*y+28.0*xy+76.0*yy-16.0*xxy-144.0*xyy-128.0*yyy+64.0*xxyy+128.0*xyyy+64.0*yyyy;
+        phi[8] = 16.0*y-208.0*ONETHIRD*xy-208.0*ONETHIRD*yy+96.0*xxy+192.0*xyy+96.0*yyy-128.0*ONETHIRD*xxxy-
+          128.0*xxyy-128.0*xyyy-128.0*ONETHIRD*yyyy;
+        phi[9] = 16.0*x-208.0*ONETHIRD*xx-208.0*ONETHIRD*xy+96.0*xxx+192.0*xxy+96.0*xyy-128.0*ONETHIRD*xxxx-
+          128.0*xxxy-128.0*xxyy-128.0*ONETHIRD*xyyy;
+        phi[10] = -12.0*x+76.0*xx+28.0*xy-128.0*xxx-144.0*xxy-16.0*xyy+64.0*xxxx+128.0*xxxy+64.0*xxyy;
+        phi[11] = 16.0*ONETHIRD*x-112.0*ONETHIRD*xx-16.0*ONETHIRD*xy+224.0*ONETHIRD*xxx+32.0*xxy-128.0*ONETHIRD*xxxx-128.0*ONETHIRD*xxxy;
+        phi[12] = 96.0*xy-224.0*xxy-224.0*xyy+128.0*xxxy+256.0*xxyy+128.0*xyyy;
+        phi[13] = -32.0*xy+160.0*xxy+32.0*xyy-128.0*xxxy-128.0*xxyy;
+        phi[14] = -32.0*xy+32.0*xxy+160.0*xyy-128.0*xxyy-128.0*xyyy;
+        return 0;
+    }
 #endif
 
 #if GEOM_USE_P5
   case 5:
-    xx=x*x;
-    xy=x*y;
-    yy=y*y;
-    xxx=xx*x;
-    xxy=xx*y;
-    xyy=xy*y;
-    yyy=yy*y;
-    xxxx=xxx*x;
-    xxxy=xxx*y;
-    xxyy=xxy*y;
-    xyyy=xyy*y;
-    yyyy=yyy*y;
-    xxxxx=xxxx*x;
-    xxxxy=xxxx*y;
-    xxxyy=xxxy*y;
-    xxyyy=xxyy*y;
-    xyyyy=xyyy*y;
-    yyyyy=yyyy*y;
+    {
+        DT xx=x*x;
+        DT xy=x*y;
+        DT yy=y*y;
+        DT xxx=xx*x;
+        DT xxy=xx*y;
+        DT xyy=xy*y;
+        DT yyy=yy*y;
+        DT xxxx=xxx*x;
+        DT xxxy=xxx*y;
+        DT xxyy=xxy*y;
+        DT xyyy=xyy*y;
+        DT yyyy=yyy*y;
+        DT xxxxx=xxxx*x;
+        DT xxxxy=xxxx*y;
+        DT xxxyy=xxxy*y;
+        DT xxyyy=xxyy*y;
+        DT xyyyy=xyyy*y;
+        DT yyyyy=yyyy*y;
 
-    phi[0]  = 1.0-137.0/12.0*x-137.0/12.0*y+375.0/8.0*xx+375.0*0.25*xy+375.0/8.0*yy-
-                 2125.0/24.0*xxx-2125.0/8.0*xxy-2125.0/8.0*xyy-2125.0/24.0*yyy+
-                 625.0/8.0*xxxx+312.5*xxxy+1875.0*0.25*xxyy+312.5*xyyy+
-                 625.0/8.0*yyyy-625.0/24.0*xxxxx-3125.0/24.0*xxxxy-3125.0/12.0*xxxyy-
-                 3125.0/12.0*xxyyy-3125.0/24.0*xyyyy-625.0/24.0*yyyyy;
-    phi[1]  = x-125.0/12.0*xx+875.0/24.0*xxx-625.0/12.0*xxxx+625.0/24.0*xxxxx;
-    phi[2]  = y-125.0/12.0*yy+875.0/24.0*yyy-625.0/12.0*yyyy+625.0/24.0*yyyyy;
-    phi[3]  = -25.0*0.25*xy+1375.0/24.0*xxy-625.0*0.25*xxxy+3125.0/24.0*xxxxy;
-    phi[4]  = -25.0*ONESIXTH*xy+125.0*0.25*xxy+125.0*ONESIXTH*xyy-625.0/12.0*xxxy-625.0*0.25*xxyy+3125.0/12.0*xxxyy;
-    phi[5]  = -25.0*ONESIXTH*xy+125.0*ONESIXTH*xxy+125.0*0.25*xyy-625.0*0.25*xxyy-625.0/12.0*xyyy+3125.0/12.0*xxyyy;
-    phi[6]  = -25.0*0.25*xy+1375.0/24.0*xyy-625.0*0.25*xyyy+3125.0/24.0*xyyyy;
-    phi[7]  = -25.0*0.25*y+25.0*0.25*xy+1525.0/24.0*yy-1375.0/24.0*xyy-5125.0/24.0*yyy+
-                625.0*0.25*xyyy+6875.0/24.0*yyyy-3125.0/24.0*xyyyy-3125.0/24.0*yyyyy;
-    phi[8]  = 50.0*ONETHIRD*y-37.5*xy-162.5*yy+125.0*ONESIXTH*xxy+3875.0/12.0*xyy+6125.0/12.0*yyy-
-                625.0*0.25*xxyy-3125.0*0.25*xyyy-625.0*yyyy+3125.0/12.0*xxyyy+3125.0*ONESIXTH*xyyyy+3125.0/12.0*yyyyy;
-    phi[9]  = -25.0*y+1175.0/12.0*xy+2675.0/12.0*yy-125.0*xxy-8875.0/12.0*xyy-7375.0/12.0*yyy+
-                625.0/12.0*xxxy+3125.0*0.25*xxyy+5625.0*0.25*xyyy+8125.0/12.0*yyyy-3125.0/12.0*xxxyy-
-                3125.0*0.25*xxyyy-3125.0*0.25*xyyyy-3125.0/12.0*yyyyy; 
-    phi[10] = 25.0*y-1925.0/12.0*xy-1925.0/12.0*yy+8875.0/24.0*xxy+8875.0/12.0*xyy+8875.0/24.0*yyy-
-                4375.0/12.0*xxxy-4375.0*0.25*xxyy-4375.0*0.25*xyyy-4375.0/12.0*yyyy+3125.0/24.0*xxxxy+
-                3125.0*ONESIXTH*xxxyy+3125.0*0.25*xxyyy+3125.0*ONESIXTH*xyyyy+3125.0/24.0*yyyyy;
-    phi[11] = 25.0*x-1925.0/12.0*xx-1925.0/12.0*xy+8875.0/24.0*xxx+8875.0/12.0*xxy+8875.0/24.0*xyy-
-                4375.0/12.0*xxxx-4375.0*0.25*xxxy-4375.0*0.25*xxyy-4375.0/12.0*xyyy+3125.0/24.0*xxxxx+
-                3125.0*ONESIXTH*xxxxy+3125.0*0.25*xxxyy+3125.0*ONESIXTH*xxyyy+3125.0/24.0*xyyyy;
-    phi[12] = -25.0*x+2675.0/12.0*xx+1175.0/12.0*xy-7375.0/12.0*xxx-8875.0/12.0*xxy-125.0*xyy+
-                 8125.0/12.0*xxxx+5625.0*0.25*xxxy+3125.0*0.25*xxyy+625.0/12.0*xyyy-3125.0/12.0*xxxxx-
-                 3125.0*0.25*xxxxy-3125.0*0.25*xxxyy-3125.0/12.0*xxyyy;
-    phi[13] = 50.0*ONETHIRD*x-162.5*xx-37.5*xy+6125.0/12.0*xxx+3875.0/12.0*xxy+125.0*ONESIXTH*xyy-625.0*xxxx-
-                 3125.0*0.25*xxxy-625.0*0.25*xxyy+3125.0/12.0*xxxxx+3125.0*ONESIXTH*xxxxy+3125.0/12.0*xxxyy;
-    phi[14] = -25.0*0.25*x+1525.0/24.0*xx+25.0*0.25*xy-5125.0/24.0*xxx-1375.0/24.0*xxy+6875.0/24.0*xxxx+
-                 625.0*0.25*xxxy-3125.0/24.0*xxxxx-3125.0/24.0*xxxxy;
-    phi[15] = 250.0*xy-5875.0*ONESIXTH*xxy-5875.0*ONESIXTH*xyy+1250.0*xxxy+2500.0*xxyy+1250.0*xyyy-3125.0*ONESIXTH*xxxxy-
-                 1562.5*xxxyy-1562.5*xxyyy-3125.0*ONESIXTH*xyyyy;
-    phi[16] = -125.0*xy+3625.0*0.25*xxy+1125.0*0.25*xyy-1562.5*xxxy-6875.0*0.25*xxyy-625.0*0.25*xyyy+
-                 3125.0*0.25*xxxxy+1562.5*xxxyy+3125.0*0.25*xxyyy;
-    phi[17] = 125.0*ONETHIRD*xy-2125.0*ONESIXTH*xxy-125.0*ONETHIRD*xyy+2500.0*ONETHIRD*xxxy+312.5*xxyy-3125.0*ONESIXTH*xxxxy-3125.0*ONESIXTH*xxxyy;
-    phi[18] = -125.0*xy+1125.0*0.25*xxy+3625.0*0.25*xyy-625.0*0.25*xxxy-6875.0*0.25*xxyy-1562.5*xyyy+
-                 3125.0*0.25*xxxyy+1562.5*xxyyy+3125.0*0.25*xyyyy;
-    phi[19] = 125.0*0.25*xy-187.5*xxy-187.5*xyy+625.0*0.25*xxxy+4375.0*0.25*xxyy+
-                 625.0*0.25*xyyy-3125.0*0.25*xxxyy-3125.0*0.25*xxyyy;
-    phi[20] = 125.0*ONETHIRD*xy-125.0*ONETHIRD*xxy-2125.0*ONESIXTH*xyy+312.5*xxyy+2500.0*ONETHIRD*xyyy-
-                 3125.0*ONESIXTH*xxyyy-3125.0*ONESIXTH*xyyyy;
-    return 0;
+        phi[0]  = 1.0-137.0/12.0*x-137.0/12.0*y+375.0/8.0*xx+375.0*0.25*xy+375.0/8.0*yy-
+                     2125.0/24.0*xxx-2125.0/8.0*xxy-2125.0/8.0*xyy-2125.0/24.0*yyy+
+                     625.0/8.0*xxxx+312.5*xxxy+1875.0*0.25*xxyy+312.5*xyyy+
+                     625.0/8.0*yyyy-625.0/24.0*xxxxx-3125.0/24.0*xxxxy-3125.0/12.0*xxxyy-
+                     3125.0/12.0*xxyyy-3125.0/24.0*xyyyy-625.0/24.0*yyyyy;
+        phi[1]  = x-125.0/12.0*xx+875.0/24.0*xxx-625.0/12.0*xxxx+625.0/24.0*xxxxx;
+        phi[2]  = y-125.0/12.0*yy+875.0/24.0*yyy-625.0/12.0*yyyy+625.0/24.0*yyyyy;
+        phi[3]  = -25.0*0.25*xy+1375.0/24.0*xxy-625.0*0.25*xxxy+3125.0/24.0*xxxxy;
+        phi[4]  = -25.0*ONESIXTH*xy+125.0*0.25*xxy+125.0*ONESIXTH*xyy-625.0/12.0*xxxy-625.0*0.25*xxyy+3125.0/12.0*xxxyy;
+        phi[5]  = -25.0*ONESIXTH*xy+125.0*ONESIXTH*xxy+125.0*0.25*xyy-625.0*0.25*xxyy-625.0/12.0*xyyy+3125.0/12.0*xxyyy;
+        phi[6]  = -25.0*0.25*xy+1375.0/24.0*xyy-625.0*0.25*xyyy+3125.0/24.0*xyyyy;
+        phi[7]  = -25.0*0.25*y+25.0*0.25*xy+1525.0/24.0*yy-1375.0/24.0*xyy-5125.0/24.0*yyy+
+                    625.0*0.25*xyyy+6875.0/24.0*yyyy-3125.0/24.0*xyyyy-3125.0/24.0*yyyyy;
+        phi[8]  = 50.0*ONETHIRD*y-37.5*xy-162.5*yy+125.0*ONESIXTH*xxy+3875.0/12.0*xyy+6125.0/12.0*yyy-
+                    625.0*0.25*xxyy-3125.0*0.25*xyyy-625.0*yyyy+3125.0/12.0*xxyyy+3125.0*ONESIXTH*xyyyy+3125.0/12.0*yyyyy;
+        phi[9]  = -25.0*y+1175.0/12.0*xy+2675.0/12.0*yy-125.0*xxy-8875.0/12.0*xyy-7375.0/12.0*yyy+
+                    625.0/12.0*xxxy+3125.0*0.25*xxyy+5625.0*0.25*xyyy+8125.0/12.0*yyyy-3125.0/12.0*xxxyy-
+                    3125.0*0.25*xxyyy-3125.0*0.25*xyyyy-3125.0/12.0*yyyyy;
+        phi[10] = 25.0*y-1925.0/12.0*xy-1925.0/12.0*yy+8875.0/24.0*xxy+8875.0/12.0*xyy+8875.0/24.0*yyy-
+                    4375.0/12.0*xxxy-4375.0*0.25*xxyy-4375.0*0.25*xyyy-4375.0/12.0*yyyy+3125.0/24.0*xxxxy+
+                    3125.0*ONESIXTH*xxxyy+3125.0*0.25*xxyyy+3125.0*ONESIXTH*xyyyy+3125.0/24.0*yyyyy;
+        phi[11] = 25.0*x-1925.0/12.0*xx-1925.0/12.0*xy+8875.0/24.0*xxx+8875.0/12.0*xxy+8875.0/24.0*xyy-
+                    4375.0/12.0*xxxx-4375.0*0.25*xxxy-4375.0*0.25*xxyy-4375.0/12.0*xyyy+3125.0/24.0*xxxxx+
+                    3125.0*ONESIXTH*xxxxy+3125.0*0.25*xxxyy+3125.0*ONESIXTH*xxyyy+3125.0/24.0*xyyyy;
+        phi[12] = -25.0*x+2675.0/12.0*xx+1175.0/12.0*xy-7375.0/12.0*xxx-8875.0/12.0*xxy-125.0*xyy+
+                     8125.0/12.0*xxxx+5625.0*0.25*xxxy+3125.0*0.25*xxyy+625.0/12.0*xyyy-3125.0/12.0*xxxxx-
+                     3125.0*0.25*xxxxy-3125.0*0.25*xxxyy-3125.0/12.0*xxyyy;
+        phi[13] = 50.0*ONETHIRD*x-162.5*xx-37.5*xy+6125.0/12.0*xxx+3875.0/12.0*xxy+125.0*ONESIXTH*xyy-625.0*xxxx-
+                     3125.0*0.25*xxxy-625.0*0.25*xxyy+3125.0/12.0*xxxxx+3125.0*ONESIXTH*xxxxy+3125.0/12.0*xxxyy;
+        phi[14] = -25.0*0.25*x+1525.0/24.0*xx+25.0*0.25*xy-5125.0/24.0*xxx-1375.0/24.0*xxy+6875.0/24.0*xxxx+
+                     625.0*0.25*xxxy-3125.0/24.0*xxxxx-3125.0/24.0*xxxxy;
+        phi[15] = 250.0*xy-5875.0*ONESIXTH*xxy-5875.0*ONESIXTH*xyy+1250.0*xxxy+2500.0*xxyy+1250.0*xyyy-3125.0*ONESIXTH*xxxxy-
+                     1562.5*xxxyy-1562.5*xxyyy-3125.0*ONESIXTH*xyyyy;
+        phi[16] = -125.0*xy+3625.0*0.25*xxy+1125.0*0.25*xyy-1562.5*xxxy-6875.0*0.25*xxyy-625.0*0.25*xyyy+
+                     3125.0*0.25*xxxxy+1562.5*xxxyy+3125.0*0.25*xxyyy;
+        phi[17] = 125.0*ONETHIRD*xy-2125.0*ONESIXTH*xxy-125.0*ONETHIRD*xyy+2500.0*ONETHIRD*xxxy+312.5*xxyy-3125.0*ONESIXTH*xxxxy-3125.0*ONESIXTH*xxxyy;
+        phi[18] = -125.0*xy+1125.0*0.25*xxy+3625.0*0.25*xyy-625.0*0.25*xxxy-6875.0*0.25*xxyy-1562.5*xyyy+
+                     3125.0*0.25*xxxyy+1562.5*xxyyy+3125.0*0.25*xyyyy;
+        phi[19] = 125.0*0.25*xy-187.5*xxy-187.5*xyy+625.0*0.25*xxxy+4375.0*0.25*xxyy+
+                     625.0*0.25*xyyy-3125.0*0.25*xxxyy-3125.0*0.25*xxyyy;
+        phi[20] = 125.0*ONETHIRD*xy-125.0*ONETHIRD*xxy-2125.0*ONESIXTH*xyy+312.5*xxyy+2500.0*ONETHIRD*xyyy-
+                     3125.0*ONESIXTH*xxyyy-3125.0*ONESIXTH*xyyyy;
+        return 0;
+    }
 #endif
   default:
     return -1;
@@ -711,11 +712,10 @@ PXShapeQuadSpectralLagrange2d(const int porder, const DT * RESTRICT xref, DT * R
 template <typename DT> ELVIS_DEVICE int
 PXShapeHierarch3d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 {
-  DT x , y , z ;
 
-  x = xref[0];
-  y = xref[1];
-  z = xref[2];
+  DT x = xref[0];
+  DT y = xref[1];
+  DT z = xref[2];
 
   if (porder <= 0)
     return -1;
@@ -801,8 +801,7 @@ PXShapeHierarch3d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
   }
 #endif
 
-  if (porder >= 6)
-    return -1;  
+    return -1;
 } // PXShapeHierarch3d
 
 
@@ -811,12 +810,9 @@ PXShapeHierarch3d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 template <typename DT> ELVIS_DEVICE int
 PXShapeLagrange3d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 {
-  DT x, y, z;
-  DT MapleGenVar1, x3, x4, y3, y4, z3, z4;
-
-  x = xref[0];
-  y = xref[1];
-  z = xref[2];
+  DT x = xref[0];
+  DT y = xref[1];
+  DT z = xref[2];
 
   switch (porder){
 #if GEOM_USE_P0    
@@ -917,72 +913,74 @@ PXShapeLagrange3d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 #endif
 #if GEOM_USE_P5
   case 5:
-    x4 = x*x*x*x;
-    x3 = x*x*x;
-    y4 = y*y*y*y;
-    y3 = y*y*y;
-    z4 = z*z*z*z;
-    z3 = z*z*z;
-    
-    MapleGenVar1 = 1.0-3125.0*ONESIXTH*z*y*x*x*x-137.0/12.0*x-137.0/12.0*y-3125.0*ONESIXTH*z*y*y*y*x-2125.0*0.25*z*y*x+1875.0*0.25*y*y*x*x-137.0/12.0*z-3125.0/24.0*z*z*z*z*y-3125.0/12.0*z*z*z*y*y+375.0/8.0*x*x+312.5*y*y*y*x+312.5*z*x*x*x+1875.0*0.25*z*z*y*y+1875.0*0.25*z*z*x*x+312.5*z*y*y*y+312.5*z*z*z*y+375.0*0.25*z*y-2125.0/8.0*z*z*y-2125.0/24.0*x*x*x-3125.0/24.0*z*x*x*x*x-3125.0/12.0*y*y*x*x*x-3125.0/24.0*z*y*y*y*y-2125.0/8.0*y*y*x-3125.0/12.0*z*z*x*x*x-2125.0/8.0*y*x*x-2125.0/8.0*z*x*x-3125.0/12.0*z*z*y*y*y;
-    phi[0] = -2125.0/8.0*z*y*y-3125.0/24.0*z*z*z*z*x+312.5*z*z*z*x-3125.0*0.25*z*y*y*x*x-3125.0*0.25*z*z*y*x*x-3125.0/12.0*z*z*z*x*x+937.5*z*y*x*x-3125.0*0.25*z*z*y*y*x+MapleGenVar1-2125.0/8.0*z*z*x+312.5*y*x*x*x-3125.0/24.0*y*x*x*x*x+937.5*z*z*y*x+937.5*z*y*y*x+375.0*0.25*z*x-3125.0/12.0*y*y*y*x*x+375.0/8.0*z*z+375.0/8.0*y*y-2125.0/24.0*z*z*z-2125.0/24.0*y*y*y+625.0/8.0*z*z*z*z+625.0/8.0*y*y*y*y-625.0/24.0*z*z*z*z*z-625.0/24.0*y*y*y*y*y-625.0/24.0*x*x*x*x*x-3125.0*ONESIXTH*z*z*z*y*x+375.0*0.25*y*x+625.0/8.0*x*x*x*x-3125.0/24.0*y*y*y*y*x;
-    phi[1] = 1562.5*z*y*x*x*x+25.0*x+3125.0*ONESIXTH*z*y*y*y*x+8875.0/12.0*z*y*x-4375.0*0.25*y*y*x*x-1925.0/12.0*x*x-4375.0/12.0*y*y*y*x-4375.0*0.25*z*x*x*x-4375.0*0.25*z*z*x*x+8875.0/24.0*x*x*x+3125.0*ONESIXTH*z*x*x*x*x+3125.0*0.25*y*y*x*x*x+8875.0/24.0*y*y*x+3125.0*0.25*z*z*x*x*x+8875.0/12.0*y*x*x+8875.0/12.0*z*x*x+3125.0/24.0*z*z*z*z*x-4375.0/12.0*z*z*z*x+1562.5*z*y*y*x*x+1562.5*z*z*y*x*x+3125.0*ONESIXTH*z*z*z*x*x-2187.5*z*y*x*x+3125.0*0.25*z*z*y*y*x+8875.0/24.0*z*z*x-4375.0*0.25*y*x*x*x+3125.0*ONESIXTH*y*x*x*x*x-4375.0*0.25*z*z*y*x-4375.0*0.25*z*y*y*x-1925.0/12.0*z*x+3125.0*ONESIXTH*y*y*y*x*x+3125.0/24.0*x*x*x*x*x+3125.0*ONESIXTH*z*z*z*y*x-1925.0/12.0*y*x-4375.0/12.0*x*x*x*x+3125.0/24.0*y*y*y*y*x;
-    phi[2] = -1562.5*z*y*x*x*x-25.0*x-250.0*z*y*x+3125.0*0.25*y*y*x*x+2675.0/12.0*x*x+625.0/12.0*y*y*y*x+5625.0*0.25*z*x*x*x+3125.0*0.25*z*z*x*x-7375.0/12.0*x*x*x-3125.0*0.25*z*x*x*x*x-3125.0*0.25*y*y*x*x*x-125.0*y*y*x-3125.0*0.25*z*z*x*x*x-8875.0/12.0*y*x*x-8875.0/12.0*z*x*x+625.0/12.0*z*z*z*x-3125.0*0.25*z*y*y*x*x-3125.0*0.25*z*z*y*x*x-3125.0/12.0*z*z*z*x*x+1562.5*z*y*x*x-125.0*z*z*x+5625.0*0.25*y*x*x*x-3125.0*0.25*y*x*x*x*x+625.0*0.25*z*z*y*x+625.0*0.25*z*y*y*x+1175.0/12.0*z*x-3125.0/12.0*y*y*y*x*x-3125.0/12.0*x*x*x*x*x+1175.0/12.0*y*x+8125.0/12.0*x*x*x*x;
-    phi[3] = 125.0*ONETHIRD*z*y*x+50.0*ONETHIRD*x-312.5*z*y*x*x-162.5*x*x+6125.0/12.0*x*x*x+3125.0*ONESIXTH*z*y*x*x*x-625.0*x*x*x*x+3875.0/12.0*y*x*x+125.0*ONESIXTH*y*y*x-37.5*y*x-37.5*z*x-625.0*0.25*z*z*x*x+3125.0/12.0*x*x*x*x*x+3125.0*ONESIXTH*y*x*x*x*x+3125.0/12.0*y*y*x*x*x-3125.0*0.25*y*x*x*x-625.0*0.25*y*y*x*x-3125.0*0.25*z*x*x*x+3875.0/12.0*z*x*x+125.0*ONESIXTH*z*z*x+3125.0*ONESIXTH*z*x*x*x*x+3125.0/12.0*z*z*x*x*x;
-    phi[4] = -25.0*0.25*x+1525.0/24.0*x*x-5125.0/24.0*x*x*x+6875.0/24.0*x*x*x*x-1375.0/24.0*y*x*x+25.0*0.25*y*x+25.0*0.25*z*x-3125.0/24.0*x*x*x*x*x-3125.0/24.0*y*x*x*x*x+625.0*0.25*y*x*x*x+625.0*0.25*z*x*x*x-1375.0/24.0*z*x*x-3125.0/24.0*z*x*x*x*x;
-    phi[5] = x-125.0/12.0*x*x+875.0/24.0*x*x*x-625.0/12.0*x*x*x*x+625.0/24.0*x*x*x*x*x;
-    phi[6] = 3125.0*ONESIXTH*z*y*x*x*x+25.0*y+1562.5*z*y*y*y*x+8875.0/12.0*z*y*x-4375.0*0.25*y*y*x*x+3125.0/24.0*z*z*z*z*y+3125.0*ONESIXTH*z*z*z*y*y-4375.0*0.25*y*y*y*x-4375.0*0.25*z*z*y*y-4375.0*0.25*z*y*y*y-4375.0/12.0*z*z*z*y-1925.0/12.0*z*y+8875.0/24.0*z*z*y+3125.0*ONESIXTH*y*y*x*x*x+3125.0*ONESIXTH*z*y*y*y*y+8875.0/12.0*y*y*x+8875.0/24.0*y*x*x+3125.0*0.25*z*z*y*y*y+8875.0/12.0*z*y*y+1562.5*z*y*y*x*x+3125.0*0.25*z*z*y*x*x-4375.0*0.25*z*y*x*x+1562.5*z*z*y*y*x-4375.0/12.0*y*x*x*x+3125.0/24.0*y*x*x*x*x-4375.0*0.25*z*z*y*x-2187.5*z*y*y*x+3125.0*0.25*y*y*y*x*x-1925.0/12.0*y*y+8875.0/24.0*y*y*y-4375.0/12.0*y*y*y*y+3125.0/24.0*y*y*y*y*y+3125.0*ONESIXTH*z*z*z*y*x-1925.0/12.0*y*x+3125.0*ONESIXTH*y*y*y*y*x;
-    phi[7] = -5875.0*ONESIXTH*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-1562.5*z*z*y*y*x-1562.5*z*y*y*y*x-1562.5*z*z*y*x*x+2500.0*z*y*y*x+1250.0*z*z*y*x+2500.0*z*y*x*x-3125.0*z*y*y*x*x-3125.0*ONESIXTH*y*y*y*y*x-1562.5*z*y*x*x*x-5875.0*ONESIXTH*y*x*x-5875.0*ONESIXTH*y*y*x+250.0*y*x-3125.0*ONESIXTH*y*x*x*x*x-1562.5*y*y*y*x*x-1562.5*y*y*x*x*x+1250.0*y*x*x*x+2500.0*y*y*x*x+1250.0*y*y*y*x;
-    phi[8] = 1125.0*0.25*z*y*x+3125.0*0.25*z*z*y*x*x-312.5*z*y*y*x-625.0*0.25*z*z*y*x-6875.0*0.25*z*y*x*x+1562.5*z*y*y*x*x+1562.5*z*y*x*x*x+3625.0*0.25*y*x*x+1125.0*0.25*y*y*x-125.0*y*x+3125.0*0.25*y*x*x*x*x+3125.0*0.25*y*y*y*x*x+1562.5*y*y*x*x*x-1562.5*y*x*x*x-6875.0*0.25*y*y*x*x-625.0*0.25*y*y*y*x;
-    phi[9] = -125.0*ONETHIRD*z*y*x+312.5*z*y*x*x-3125.0*ONESIXTH*z*y*x*x*x-2125.0*ONESIXTH*y*x*x-125.0*ONETHIRD*y*y*x+125.0*ONETHIRD*y*x-3125.0*ONESIXTH*y*x*x*x*x-3125.0*ONESIXTH*y*y*x*x*x+2500.0*ONETHIRD*y*x*x*x+312.5*y*y*x*x;
-    phi[10] = 1375.0/24.0*y*x*x-25.0*0.25*y*x+3125.0/24.0*y*x*x*x*x-625.0*0.25*y*x*x*x;
-    phi[11] = -25.0*y-1562.5*z*y*y*y*x-250.0*z*y*x+3125.0*0.25*y*y*x*x-3125.0/12.0*z*z*z*y*y+5625.0*0.25*y*y*y*x+3125.0*0.25*z*z*y*y+5625.0*0.25*z*y*y*y+625.0/12.0*z*z*z*y+1175.0/12.0*z*y-125.0*z*z*y-3125.0/12.0*y*y*x*x*x-3125.0*0.25*z*y*y*y*y-8875.0/12.0*y*y*x-125.0*y*x*x-3125.0*0.25*z*z*y*y*y-8875.0/12.0*z*y*y-3125.0*0.25*z*y*y*x*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*z*y*y*x+625.0/12.0*y*x*x*x+625.0*0.25*z*z*y*x+1562.5*z*y*y*x-3125.0*0.25*y*y*y*x*x+2675.0/12.0*y*y-7375.0/12.0*y*y*y+8125.0/12.0*y*y*y*y-3125.0/12.0*y*y*y*y*y+1175.0/12.0*y*x-3125.0*0.25*y*y*y*y*x;
-    phi[12] = 1125.0*0.25*z*y*x+1562.5*z*y*y*y*x+3125.0*0.25*z*z*y*y*x+3125.0*0.25*y*y*y*y*x-6875.0*0.25*z*y*y*x-625.0*0.25*z*z*y*x-312.5*z*y*x*x+1562.5*z*y*y*x*x+1125.0*0.25*y*x*x+3625.0*0.25*y*y*x-125.0*y*x+1562.5*y*y*y*x*x+3125.0*0.25*y*y*x*x*x-625.0*0.25*y*x*x*x-6875.0*0.25*y*y*x*x-1562.5*y*y*y*x;
-    phi[13] = -125.0*0.25*z*y*x+625.0*0.25*z*y*y*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*y*y*x*x-187.5*y*x*x-187.5*y*y*x+125.0*0.25*y*x-3125.0*0.25*y*y*y*x*x-3125.0*0.25*y*y*x*x*x+625.0*0.25*y*x*x*x+4375.0*0.25*y*y*x*x+625.0*0.25*y*y*y*x;
-    phi[14] = 125.0*0.25*y*x*x+125.0*ONESIXTH*y*y*x-25.0*ONESIXTH*y*x+3125.0/12.0*y*y*x*x*x-625.0/12.0*y*x*x*x-625.0*0.25*y*y*x*x;
-    phi[15] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*y*y*x+3125.0*ONESIXTH*y*y*y*y*x+50.0*ONETHIRD*y-312.5*z*y*y*x+3875.0/12.0*z*y*y-162.5*y*y+6125.0/12.0*y*y*y-625.0*y*y*y*y+3125.0/12.0*y*y*y*y*y+3125.0*ONESIXTH*z*y*y*y*y+3125.0/12.0*z*z*y*y*y-3125.0*0.25*z*y*y*y+125.0*ONESIXTH*z*z*y-625.0*0.25*z*z*y*y-37.5*z*y+125.0*ONESIXTH*y*x*x+3875.0/12.0*y*y*x-37.5*y*x+3125.0/12.0*y*y*y*x*x-625.0*0.25*y*y*x*x-3125.0*0.25*y*y*y*x;
-    phi[16] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*y*y*x-3125.0*ONESIXTH*y*y*y*y*x+312.5*z*y*y*x-125.0*ONETHIRD*y*x*x-2125.0*ONESIXTH*y*y*x+125.0*ONETHIRD*y*x-3125.0*ONESIXTH*y*y*y*x*x+312.5*y*y*x*x+2500.0*ONETHIRD*y*y*y*x;
-    phi[17] = 125.0*ONESIXTH*y*x*x+125.0*0.25*y*y*x-25.0*ONESIXTH*y*x+3125.0/12.0*y*y*y*x*x-625.0*0.25*y*y*x*x-625.0/12.0*y*y*y*x;
-    phi[18] = -3125.0/24.0*y*y*y*y*x-25.0*0.25*y-1375.0/24.0*z*y*y+1525.0/24.0*y*y-5125.0/24.0*y*y*y+6875.0/24.0*y*y*y*y-3125.0/24.0*y*y*y*y*y-3125.0/24.0*z*y*y*y*y+625.0*0.25*z*y*y*y+25.0*0.25*z*y-1375.0/24.0*y*y*x+25.0*0.25*y*x+625.0*0.25*y*y*y*x;
-    phi[19] = 3125.0/24.0*y*y*y*y*x+1375.0/24.0*y*y*x-25.0*0.25*y*x-625.0*0.25*y*y*y*x;
-    phi[20] = y-125.0/12.0*y*y+875.0/24.0*y*y*y-625.0/12.0*y*y*y*y+625.0/24.0*y*y*y*y*y;
-    phi[21] = 3125.0*ONESIXTH*z*y*x*x*x+3125.0*ONESIXTH*z*y*y*y*x+8875.0/12.0*z*y*x+25.0*z+3125.0*ONESIXTH*z*z*z*z*y+3125.0*0.25*z*z*z*y*y-4375.0/12.0*z*x*x*x-4375.0*0.25*z*z*y*y-4375.0*0.25*z*z*x*x-4375.0/12.0*z*y*y*y-4375.0*0.25*z*z*z*y-1925.0/12.0*z*y+8875.0/12.0*z*z*y+3125.0/24.0*z*x*x*x*x+3125.0/24.0*z*y*y*y*y+3125.0*ONESIXTH*z*z*x*x*x+8875.0/24.0*z*x*x+3125.0*ONESIXTH*z*z*y*y*y+8875.0/24.0*z*y*y+3125.0*ONESIXTH*z*z*z*z*x-4375.0*0.25*z*z*z*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*x*x+3125.0*0.25*z*z*z*x*x-4375.0*0.25*z*y*x*x+1562.5*z*z*y*y*x+8875.0/12.0*z*z*x-2187.5*z*z*y*x-4375.0*0.25*z*y*y*x-1925.0/12.0*z*x-1925.0/12.0*z*z+8875.0/24.0*z*z*z-4375.0/12.0*z*z*z*z+3125.0/24.0*z*z*z*z*z+1562.5*z*z*z*y*x;
-    phi[22] = -5875.0*ONESIXTH*z*y*x-1562.5*z*y*x*x*x-1562.5*z*y*y*x*x-3125.0*z*z*y*x*x-1562.5*z*z*y*y*x-1562.5*z*z*z*y*x+2500.0*z*y*x*x+2500.0*z*z*y*x-3125.0*ONESIXTH*z*y*y*y*x-5875.0*ONESIXTH*z*z*x+1250.0*z*y*y*x+250.0*z*x+2500.0*z*z*x*x-1562.5*z*z*x*x*x-3125.0*ONESIXTH*z*x*x*x*x-1562.5*z*z*z*x*x-3125.0*ONESIXTH*z*z*z*z*x+1250.0*z*x*x*x+1250.0*z*z*z*x-5875.0*ONESIXTH*z*x*x;
-    phi[23] = 1125.0*0.25*z*y*x+1562.5*z*y*x*x*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*x*x-6875.0*0.25*z*y*x*x-312.5*z*z*y*x+1125.0*0.25*z*z*x-625.0*0.25*z*y*y*x-125.0*z*x-6875.0*0.25*z*z*x*x+1562.5*z*z*x*x*x+3125.0*0.25*z*x*x*x*x+3125.0*0.25*z*z*z*x*x-1562.5*z*x*x*x-625.0*0.25*z*z*z*x+3625.0*0.25*z*x*x;
-    phi[24] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*x*x*x+312.5*z*y*x*x-125.0*ONETHIRD*z*z*x+125.0*ONETHIRD*z*x+312.5*z*z*x*x-3125.0*ONESIXTH*z*z*x*x*x-3125.0*ONESIXTH*z*x*x*x*x+2500.0*ONETHIRD*z*x*x*x-2125.0*ONESIXTH*z*x*x;
-    phi[25] = -25.0*0.25*z*x+3125.0/24.0*z*x*x*x*x-625.0*0.25*z*x*x*x+1375.0/24.0*z*x*x;
-    phi[26] = -5875.0*ONESIXTH*z*y*x-3125.0*ONESIXTH*z*y*x*x*x-1562.5*z*y*y*x*x-1562.5*z*z*y*x*x-3125.0*z*z*y*y*x-1562.5*z*z*z*y*x+1250.0*z*y*x*x+2500.0*z*z*y*x-1562.5*z*y*y*y*x+2500.0*z*y*y*x+1250.0*z*z*z*y-1562.5*z*z*y*y*y+250.0*z*y-1562.5*z*z*z*y*y-5875.0*ONESIXTH*z*y*y-3125.0*ONESIXTH*z*z*z*z*y-5875.0*ONESIXTH*z*z*y-3125.0*ONESIXTH*z*y*y*y*y+1250.0*z*y*y*y+2500.0*z*z*y*y;
-    phi[27] = 1250.0*z*y*x+1562.5*z*y*x*x*x+3125.0*z*y*y*x*x+3125.0*z*z*y*x*x+3125.0*z*z*y*y*x+1562.5*z*z*z*y*x-2812.5*z*y*x*x-2812.5*z*z*y*x+1562.5*z*y*y*y*x-2812.5*z*y*y*x;
-    phi[28] = -312.5*z*y*x-1562.5*z*y*x*x*x-1562.5*z*y*y*x*x-1562.5*z*z*y*x*x+1875.0*z*y*x*x+312.5*z*z*y*x+312.5*z*y*y*x;
-    phi[29] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*x*x*x-312.5*z*y*x*x;
-    phi[30] = 1125.0*0.25*z*y*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*y*x-625.0*0.25*z*y*x*x-312.5*z*z*y*x+1562.5*z*y*y*y*x-6875.0*0.25*z*y*y*x-625.0*0.25*z*z*z*y+1562.5*z*z*y*y*y-125.0*z*y+3125.0*0.25*z*z*z*y*y+3625.0*0.25*z*y*y+1125.0*0.25*z*z*y+3125.0*0.25*z*y*y*y*y-1562.5*z*y*y*y-6875.0*0.25*z*z*y*y;
-    phi[31] = -312.5*z*y*x-1562.5*z*y*y*x*x-1562.5*z*z*y*y*x+312.5*z*y*x*x+312.5*z*z*y*x-1562.5*z*y*y*y*x+1875.0*z*y*y*x;
-    phi[32] = 125.0*0.25*z*y*x+3125.0*0.25*z*y*y*x*x-625.0*0.25*z*y*x*x-625.0*0.25*z*y*y*x;
-    phi[33] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*y*y*x+312.5*z*y*y*x-3125.0*ONESIXTH*z*z*y*y*y+125.0*ONETHIRD*z*y-2125.0*ONESIXTH*z*y*y-125.0*ONETHIRD*z*z*y-3125.0*ONESIXTH*z*y*y*y*y+2500.0*ONETHIRD*z*y*y*y+312.5*z*z*y*y;
-    phi[34] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*y*y*x-312.5*z*y*y*x;
-    phi[35] = -25.0*0.25*z*y+1375.0/24.0*z*y*y+3125.0/24.0*z*y*y*y*y-625.0*0.25*z*y*y*y;
-    phi[36] = -250.0*z*y*x-25.0*z-3125.0*0.25*z*z*z*z*y-3125.0*0.25*z*z*z*y*y+625.0/12.0*z*x*x*x+3125.0*0.25*z*z*y*y+3125.0*0.25*z*z*x*x+625.0/12.0*z*y*y*y+5625.0*0.25*z*z*z*y+1175.0/12.0*z*y-8875.0/12.0*z*z*y-3125.0/12.0*z*z*x*x*x-125.0*z*x*x-3125.0/12.0*z*z*y*y*y-125.0*z*y*y-3125.0*0.25*z*z*z*z*x+5625.0*0.25*z*z*z*x-3125.0*0.25*z*z*y*x*x-3125.0*0.25*z*z*z*x*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*z*y*y*x-8875.0/12.0*z*z*x+1562.5*z*z*y*x+625.0*0.25*z*y*y*x+1175.0/12.0*z*x+2675.0/12.0*z*z-7375.0/12.0*z*z*z+8125.0/12.0*z*z*z*z-3125.0/12.0*z*z*z*z*z-1562.5*z*z*z*y*x;
-    phi[37] = 1562.5*z*z*y*x*x+3125.0*0.25*z*z*y*y*x+1562.5*z*z*z*y*x-6875.0*0.25*z*z*y*x+1125.0*0.25*z*y*x-312.5*z*y*x*x-625.0*0.25*z*x*x*x-625.0*0.25*z*y*y*x-6875.0*0.25*z*z*x*x-1562.5*z*z*z*x+3125.0*0.25*z*z*x*x*x+1125.0*0.25*z*x*x-125.0*z*x+3625.0*0.25*z*z*x+1562.5*z*z*z*x*x+3125.0*0.25*z*z*z*z*x;
-    phi[38] = -3125.0*0.25*z*z*y*x*x+625.0*0.25*z*z*y*x-125.0*0.25*z*y*x+625.0*0.25*z*y*x*x+625.0*0.25*z*x*x*x+4375.0*0.25*z*z*x*x+625.0*0.25*z*z*z*x-3125.0*0.25*z*z*x*x*x-187.5*z*x*x+125.0*0.25*z*x-187.5*z*z*x-3125.0*0.25*z*z*z*x*x;
-    phi[39] = -625.0/12.0*z*x*x*x-625.0*0.25*z*z*x*x+3125.0/12.0*z*z*x*x*x+125.0*0.25*z*x*x-25.0*ONESIXTH*z*x+125.0*ONESIXTH*z*z*x;
-    phi[40] = 3125.0*0.25*z*z*y*x*x+1562.5*z*z*y*y*x+1562.5*z*z*z*y*x-6875.0*0.25*z*z*y*x+1125.0*0.25*z*y*x-625.0*0.25*z*y*x*x-312.5*z*y*y*x-1562.5*z*z*z*y+3125.0*0.25*z*z*y*y*y-125.0*z*y+1125.0*0.25*z*y*y+3625.0*0.25*z*z*y+1562.5*z*z*z*y*y+3125.0*0.25*z*z*z*z*y-625.0*0.25*z*y*y*y-6875.0*0.25*z*z*y*y;
-    phi[41] = -1562.5*z*z*y*x*x-1562.5*z*z*y*y*x-1562.5*z*z*z*y*x+1875.0*z*z*y*x-312.5*z*y*x+312.5*z*y*x*x+312.5*z*y*y*x;
-    phi[42] = 3125.0*0.25*z*z*y*x*x-625.0*0.25*z*z*y*x+125.0*0.25*z*y*x-625.0*0.25*z*y*x*x;
-    phi[43] = -3125.0*0.25*z*z*y*y*x+625.0*0.25*z*z*y*x-125.0*0.25*z*y*x+625.0*0.25*z*y*y*x+625.0*0.25*z*z*z*y-3125.0*0.25*z*z*y*y*y+125.0*0.25*z*y-187.5*z*y*y-187.5*z*z*y-3125.0*0.25*z*z*z*y*y+625.0*0.25*z*y*y*y+4375.0*0.25*z*z*y*y;
-    phi[44] = 3125.0*0.25*z*z*y*y*x-625.0*0.25*z*z*y*x+125.0*0.25*z*y*x-625.0*0.25*z*y*y*x;
-    phi[45] = 3125.0/12.0*z*z*y*y*y-25.0*ONESIXTH*z*y+125.0*0.25*z*y*y+125.0*ONESIXTH*z*z*y-625.0/12.0*z*y*y*y-625.0*0.25*z*z*y*y;
-    phi[46] = -312.5*z*z*y*x+125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*z*z*y*x+3125.0/12.0*z*z*z*x*x+50.0*ONETHIRD*z+3125.0*ONESIXTH*z*z*z*z*y+3125.0*ONESIXTH*z*z*z*z*x-3125.0*0.25*z*z*z*y-162.5*z*z+6125.0/12.0*z*z*z-625.0*z*z*z*z-37.5*z*y+125.0*ONESIXTH*z*y*y+3125.0/12.0*z*z*z*z*z-625.0*0.25*z*z*x*x+3875.0/12.0*z*z*y-3125.0*0.25*z*z*z*x+3125.0/12.0*z*z*z*y*y+125.0*ONESIXTH*z*x*x-625.0*0.25*z*z*y*y+3875.0/12.0*z*z*x-37.5*z*x;
-    phi[47] = 312.5*z*z*y*x-125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-3125.0*ONESIXTH*z*z*z*x*x-3125.0*ONESIXTH*z*z*z*z*x+312.5*z*z*x*x+2500.0*ONETHIRD*z*z*z*x-125.0*ONETHIRD*z*x*x-2125.0*ONESIXTH*z*z*x+125.0*ONETHIRD*z*x;
-    phi[48] = 3125.0/12.0*z*z*z*x*x-625.0*0.25*z*z*x*x-625.0/12.0*z*z*z*x+125.0*ONESIXTH*z*x*x+125.0*0.25*z*z*x-25.0*ONESIXTH*z*x;
-    phi[49] = 312.5*z*z*y*x-125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-3125.0*ONESIXTH*z*z*z*z*y+2500.0*ONETHIRD*z*z*z*y+125.0*ONETHIRD*z*y-125.0*ONETHIRD*z*y*y-2125.0*ONESIXTH*z*z*y-3125.0*ONESIXTH*z*z*z*y*y+312.5*z*z*y*y;
-    phi[50] = -312.5*z*z*y*x+125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*z*z*y*x;
-    phi[51] = -625.0/12.0*z*z*z*y-25.0*ONESIXTH*z*y+125.0*ONESIXTH*z*y*y+125.0*0.25*z*z*y+3125.0/12.0*z*z*z*y*y-625.0*0.25*z*z*y*y;
-    phi[52] = -3125.0/24.0*z*z*z*z*z-25.0*0.25*z-3125.0/24.0*z*z*z*z*y+625.0*0.25*z*z*z*y+25.0*0.25*z*y-1375.0/24.0*z*z*y-3125.0/24.0*z*z*z*z*x+625.0*0.25*z*z*z*x-1375.0/24.0*z*z*x+1525.0/24.0*z*z+25.0*0.25*z*x+6875.0/24.0*z*z*z*z-5125.0/24.0*z*z*z;
-    phi[53] = 3125.0/24.0*z*z*z*z*x-625.0*0.25*z*z*z*x+1375.0/24.0*z*z*x-25.0*0.25*z*x;
-    phi[54] = 3125.0/24.0*z*z*z*z*y-625.0*0.25*z*z*z*y-25.0*0.25*z*y+1375.0/24.0*z*z*y;
-    phi[55] = z-125.0/12.0*z*z+875.0/24.0*z*z*z-625.0/12.0*z*z*z*z+625.0/24.0*z*z*z*z*z;
+    {
+        DT x4 = x*x*x*x;
+        DT x3 = x*x*x;
+        DT y4 = y*y*y*y;
+        DT y3 = y*y*y;
+        DT z4 = z*z*z*z;
+        DT z3 = z*z*z;
 
-    return 0;
+        MapleGenVar1 = 1.0-3125.0*ONESIXTH*z*y*x*x*x-137.0/12.0*x-137.0/12.0*y-3125.0*ONESIXTH*z*y*y*y*x-2125.0*0.25*z*y*x+1875.0*0.25*y*y*x*x-137.0/12.0*z-3125.0/24.0*z*z*z*z*y-3125.0/12.0*z*z*z*y*y+375.0/8.0*x*x+312.5*y*y*y*x+312.5*z*x*x*x+1875.0*0.25*z*z*y*y+1875.0*0.25*z*z*x*x+312.5*z*y*y*y+312.5*z*z*z*y+375.0*0.25*z*y-2125.0/8.0*z*z*y-2125.0/24.0*x*x*x-3125.0/24.0*z*x*x*x*x-3125.0/12.0*y*y*x*x*x-3125.0/24.0*z*y*y*y*y-2125.0/8.0*y*y*x-3125.0/12.0*z*z*x*x*x-2125.0/8.0*y*x*x-2125.0/8.0*z*x*x-3125.0/12.0*z*z*y*y*y;
+        phi[0] = -2125.0/8.0*z*y*y-3125.0/24.0*z*z*z*z*x+312.5*z*z*z*x-3125.0*0.25*z*y*y*x*x-3125.0*0.25*z*z*y*x*x-3125.0/12.0*z*z*z*x*x+937.5*z*y*x*x-3125.0*0.25*z*z*y*y*x+MapleGenVar1-2125.0/8.0*z*z*x+312.5*y*x*x*x-3125.0/24.0*y*x*x*x*x+937.5*z*z*y*x+937.5*z*y*y*x+375.0*0.25*z*x-3125.0/12.0*y*y*y*x*x+375.0/8.0*z*z+375.0/8.0*y*y-2125.0/24.0*z*z*z-2125.0/24.0*y*y*y+625.0/8.0*z*z*z*z+625.0/8.0*y*y*y*y-625.0/24.0*z*z*z*z*z-625.0/24.0*y*y*y*y*y-625.0/24.0*x*x*x*x*x-3125.0*ONESIXTH*z*z*z*y*x+375.0*0.25*y*x+625.0/8.0*x*x*x*x-3125.0/24.0*y*y*y*y*x;
+        phi[1] = 1562.5*z*y*x*x*x+25.0*x+3125.0*ONESIXTH*z*y*y*y*x+8875.0/12.0*z*y*x-4375.0*0.25*y*y*x*x-1925.0/12.0*x*x-4375.0/12.0*y*y*y*x-4375.0*0.25*z*x*x*x-4375.0*0.25*z*z*x*x+8875.0/24.0*x*x*x+3125.0*ONESIXTH*z*x*x*x*x+3125.0*0.25*y*y*x*x*x+8875.0/24.0*y*y*x+3125.0*0.25*z*z*x*x*x+8875.0/12.0*y*x*x+8875.0/12.0*z*x*x+3125.0/24.0*z*z*z*z*x-4375.0/12.0*z*z*z*x+1562.5*z*y*y*x*x+1562.5*z*z*y*x*x+3125.0*ONESIXTH*z*z*z*x*x-2187.5*z*y*x*x+3125.0*0.25*z*z*y*y*x+8875.0/24.0*z*z*x-4375.0*0.25*y*x*x*x+3125.0*ONESIXTH*y*x*x*x*x-4375.0*0.25*z*z*y*x-4375.0*0.25*z*y*y*x-1925.0/12.0*z*x+3125.0*ONESIXTH*y*y*y*x*x+3125.0/24.0*x*x*x*x*x+3125.0*ONESIXTH*z*z*z*y*x-1925.0/12.0*y*x-4375.0/12.0*x*x*x*x+3125.0/24.0*y*y*y*y*x;
+        phi[2] = -1562.5*z*y*x*x*x-25.0*x-250.0*z*y*x+3125.0*0.25*y*y*x*x+2675.0/12.0*x*x+625.0/12.0*y*y*y*x+5625.0*0.25*z*x*x*x+3125.0*0.25*z*z*x*x-7375.0/12.0*x*x*x-3125.0*0.25*z*x*x*x*x-3125.0*0.25*y*y*x*x*x-125.0*y*y*x-3125.0*0.25*z*z*x*x*x-8875.0/12.0*y*x*x-8875.0/12.0*z*x*x+625.0/12.0*z*z*z*x-3125.0*0.25*z*y*y*x*x-3125.0*0.25*z*z*y*x*x-3125.0/12.0*z*z*z*x*x+1562.5*z*y*x*x-125.0*z*z*x+5625.0*0.25*y*x*x*x-3125.0*0.25*y*x*x*x*x+625.0*0.25*z*z*y*x+625.0*0.25*z*y*y*x+1175.0/12.0*z*x-3125.0/12.0*y*y*y*x*x-3125.0/12.0*x*x*x*x*x+1175.0/12.0*y*x+8125.0/12.0*x*x*x*x;
+        phi[3] = 125.0*ONETHIRD*z*y*x+50.0*ONETHIRD*x-312.5*z*y*x*x-162.5*x*x+6125.0/12.0*x*x*x+3125.0*ONESIXTH*z*y*x*x*x-625.0*x*x*x*x+3875.0/12.0*y*x*x+125.0*ONESIXTH*y*y*x-37.5*y*x-37.5*z*x-625.0*0.25*z*z*x*x+3125.0/12.0*x*x*x*x*x+3125.0*ONESIXTH*y*x*x*x*x+3125.0/12.0*y*y*x*x*x-3125.0*0.25*y*x*x*x-625.0*0.25*y*y*x*x-3125.0*0.25*z*x*x*x+3875.0/12.0*z*x*x+125.0*ONESIXTH*z*z*x+3125.0*ONESIXTH*z*x*x*x*x+3125.0/12.0*z*z*x*x*x;
+        phi[4] = -25.0*0.25*x+1525.0/24.0*x*x-5125.0/24.0*x*x*x+6875.0/24.0*x*x*x*x-1375.0/24.0*y*x*x+25.0*0.25*y*x+25.0*0.25*z*x-3125.0/24.0*x*x*x*x*x-3125.0/24.0*y*x*x*x*x+625.0*0.25*y*x*x*x+625.0*0.25*z*x*x*x-1375.0/24.0*z*x*x-3125.0/24.0*z*x*x*x*x;
+        phi[5] = x-125.0/12.0*x*x+875.0/24.0*x*x*x-625.0/12.0*x*x*x*x+625.0/24.0*x*x*x*x*x;
+        phi[6] = 3125.0*ONESIXTH*z*y*x*x*x+25.0*y+1562.5*z*y*y*y*x+8875.0/12.0*z*y*x-4375.0*0.25*y*y*x*x+3125.0/24.0*z*z*z*z*y+3125.0*ONESIXTH*z*z*z*y*y-4375.0*0.25*y*y*y*x-4375.0*0.25*z*z*y*y-4375.0*0.25*z*y*y*y-4375.0/12.0*z*z*z*y-1925.0/12.0*z*y+8875.0/24.0*z*z*y+3125.0*ONESIXTH*y*y*x*x*x+3125.0*ONESIXTH*z*y*y*y*y+8875.0/12.0*y*y*x+8875.0/24.0*y*x*x+3125.0*0.25*z*z*y*y*y+8875.0/12.0*z*y*y+1562.5*z*y*y*x*x+3125.0*0.25*z*z*y*x*x-4375.0*0.25*z*y*x*x+1562.5*z*z*y*y*x-4375.0/12.0*y*x*x*x+3125.0/24.0*y*x*x*x*x-4375.0*0.25*z*z*y*x-2187.5*z*y*y*x+3125.0*0.25*y*y*y*x*x-1925.0/12.0*y*y+8875.0/24.0*y*y*y-4375.0/12.0*y*y*y*y+3125.0/24.0*y*y*y*y*y+3125.0*ONESIXTH*z*z*z*y*x-1925.0/12.0*y*x+3125.0*ONESIXTH*y*y*y*y*x;
+        phi[7] = -5875.0*ONESIXTH*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-1562.5*z*z*y*y*x-1562.5*z*y*y*y*x-1562.5*z*z*y*x*x+2500.0*z*y*y*x+1250.0*z*z*y*x+2500.0*z*y*x*x-3125.0*z*y*y*x*x-3125.0*ONESIXTH*y*y*y*y*x-1562.5*z*y*x*x*x-5875.0*ONESIXTH*y*x*x-5875.0*ONESIXTH*y*y*x+250.0*y*x-3125.0*ONESIXTH*y*x*x*x*x-1562.5*y*y*y*x*x-1562.5*y*y*x*x*x+1250.0*y*x*x*x+2500.0*y*y*x*x+1250.0*y*y*y*x;
+        phi[8] = 1125.0*0.25*z*y*x+3125.0*0.25*z*z*y*x*x-312.5*z*y*y*x-625.0*0.25*z*z*y*x-6875.0*0.25*z*y*x*x+1562.5*z*y*y*x*x+1562.5*z*y*x*x*x+3625.0*0.25*y*x*x+1125.0*0.25*y*y*x-125.0*y*x+3125.0*0.25*y*x*x*x*x+3125.0*0.25*y*y*y*x*x+1562.5*y*y*x*x*x-1562.5*y*x*x*x-6875.0*0.25*y*y*x*x-625.0*0.25*y*y*y*x;
+        phi[9] = -125.0*ONETHIRD*z*y*x+312.5*z*y*x*x-3125.0*ONESIXTH*z*y*x*x*x-2125.0*ONESIXTH*y*x*x-125.0*ONETHIRD*y*y*x+125.0*ONETHIRD*y*x-3125.0*ONESIXTH*y*x*x*x*x-3125.0*ONESIXTH*y*y*x*x*x+2500.0*ONETHIRD*y*x*x*x+312.5*y*y*x*x;
+        phi[10] = 1375.0/24.0*y*x*x-25.0*0.25*y*x+3125.0/24.0*y*x*x*x*x-625.0*0.25*y*x*x*x;
+        phi[11] = -25.0*y-1562.5*z*y*y*y*x-250.0*z*y*x+3125.0*0.25*y*y*x*x-3125.0/12.0*z*z*z*y*y+5625.0*0.25*y*y*y*x+3125.0*0.25*z*z*y*y+5625.0*0.25*z*y*y*y+625.0/12.0*z*z*z*y+1175.0/12.0*z*y-125.0*z*z*y-3125.0/12.0*y*y*x*x*x-3125.0*0.25*z*y*y*y*y-8875.0/12.0*y*y*x-125.0*y*x*x-3125.0*0.25*z*z*y*y*y-8875.0/12.0*z*y*y-3125.0*0.25*z*y*y*x*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*z*y*y*x+625.0/12.0*y*x*x*x+625.0*0.25*z*z*y*x+1562.5*z*y*y*x-3125.0*0.25*y*y*y*x*x+2675.0/12.0*y*y-7375.0/12.0*y*y*y+8125.0/12.0*y*y*y*y-3125.0/12.0*y*y*y*y*y+1175.0/12.0*y*x-3125.0*0.25*y*y*y*y*x;
+        phi[12] = 1125.0*0.25*z*y*x+1562.5*z*y*y*y*x+3125.0*0.25*z*z*y*y*x+3125.0*0.25*y*y*y*y*x-6875.0*0.25*z*y*y*x-625.0*0.25*z*z*y*x-312.5*z*y*x*x+1562.5*z*y*y*x*x+1125.0*0.25*y*x*x+3625.0*0.25*y*y*x-125.0*y*x+1562.5*y*y*y*x*x+3125.0*0.25*y*y*x*x*x-625.0*0.25*y*x*x*x-6875.0*0.25*y*y*x*x-1562.5*y*y*y*x;
+        phi[13] = -125.0*0.25*z*y*x+625.0*0.25*z*y*y*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*y*y*x*x-187.5*y*x*x-187.5*y*y*x+125.0*0.25*y*x-3125.0*0.25*y*y*y*x*x-3125.0*0.25*y*y*x*x*x+625.0*0.25*y*x*x*x+4375.0*0.25*y*y*x*x+625.0*0.25*y*y*y*x;
+        phi[14] = 125.0*0.25*y*x*x+125.0*ONESIXTH*y*y*x-25.0*ONESIXTH*y*x+3125.0/12.0*y*y*x*x*x-625.0/12.0*y*x*x*x-625.0*0.25*y*y*x*x;
+        phi[15] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*y*y*x+3125.0*ONESIXTH*y*y*y*y*x+50.0*ONETHIRD*y-312.5*z*y*y*x+3875.0/12.0*z*y*y-162.5*y*y+6125.0/12.0*y*y*y-625.0*y*y*y*y+3125.0/12.0*y*y*y*y*y+3125.0*ONESIXTH*z*y*y*y*y+3125.0/12.0*z*z*y*y*y-3125.0*0.25*z*y*y*y+125.0*ONESIXTH*z*z*y-625.0*0.25*z*z*y*y-37.5*z*y+125.0*ONESIXTH*y*x*x+3875.0/12.0*y*y*x-37.5*y*x+3125.0/12.0*y*y*y*x*x-625.0*0.25*y*y*x*x-3125.0*0.25*y*y*y*x;
+        phi[16] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*y*y*x-3125.0*ONESIXTH*y*y*y*y*x+312.5*z*y*y*x-125.0*ONETHIRD*y*x*x-2125.0*ONESIXTH*y*y*x+125.0*ONETHIRD*y*x-3125.0*ONESIXTH*y*y*y*x*x+312.5*y*y*x*x+2500.0*ONETHIRD*y*y*y*x;
+        phi[17] = 125.0*ONESIXTH*y*x*x+125.0*0.25*y*y*x-25.0*ONESIXTH*y*x+3125.0/12.0*y*y*y*x*x-625.0*0.25*y*y*x*x-625.0/12.0*y*y*y*x;
+        phi[18] = -3125.0/24.0*y*y*y*y*x-25.0*0.25*y-1375.0/24.0*z*y*y+1525.0/24.0*y*y-5125.0/24.0*y*y*y+6875.0/24.0*y*y*y*y-3125.0/24.0*y*y*y*y*y-3125.0/24.0*z*y*y*y*y+625.0*0.25*z*y*y*y+25.0*0.25*z*y-1375.0/24.0*y*y*x+25.0*0.25*y*x+625.0*0.25*y*y*y*x;
+        phi[19] = 3125.0/24.0*y*y*y*y*x+1375.0/24.0*y*y*x-25.0*0.25*y*x-625.0*0.25*y*y*y*x;
+        phi[20] = y-125.0/12.0*y*y+875.0/24.0*y*y*y-625.0/12.0*y*y*y*y+625.0/24.0*y*y*y*y*y;
+        phi[21] = 3125.0*ONESIXTH*z*y*x*x*x+3125.0*ONESIXTH*z*y*y*y*x+8875.0/12.0*z*y*x+25.0*z+3125.0*ONESIXTH*z*z*z*z*y+3125.0*0.25*z*z*z*y*y-4375.0/12.0*z*x*x*x-4375.0*0.25*z*z*y*y-4375.0*0.25*z*z*x*x-4375.0/12.0*z*y*y*y-4375.0*0.25*z*z*z*y-1925.0/12.0*z*y+8875.0/12.0*z*z*y+3125.0/24.0*z*x*x*x*x+3125.0/24.0*z*y*y*y*y+3125.0*ONESIXTH*z*z*x*x*x+8875.0/24.0*z*x*x+3125.0*ONESIXTH*z*z*y*y*y+8875.0/24.0*z*y*y+3125.0*ONESIXTH*z*z*z*z*x-4375.0*0.25*z*z*z*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*x*x+3125.0*0.25*z*z*z*x*x-4375.0*0.25*z*y*x*x+1562.5*z*z*y*y*x+8875.0/12.0*z*z*x-2187.5*z*z*y*x-4375.0*0.25*z*y*y*x-1925.0/12.0*z*x-1925.0/12.0*z*z+8875.0/24.0*z*z*z-4375.0/12.0*z*z*z*z+3125.0/24.0*z*z*z*z*z+1562.5*z*z*z*y*x;
+        phi[22] = -5875.0*ONESIXTH*z*y*x-1562.5*z*y*x*x*x-1562.5*z*y*y*x*x-3125.0*z*z*y*x*x-1562.5*z*z*y*y*x-1562.5*z*z*z*y*x+2500.0*z*y*x*x+2500.0*z*z*y*x-3125.0*ONESIXTH*z*y*y*y*x-5875.0*ONESIXTH*z*z*x+1250.0*z*y*y*x+250.0*z*x+2500.0*z*z*x*x-1562.5*z*z*x*x*x-3125.0*ONESIXTH*z*x*x*x*x-1562.5*z*z*z*x*x-3125.0*ONESIXTH*z*z*z*z*x+1250.0*z*x*x*x+1250.0*z*z*z*x-5875.0*ONESIXTH*z*x*x;
+        phi[23] = 1125.0*0.25*z*y*x+1562.5*z*y*x*x*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*x*x-6875.0*0.25*z*y*x*x-312.5*z*z*y*x+1125.0*0.25*z*z*x-625.0*0.25*z*y*y*x-125.0*z*x-6875.0*0.25*z*z*x*x+1562.5*z*z*x*x*x+3125.0*0.25*z*x*x*x*x+3125.0*0.25*z*z*z*x*x-1562.5*z*x*x*x-625.0*0.25*z*z*z*x+3625.0*0.25*z*x*x;
+        phi[24] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*x*x*x+312.5*z*y*x*x-125.0*ONETHIRD*z*z*x+125.0*ONETHIRD*z*x+312.5*z*z*x*x-3125.0*ONESIXTH*z*z*x*x*x-3125.0*ONESIXTH*z*x*x*x*x+2500.0*ONETHIRD*z*x*x*x-2125.0*ONESIXTH*z*x*x;
+        phi[25] = -25.0*0.25*z*x+3125.0/24.0*z*x*x*x*x-625.0*0.25*z*x*x*x+1375.0/24.0*z*x*x;
+        phi[26] = -5875.0*ONESIXTH*z*y*x-3125.0*ONESIXTH*z*y*x*x*x-1562.5*z*y*y*x*x-1562.5*z*z*y*x*x-3125.0*z*z*y*y*x-1562.5*z*z*z*y*x+1250.0*z*y*x*x+2500.0*z*z*y*x-1562.5*z*y*y*y*x+2500.0*z*y*y*x+1250.0*z*z*z*y-1562.5*z*z*y*y*y+250.0*z*y-1562.5*z*z*z*y*y-5875.0*ONESIXTH*z*y*y-3125.0*ONESIXTH*z*z*z*z*y-5875.0*ONESIXTH*z*z*y-3125.0*ONESIXTH*z*y*y*y*y+1250.0*z*y*y*y+2500.0*z*z*y*y;
+        phi[27] = 1250.0*z*y*x+1562.5*z*y*x*x*x+3125.0*z*y*y*x*x+3125.0*z*z*y*x*x+3125.0*z*z*y*y*x+1562.5*z*z*z*y*x-2812.5*z*y*x*x-2812.5*z*z*y*x+1562.5*z*y*y*y*x-2812.5*z*y*y*x;
+        phi[28] = -312.5*z*y*x-1562.5*z*y*x*x*x-1562.5*z*y*y*x*x-1562.5*z*z*y*x*x+1875.0*z*y*x*x+312.5*z*z*y*x+312.5*z*y*y*x;
+        phi[29] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*x*x*x-312.5*z*y*x*x;
+        phi[30] = 1125.0*0.25*z*y*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*y*x-625.0*0.25*z*y*x*x-312.5*z*z*y*x+1562.5*z*y*y*y*x-6875.0*0.25*z*y*y*x-625.0*0.25*z*z*z*y+1562.5*z*z*y*y*y-125.0*z*y+3125.0*0.25*z*z*z*y*y+3625.0*0.25*z*y*y+1125.0*0.25*z*z*y+3125.0*0.25*z*y*y*y*y-1562.5*z*y*y*y-6875.0*0.25*z*z*y*y;
+        phi[31] = -312.5*z*y*x-1562.5*z*y*y*x*x-1562.5*z*z*y*y*x+312.5*z*y*x*x+312.5*z*z*y*x-1562.5*z*y*y*y*x+1875.0*z*y*y*x;
+        phi[32] = 125.0*0.25*z*y*x+3125.0*0.25*z*y*y*x*x-625.0*0.25*z*y*x*x-625.0*0.25*z*y*y*x;
+        phi[33] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*y*y*x+312.5*z*y*y*x-3125.0*ONESIXTH*z*z*y*y*y+125.0*ONETHIRD*z*y-2125.0*ONESIXTH*z*y*y-125.0*ONETHIRD*z*z*y-3125.0*ONESIXTH*z*y*y*y*y+2500.0*ONETHIRD*z*y*y*y+312.5*z*z*y*y;
+        phi[34] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*y*y*x-312.5*z*y*y*x;
+        phi[35] = -25.0*0.25*z*y+1375.0/24.0*z*y*y+3125.0/24.0*z*y*y*y*y-625.0*0.25*z*y*y*y;
+        phi[36] = -250.0*z*y*x-25.0*z-3125.0*0.25*z*z*z*z*y-3125.0*0.25*z*z*z*y*y+625.0/12.0*z*x*x*x+3125.0*0.25*z*z*y*y+3125.0*0.25*z*z*x*x+625.0/12.0*z*y*y*y+5625.0*0.25*z*z*z*y+1175.0/12.0*z*y-8875.0/12.0*z*z*y-3125.0/12.0*z*z*x*x*x-125.0*z*x*x-3125.0/12.0*z*z*y*y*y-125.0*z*y*y-3125.0*0.25*z*z*z*z*x+5625.0*0.25*z*z*z*x-3125.0*0.25*z*z*y*x*x-3125.0*0.25*z*z*z*x*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*z*y*y*x-8875.0/12.0*z*z*x+1562.5*z*z*y*x+625.0*0.25*z*y*y*x+1175.0/12.0*z*x+2675.0/12.0*z*z-7375.0/12.0*z*z*z+8125.0/12.0*z*z*z*z-3125.0/12.0*z*z*z*z*z-1562.5*z*z*z*y*x;
+        phi[37] = 1562.5*z*z*y*x*x+3125.0*0.25*z*z*y*y*x+1562.5*z*z*z*y*x-6875.0*0.25*z*z*y*x+1125.0*0.25*z*y*x-312.5*z*y*x*x-625.0*0.25*z*x*x*x-625.0*0.25*z*y*y*x-6875.0*0.25*z*z*x*x-1562.5*z*z*z*x+3125.0*0.25*z*z*x*x*x+1125.0*0.25*z*x*x-125.0*z*x+3625.0*0.25*z*z*x+1562.5*z*z*z*x*x+3125.0*0.25*z*z*z*z*x;
+        phi[38] = -3125.0*0.25*z*z*y*x*x+625.0*0.25*z*z*y*x-125.0*0.25*z*y*x+625.0*0.25*z*y*x*x+625.0*0.25*z*x*x*x+4375.0*0.25*z*z*x*x+625.0*0.25*z*z*z*x-3125.0*0.25*z*z*x*x*x-187.5*z*x*x+125.0*0.25*z*x-187.5*z*z*x-3125.0*0.25*z*z*z*x*x;
+        phi[39] = -625.0/12.0*z*x*x*x-625.0*0.25*z*z*x*x+3125.0/12.0*z*z*x*x*x+125.0*0.25*z*x*x-25.0*ONESIXTH*z*x+125.0*ONESIXTH*z*z*x;
+        phi[40] = 3125.0*0.25*z*z*y*x*x+1562.5*z*z*y*y*x+1562.5*z*z*z*y*x-6875.0*0.25*z*z*y*x+1125.0*0.25*z*y*x-625.0*0.25*z*y*x*x-312.5*z*y*y*x-1562.5*z*z*z*y+3125.0*0.25*z*z*y*y*y-125.0*z*y+1125.0*0.25*z*y*y+3625.0*0.25*z*z*y+1562.5*z*z*z*y*y+3125.0*0.25*z*z*z*z*y-625.0*0.25*z*y*y*y-6875.0*0.25*z*z*y*y;
+        phi[41] = -1562.5*z*z*y*x*x-1562.5*z*z*y*y*x-1562.5*z*z*z*y*x+1875.0*z*z*y*x-312.5*z*y*x+312.5*z*y*x*x+312.5*z*y*y*x;
+        phi[42] = 3125.0*0.25*z*z*y*x*x-625.0*0.25*z*z*y*x+125.0*0.25*z*y*x-625.0*0.25*z*y*x*x;
+        phi[43] = -3125.0*0.25*z*z*y*y*x+625.0*0.25*z*z*y*x-125.0*0.25*z*y*x+625.0*0.25*z*y*y*x+625.0*0.25*z*z*z*y-3125.0*0.25*z*z*y*y*y+125.0*0.25*z*y-187.5*z*y*y-187.5*z*z*y-3125.0*0.25*z*z*z*y*y+625.0*0.25*z*y*y*y+4375.0*0.25*z*z*y*y;
+        phi[44] = 3125.0*0.25*z*z*y*y*x-625.0*0.25*z*z*y*x+125.0*0.25*z*y*x-625.0*0.25*z*y*y*x;
+        phi[45] = 3125.0/12.0*z*z*y*y*y-25.0*ONESIXTH*z*y+125.0*0.25*z*y*y+125.0*ONESIXTH*z*z*y-625.0/12.0*z*y*y*y-625.0*0.25*z*z*y*y;
+        phi[46] = -312.5*z*z*y*x+125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*z*z*y*x+3125.0/12.0*z*z*z*x*x+50.0*ONETHIRD*z+3125.0*ONESIXTH*z*z*z*z*y+3125.0*ONESIXTH*z*z*z*z*x-3125.0*0.25*z*z*z*y-162.5*z*z+6125.0/12.0*z*z*z-625.0*z*z*z*z-37.5*z*y+125.0*ONESIXTH*z*y*y+3125.0/12.0*z*z*z*z*z-625.0*0.25*z*z*x*x+3875.0/12.0*z*z*y-3125.0*0.25*z*z*z*x+3125.0/12.0*z*z*z*y*y+125.0*ONESIXTH*z*x*x-625.0*0.25*z*z*y*y+3875.0/12.0*z*z*x-37.5*z*x;
+        phi[47] = 312.5*z*z*y*x-125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-3125.0*ONESIXTH*z*z*z*x*x-3125.0*ONESIXTH*z*z*z*z*x+312.5*z*z*x*x+2500.0*ONETHIRD*z*z*z*x-125.0*ONETHIRD*z*x*x-2125.0*ONESIXTH*z*z*x+125.0*ONETHIRD*z*x;
+        phi[48] = 3125.0/12.0*z*z*z*x*x-625.0*0.25*z*z*x*x-625.0/12.0*z*z*z*x+125.0*ONESIXTH*z*x*x+125.0*0.25*z*z*x-25.0*ONESIXTH*z*x;
+        phi[49] = 312.5*z*z*y*x-125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-3125.0*ONESIXTH*z*z*z*z*y+2500.0*ONETHIRD*z*z*z*y+125.0*ONETHIRD*z*y-125.0*ONETHIRD*z*y*y-2125.0*ONESIXTH*z*z*y-3125.0*ONESIXTH*z*z*z*y*y+312.5*z*z*y*y;
+        phi[50] = -312.5*z*z*y*x+125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*z*z*y*x;
+        phi[51] = -625.0/12.0*z*z*z*y-25.0*ONESIXTH*z*y+125.0*ONESIXTH*z*y*y+125.0*0.25*z*z*y+3125.0/12.0*z*z*z*y*y-625.0*0.25*z*z*y*y;
+        phi[52] = -3125.0/24.0*z*z*z*z*z-25.0*0.25*z-3125.0/24.0*z*z*z*z*y+625.0*0.25*z*z*z*y+25.0*0.25*z*y-1375.0/24.0*z*z*y-3125.0/24.0*z*z*z*z*x+625.0*0.25*z*z*z*x-1375.0/24.0*z*z*x+1525.0/24.0*z*z+25.0*0.25*z*x+6875.0/24.0*z*z*z*z-5125.0/24.0*z*z*z;
+        phi[53] = 3125.0/24.0*z*z*z*z*x-625.0*0.25*z*z*z*x+1375.0/24.0*z*z*x-25.0*0.25*z*x;
+        phi[54] = 3125.0/24.0*z*z*z*z*y-625.0*0.25*z*z*z*y-25.0*0.25*z*y+1375.0/24.0*z*z*y;
+        phi[55] = z-125.0/12.0*z*z+875.0/24.0*z*z*z-625.0/12.0*z*z*z*z+625.0/24.0*z*z*z*z*z;
+
+        return 0;
+      }
 #endif
   default:
     return -1;
@@ -995,12 +993,10 @@ PXShapeLagrange3d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 template <typename DT> ELVIS_DEVICE int
 PXShapeLagrange3d_Solution(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 {
-  DT x, y, z;
-  DT MapleGenVar1, x3, x4, y3, y4, z3, z4;
 
-  x = xref[0];
-  y = xref[1];
-  z = xref[2];
+  DT x = xref[0];
+  DT y = xref[1];
+  DT z = xref[2];
 
   switch (porder){
 #if SOLN_USE_P0    
@@ -1101,72 +1097,74 @@ PXShapeLagrange3d_Solution(const int porder, const DT * RESTRICT xref, DT * REST
 #endif
 #if SOLN_USE_P5
   case 5:
-    x4 = x*x*x*x;
-    x3 = x*x*x;
-    y4 = y*y*y*y;
-    y3 = y*y*y;
-    z4 = z*z*z*z;
-    z3 = z*z*z;
-    
-    MapleGenVar1 = 1.0-3125.0*ONESIXTH*z*y*x*x*x-137.0/12.0*x-137.0/12.0*y-3125.0*ONESIXTH*z*y*y*y*x-2125.0*0.25*z*y*x+1875.0*0.25*y*y*x*x-137.0/12.0*z-3125.0/24.0*z*z*z*z*y-3125.0/12.0*z*z*z*y*y+375.0/8.0*x*x+312.5*y*y*y*x+312.5*z*x*x*x+1875.0*0.25*z*z*y*y+1875.0*0.25*z*z*x*x+312.5*z*y*y*y+312.5*z*z*z*y+375.0*0.25*z*y-2125.0/8.0*z*z*y-2125.0/24.0*x*x*x-3125.0/24.0*z*x*x*x*x-3125.0/12.0*y*y*x*x*x-3125.0/24.0*z*y*y*y*y-2125.0/8.0*y*y*x-3125.0/12.0*z*z*x*x*x-2125.0/8.0*y*x*x-2125.0/8.0*z*x*x-3125.0/12.0*z*z*y*y*y;
-    phi[0] = -2125.0/8.0*z*y*y-3125.0/24.0*z*z*z*z*x+312.5*z*z*z*x-3125.0*0.25*z*y*y*x*x-3125.0*0.25*z*z*y*x*x-3125.0/12.0*z*z*z*x*x+937.5*z*y*x*x-3125.0*0.25*z*z*y*y*x+MapleGenVar1-2125.0/8.0*z*z*x+312.5*y*x*x*x-3125.0/24.0*y*x*x*x*x+937.5*z*z*y*x+937.5*z*y*y*x+375.0*0.25*z*x-3125.0/12.0*y*y*y*x*x+375.0/8.0*z*z+375.0/8.0*y*y-2125.0/24.0*z*z*z-2125.0/24.0*y*y*y+625.0/8.0*z*z*z*z+625.0/8.0*y*y*y*y-625.0/24.0*z*z*z*z*z-625.0/24.0*y*y*y*y*y-625.0/24.0*x*x*x*x*x-3125.0*ONESIXTH*z*z*z*y*x+375.0*0.25*y*x+625.0/8.0*x*x*x*x-3125.0/24.0*y*y*y*y*x;
-    phi[1] = 1562.5*z*y*x*x*x+25.0*x+3125.0*ONESIXTH*z*y*y*y*x+8875.0/12.0*z*y*x-4375.0*0.25*y*y*x*x-1925.0/12.0*x*x-4375.0/12.0*y*y*y*x-4375.0*0.25*z*x*x*x-4375.0*0.25*z*z*x*x+8875.0/24.0*x*x*x+3125.0*ONESIXTH*z*x*x*x*x+3125.0*0.25*y*y*x*x*x+8875.0/24.0*y*y*x+3125.0*0.25*z*z*x*x*x+8875.0/12.0*y*x*x+8875.0/12.0*z*x*x+3125.0/24.0*z*z*z*z*x-4375.0/12.0*z*z*z*x+1562.5*z*y*y*x*x+1562.5*z*z*y*x*x+3125.0*ONESIXTH*z*z*z*x*x-2187.5*z*y*x*x+3125.0*0.25*z*z*y*y*x+8875.0/24.0*z*z*x-4375.0*0.25*y*x*x*x+3125.0*ONESIXTH*y*x*x*x*x-4375.0*0.25*z*z*y*x-4375.0*0.25*z*y*y*x-1925.0/12.0*z*x+3125.0*ONESIXTH*y*y*y*x*x+3125.0/24.0*x*x*x*x*x+3125.0*ONESIXTH*z*z*z*y*x-1925.0/12.0*y*x-4375.0/12.0*x*x*x*x+3125.0/24.0*y*y*y*y*x;
-    phi[2] = -1562.5*z*y*x*x*x-25.0*x-250.0*z*y*x+3125.0*0.25*y*y*x*x+2675.0/12.0*x*x+625.0/12.0*y*y*y*x+5625.0*0.25*z*x*x*x+3125.0*0.25*z*z*x*x-7375.0/12.0*x*x*x-3125.0*0.25*z*x*x*x*x-3125.0*0.25*y*y*x*x*x-125.0*y*y*x-3125.0*0.25*z*z*x*x*x-8875.0/12.0*y*x*x-8875.0/12.0*z*x*x+625.0/12.0*z*z*z*x-3125.0*0.25*z*y*y*x*x-3125.0*0.25*z*z*y*x*x-3125.0/12.0*z*z*z*x*x+1562.5*z*y*x*x-125.0*z*z*x+5625.0*0.25*y*x*x*x-3125.0*0.25*y*x*x*x*x+625.0*0.25*z*z*y*x+625.0*0.25*z*y*y*x+1175.0/12.0*z*x-3125.0/12.0*y*y*y*x*x-3125.0/12.0*x*x*x*x*x+1175.0/12.0*y*x+8125.0/12.0*x*x*x*x;
-    phi[3] = 125.0*ONETHIRD*z*y*x+50.0*ONETHIRD*x-312.5*z*y*x*x-162.5*x*x+6125.0/12.0*x*x*x+3125.0*ONESIXTH*z*y*x*x*x-625.0*x*x*x*x+3875.0/12.0*y*x*x+125.0*ONESIXTH*y*y*x-37.5*y*x-37.5*z*x-625.0*0.25*z*z*x*x+3125.0/12.0*x*x*x*x*x+3125.0*ONESIXTH*y*x*x*x*x+3125.0/12.0*y*y*x*x*x-3125.0*0.25*y*x*x*x-625.0*0.25*y*y*x*x-3125.0*0.25*z*x*x*x+3875.0/12.0*z*x*x+125.0*ONESIXTH*z*z*x+3125.0*ONESIXTH*z*x*x*x*x+3125.0/12.0*z*z*x*x*x;
-    phi[4] = -25.0*0.25*x+1525.0/24.0*x*x-5125.0/24.0*x*x*x+6875.0/24.0*x*x*x*x-1375.0/24.0*y*x*x+25.0*0.25*y*x+25.0*0.25*z*x-3125.0/24.0*x*x*x*x*x-3125.0/24.0*y*x*x*x*x+625.0*0.25*y*x*x*x+625.0*0.25*z*x*x*x-1375.0/24.0*z*x*x-3125.0/24.0*z*x*x*x*x;
-    phi[5] = x-125.0/12.0*x*x+875.0/24.0*x*x*x-625.0/12.0*x*x*x*x+625.0/24.0*x*x*x*x*x;
-    phi[6] = 3125.0*ONESIXTH*z*y*x*x*x+25.0*y+1562.5*z*y*y*y*x+8875.0/12.0*z*y*x-4375.0*0.25*y*y*x*x+3125.0/24.0*z*z*z*z*y+3125.0*ONESIXTH*z*z*z*y*y-4375.0*0.25*y*y*y*x-4375.0*0.25*z*z*y*y-4375.0*0.25*z*y*y*y-4375.0/12.0*z*z*z*y-1925.0/12.0*z*y+8875.0/24.0*z*z*y+3125.0*ONESIXTH*y*y*x*x*x+3125.0*ONESIXTH*z*y*y*y*y+8875.0/12.0*y*y*x+8875.0/24.0*y*x*x+3125.0*0.25*z*z*y*y*y+8875.0/12.0*z*y*y+1562.5*z*y*y*x*x+3125.0*0.25*z*z*y*x*x-4375.0*0.25*z*y*x*x+1562.5*z*z*y*y*x-4375.0/12.0*y*x*x*x+3125.0/24.0*y*x*x*x*x-4375.0*0.25*z*z*y*x-2187.5*z*y*y*x+3125.0*0.25*y*y*y*x*x-1925.0/12.0*y*y+8875.0/24.0*y*y*y-4375.0/12.0*y*y*y*y+3125.0/24.0*y*y*y*y*y+3125.0*ONESIXTH*z*z*z*y*x-1925.0/12.0*y*x+3125.0*ONESIXTH*y*y*y*y*x;
-    phi[7] = -5875.0*ONESIXTH*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-1562.5*z*z*y*y*x-1562.5*z*y*y*y*x-1562.5*z*z*y*x*x+2500.0*z*y*y*x+1250.0*z*z*y*x+2500.0*z*y*x*x-3125.0*z*y*y*x*x-3125.0*ONESIXTH*y*y*y*y*x-1562.5*z*y*x*x*x-5875.0*ONESIXTH*y*x*x-5875.0*ONESIXTH*y*y*x+250.0*y*x-3125.0*ONESIXTH*y*x*x*x*x-1562.5*y*y*y*x*x-1562.5*y*y*x*x*x+1250.0*y*x*x*x+2500.0*y*y*x*x+1250.0*y*y*y*x;
-    phi[8] = 1125.0*0.25*z*y*x+3125.0*0.25*z*z*y*x*x-312.5*z*y*y*x-625.0*0.25*z*z*y*x-6875.0*0.25*z*y*x*x+1562.5*z*y*y*x*x+1562.5*z*y*x*x*x+3625.0*0.25*y*x*x+1125.0*0.25*y*y*x-125.0*y*x+3125.0*0.25*y*x*x*x*x+3125.0*0.25*y*y*y*x*x+1562.5*y*y*x*x*x-1562.5*y*x*x*x-6875.0*0.25*y*y*x*x-625.0*0.25*y*y*y*x;
-    phi[9] = -125.0*ONETHIRD*z*y*x+312.5*z*y*x*x-3125.0*ONESIXTH*z*y*x*x*x-2125.0*ONESIXTH*y*x*x-125.0*ONETHIRD*y*y*x+125.0*ONETHIRD*y*x-3125.0*ONESIXTH*y*x*x*x*x-3125.0*ONESIXTH*y*y*x*x*x+2500.0*ONETHIRD*y*x*x*x+312.5*y*y*x*x;
-    phi[10] = 1375.0/24.0*y*x*x-25.0*0.25*y*x+3125.0/24.0*y*x*x*x*x-625.0*0.25*y*x*x*x;
-    phi[11] = -25.0*y-1562.5*z*y*y*y*x-250.0*z*y*x+3125.0*0.25*y*y*x*x-3125.0/12.0*z*z*z*y*y+5625.0*0.25*y*y*y*x+3125.0*0.25*z*z*y*y+5625.0*0.25*z*y*y*y+625.0/12.0*z*z*z*y+1175.0/12.0*z*y-125.0*z*z*y-3125.0/12.0*y*y*x*x*x-3125.0*0.25*z*y*y*y*y-8875.0/12.0*y*y*x-125.0*y*x*x-3125.0*0.25*z*z*y*y*y-8875.0/12.0*z*y*y-3125.0*0.25*z*y*y*x*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*z*y*y*x+625.0/12.0*y*x*x*x+625.0*0.25*z*z*y*x+1562.5*z*y*y*x-3125.0*0.25*y*y*y*x*x+2675.0/12.0*y*y-7375.0/12.0*y*y*y+8125.0/12.0*y*y*y*y-3125.0/12.0*y*y*y*y*y+1175.0/12.0*y*x-3125.0*0.25*y*y*y*y*x;
-    phi[12] = 1125.0*0.25*z*y*x+1562.5*z*y*y*y*x+3125.0*0.25*z*z*y*y*x+3125.0*0.25*y*y*y*y*x-6875.0*0.25*z*y*y*x-625.0*0.25*z*z*y*x-312.5*z*y*x*x+1562.5*z*y*y*x*x+1125.0*0.25*y*x*x+3625.0*0.25*y*y*x-125.0*y*x+1562.5*y*y*y*x*x+3125.0*0.25*y*y*x*x*x-625.0*0.25*y*x*x*x-6875.0*0.25*y*y*x*x-1562.5*y*y*y*x;
-    phi[13] = -125.0*0.25*z*y*x+625.0*0.25*z*y*y*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*y*y*x*x-187.5*y*x*x-187.5*y*y*x+125.0*0.25*y*x-3125.0*0.25*y*y*y*x*x-3125.0*0.25*y*y*x*x*x+625.0*0.25*y*x*x*x+4375.0*0.25*y*y*x*x+625.0*0.25*y*y*y*x;
-    phi[14] = 125.0*0.25*y*x*x+125.0*ONESIXTH*y*y*x-25.0*ONESIXTH*y*x+3125.0/12.0*y*y*x*x*x-625.0/12.0*y*x*x*x-625.0*0.25*y*y*x*x;
-    phi[15] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*y*y*x+3125.0*ONESIXTH*y*y*y*y*x+50.0*ONETHIRD*y-312.5*z*y*y*x+3875.0/12.0*z*y*y-162.5*y*y+6125.0/12.0*y*y*y-625.0*y*y*y*y+3125.0/12.0*y*y*y*y*y+3125.0*ONESIXTH*z*y*y*y*y+3125.0/12.0*z*z*y*y*y-3125.0*0.25*z*y*y*y+125.0*ONESIXTH*z*z*y-625.0*0.25*z*z*y*y-37.5*z*y+125.0*ONESIXTH*y*x*x+3875.0/12.0*y*y*x-37.5*y*x+3125.0/12.0*y*y*y*x*x-625.0*0.25*y*y*x*x-3125.0*0.25*y*y*y*x;
-    phi[16] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*y*y*x-3125.0*ONESIXTH*y*y*y*y*x+312.5*z*y*y*x-125.0*ONETHIRD*y*x*x-2125.0*ONESIXTH*y*y*x+125.0*ONETHIRD*y*x-3125.0*ONESIXTH*y*y*y*x*x+312.5*y*y*x*x+2500.0*ONETHIRD*y*y*y*x;
-    phi[17] = 125.0*ONESIXTH*y*x*x+125.0*0.25*y*y*x-25.0*ONESIXTH*y*x+3125.0/12.0*y*y*y*x*x-625.0*0.25*y*y*x*x-625.0/12.0*y*y*y*x;
-    phi[18] = -3125.0/24.0*y*y*y*y*x-25.0*0.25*y-1375.0/24.0*z*y*y+1525.0/24.0*y*y-5125.0/24.0*y*y*y+6875.0/24.0*y*y*y*y-3125.0/24.0*y*y*y*y*y-3125.0/24.0*z*y*y*y*y+625.0*0.25*z*y*y*y+25.0*0.25*z*y-1375.0/24.0*y*y*x+25.0*0.25*y*x+625.0*0.25*y*y*y*x;
-    phi[19] = 3125.0/24.0*y*y*y*y*x+1375.0/24.0*y*y*x-25.0*0.25*y*x-625.0*0.25*y*y*y*x;
-    phi[20] = y-125.0/12.0*y*y+875.0/24.0*y*y*y-625.0/12.0*y*y*y*y+625.0/24.0*y*y*y*y*y;
-    phi[21] = 3125.0*ONESIXTH*z*y*x*x*x+3125.0*ONESIXTH*z*y*y*y*x+8875.0/12.0*z*y*x+25.0*z+3125.0*ONESIXTH*z*z*z*z*y+3125.0*0.25*z*z*z*y*y-4375.0/12.0*z*x*x*x-4375.0*0.25*z*z*y*y-4375.0*0.25*z*z*x*x-4375.0/12.0*z*y*y*y-4375.0*0.25*z*z*z*y-1925.0/12.0*z*y+8875.0/12.0*z*z*y+3125.0/24.0*z*x*x*x*x+3125.0/24.0*z*y*y*y*y+3125.0*ONESIXTH*z*z*x*x*x+8875.0/24.0*z*x*x+3125.0*ONESIXTH*z*z*y*y*y+8875.0/24.0*z*y*y+3125.0*ONESIXTH*z*z*z*z*x-4375.0*0.25*z*z*z*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*x*x+3125.0*0.25*z*z*z*x*x-4375.0*0.25*z*y*x*x+1562.5*z*z*y*y*x+8875.0/12.0*z*z*x-2187.5*z*z*y*x-4375.0*0.25*z*y*y*x-1925.0/12.0*z*x-1925.0/12.0*z*z+8875.0/24.0*z*z*z-4375.0/12.0*z*z*z*z+3125.0/24.0*z*z*z*z*z+1562.5*z*z*z*y*x;
-    phi[22] = -5875.0*ONESIXTH*z*y*x-1562.5*z*y*x*x*x-1562.5*z*y*y*x*x-3125.0*z*z*y*x*x-1562.5*z*z*y*y*x-1562.5*z*z*z*y*x+2500.0*z*y*x*x+2500.0*z*z*y*x-3125.0*ONESIXTH*z*y*y*y*x-5875.0*ONESIXTH*z*z*x+1250.0*z*y*y*x+250.0*z*x+2500.0*z*z*x*x-1562.5*z*z*x*x*x-3125.0*ONESIXTH*z*x*x*x*x-1562.5*z*z*z*x*x-3125.0*ONESIXTH*z*z*z*z*x+1250.0*z*x*x*x+1250.0*z*z*z*x-5875.0*ONESIXTH*z*x*x;
-    phi[23] = 1125.0*0.25*z*y*x+1562.5*z*y*x*x*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*x*x-6875.0*0.25*z*y*x*x-312.5*z*z*y*x+1125.0*0.25*z*z*x-625.0*0.25*z*y*y*x-125.0*z*x-6875.0*0.25*z*z*x*x+1562.5*z*z*x*x*x+3125.0*0.25*z*x*x*x*x+3125.0*0.25*z*z*z*x*x-1562.5*z*x*x*x-625.0*0.25*z*z*z*x+3625.0*0.25*z*x*x;
-    phi[24] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*x*x*x+312.5*z*y*x*x-125.0*ONETHIRD*z*z*x+125.0*ONETHIRD*z*x+312.5*z*z*x*x-3125.0*ONESIXTH*z*z*x*x*x-3125.0*ONESIXTH*z*x*x*x*x+2500.0*ONETHIRD*z*x*x*x-2125.0*ONESIXTH*z*x*x;
-    phi[25] = -25.0*0.25*z*x+3125.0/24.0*z*x*x*x*x-625.0*0.25*z*x*x*x+1375.0/24.0*z*x*x;
-    phi[26] = -5875.0*ONESIXTH*z*y*x-3125.0*ONESIXTH*z*y*x*x*x-1562.5*z*y*y*x*x-1562.5*z*z*y*x*x-3125.0*z*z*y*y*x-1562.5*z*z*z*y*x+1250.0*z*y*x*x+2500.0*z*z*y*x-1562.5*z*y*y*y*x+2500.0*z*y*y*x+1250.0*z*z*z*y-1562.5*z*z*y*y*y+250.0*z*y-1562.5*z*z*z*y*y-5875.0*ONESIXTH*z*y*y-3125.0*ONESIXTH*z*z*z*z*y-5875.0*ONESIXTH*z*z*y-3125.0*ONESIXTH*z*y*y*y*y+1250.0*z*y*y*y+2500.0*z*z*y*y;
-    phi[27] = 1250.0*z*y*x+1562.5*z*y*x*x*x+3125.0*z*y*y*x*x+3125.0*z*z*y*x*x+3125.0*z*z*y*y*x+1562.5*z*z*z*y*x-2812.5*z*y*x*x-2812.5*z*z*y*x+1562.5*z*y*y*y*x-2812.5*z*y*y*x;
-    phi[28] = -312.5*z*y*x-1562.5*z*y*x*x*x-1562.5*z*y*y*x*x-1562.5*z*z*y*x*x+1875.0*z*y*x*x+312.5*z*z*y*x+312.5*z*y*y*x;
-    phi[29] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*x*x*x-312.5*z*y*x*x;
-    phi[30] = 1125.0*0.25*z*y*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*y*x-625.0*0.25*z*y*x*x-312.5*z*z*y*x+1562.5*z*y*y*y*x-6875.0*0.25*z*y*y*x-625.0*0.25*z*z*z*y+1562.5*z*z*y*y*y-125.0*z*y+3125.0*0.25*z*z*z*y*y+3625.0*0.25*z*y*y+1125.0*0.25*z*z*y+3125.0*0.25*z*y*y*y*y-1562.5*z*y*y*y-6875.0*0.25*z*z*y*y;
-    phi[31] = -312.5*z*y*x-1562.5*z*y*y*x*x-1562.5*z*z*y*y*x+312.5*z*y*x*x+312.5*z*z*y*x-1562.5*z*y*y*y*x+1875.0*z*y*y*x;
-    phi[32] = 125.0*0.25*z*y*x+3125.0*0.25*z*y*y*x*x-625.0*0.25*z*y*x*x-625.0*0.25*z*y*y*x;
-    phi[33] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*y*y*x+312.5*z*y*y*x-3125.0*ONESIXTH*z*z*y*y*y+125.0*ONETHIRD*z*y-2125.0*ONESIXTH*z*y*y-125.0*ONETHIRD*z*z*y-3125.0*ONESIXTH*z*y*y*y*y+2500.0*ONETHIRD*z*y*y*y+312.5*z*z*y*y;
-    phi[34] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*y*y*x-312.5*z*y*y*x;
-    phi[35] = -25.0*0.25*z*y+1375.0/24.0*z*y*y+3125.0/24.0*z*y*y*y*y-625.0*0.25*z*y*y*y;
-    phi[36] = -250.0*z*y*x-25.0*z-3125.0*0.25*z*z*z*z*y-3125.0*0.25*z*z*z*y*y+625.0/12.0*z*x*x*x+3125.0*0.25*z*z*y*y+3125.0*0.25*z*z*x*x+625.0/12.0*z*y*y*y+5625.0*0.25*z*z*z*y+1175.0/12.0*z*y-8875.0/12.0*z*z*y-3125.0/12.0*z*z*x*x*x-125.0*z*x*x-3125.0/12.0*z*z*y*y*y-125.0*z*y*y-3125.0*0.25*z*z*z*z*x+5625.0*0.25*z*z*z*x-3125.0*0.25*z*z*y*x*x-3125.0*0.25*z*z*z*x*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*z*y*y*x-8875.0/12.0*z*z*x+1562.5*z*z*y*x+625.0*0.25*z*y*y*x+1175.0/12.0*z*x+2675.0/12.0*z*z-7375.0/12.0*z*z*z+8125.0/12.0*z*z*z*z-3125.0/12.0*z*z*z*z*z-1562.5*z*z*z*y*x;
-    phi[37] = 1562.5*z*z*y*x*x+3125.0*0.25*z*z*y*y*x+1562.5*z*z*z*y*x-6875.0*0.25*z*z*y*x+1125.0*0.25*z*y*x-312.5*z*y*x*x-625.0*0.25*z*x*x*x-625.0*0.25*z*y*y*x-6875.0*0.25*z*z*x*x-1562.5*z*z*z*x+3125.0*0.25*z*z*x*x*x+1125.0*0.25*z*x*x-125.0*z*x+3625.0*0.25*z*z*x+1562.5*z*z*z*x*x+3125.0*0.25*z*z*z*z*x;
-    phi[38] = -3125.0*0.25*z*z*y*x*x+625.0*0.25*z*z*y*x-125.0*0.25*z*y*x+625.0*0.25*z*y*x*x+625.0*0.25*z*x*x*x+4375.0*0.25*z*z*x*x+625.0*0.25*z*z*z*x-3125.0*0.25*z*z*x*x*x-187.5*z*x*x+125.0*0.25*z*x-187.5*z*z*x-3125.0*0.25*z*z*z*x*x;
-    phi[39] = -625.0/12.0*z*x*x*x-625.0*0.25*z*z*x*x+3125.0/12.0*z*z*x*x*x+125.0*0.25*z*x*x-25.0*ONESIXTH*z*x+125.0*ONESIXTH*z*z*x;
-    phi[40] = 3125.0*0.25*z*z*y*x*x+1562.5*z*z*y*y*x+1562.5*z*z*z*y*x-6875.0*0.25*z*z*y*x+1125.0*0.25*z*y*x-625.0*0.25*z*y*x*x-312.5*z*y*y*x-1562.5*z*z*z*y+3125.0*0.25*z*z*y*y*y-125.0*z*y+1125.0*0.25*z*y*y+3625.0*0.25*z*z*y+1562.5*z*z*z*y*y+3125.0*0.25*z*z*z*z*y-625.0*0.25*z*y*y*y-6875.0*0.25*z*z*y*y;
-    phi[41] = -1562.5*z*z*y*x*x-1562.5*z*z*y*y*x-1562.5*z*z*z*y*x+1875.0*z*z*y*x-312.5*z*y*x+312.5*z*y*x*x+312.5*z*y*y*x;
-    phi[42] = 3125.0*0.25*z*z*y*x*x-625.0*0.25*z*z*y*x+125.0*0.25*z*y*x-625.0*0.25*z*y*x*x;
-    phi[43] = -3125.0*0.25*z*z*y*y*x+625.0*0.25*z*z*y*x-125.0*0.25*z*y*x+625.0*0.25*z*y*y*x+625.0*0.25*z*z*z*y-3125.0*0.25*z*z*y*y*y+125.0*0.25*z*y-187.5*z*y*y-187.5*z*z*y-3125.0*0.25*z*z*z*y*y+625.0*0.25*z*y*y*y+4375.0*0.25*z*z*y*y;
-    phi[44] = 3125.0*0.25*z*z*y*y*x-625.0*0.25*z*z*y*x+125.0*0.25*z*y*x-625.0*0.25*z*y*y*x;
-    phi[45] = 3125.0/12.0*z*z*y*y*y-25.0*ONESIXTH*z*y+125.0*0.25*z*y*y+125.0*ONESIXTH*z*z*y-625.0/12.0*z*y*y*y-625.0*0.25*z*z*y*y;
-    phi[46] = -312.5*z*z*y*x+125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*z*z*y*x+3125.0/12.0*z*z*z*x*x+50.0*ONETHIRD*z+3125.0*ONESIXTH*z*z*z*z*y+3125.0*ONESIXTH*z*z*z*z*x-3125.0*0.25*z*z*z*y-162.5*z*z+6125.0/12.0*z*z*z-625.0*z*z*z*z-37.5*z*y+125.0*ONESIXTH*z*y*y+3125.0/12.0*z*z*z*z*z-625.0*0.25*z*z*x*x+3875.0/12.0*z*z*y-3125.0*0.25*z*z*z*x+3125.0/12.0*z*z*z*y*y+125.0*ONESIXTH*z*x*x-625.0*0.25*z*z*y*y+3875.0/12.0*z*z*x-37.5*z*x;
-    phi[47] = 312.5*z*z*y*x-125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-3125.0*ONESIXTH*z*z*z*x*x-3125.0*ONESIXTH*z*z*z*z*x+312.5*z*z*x*x+2500.0*ONETHIRD*z*z*z*x-125.0*ONETHIRD*z*x*x-2125.0*ONESIXTH*z*z*x+125.0*ONETHIRD*z*x;
-    phi[48] = 3125.0/12.0*z*z*z*x*x-625.0*0.25*z*z*x*x-625.0/12.0*z*z*z*x+125.0*ONESIXTH*z*x*x+125.0*0.25*z*z*x-25.0*ONESIXTH*z*x;
-    phi[49] = 312.5*z*z*y*x-125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-3125.0*ONESIXTH*z*z*z*z*y+2500.0*ONETHIRD*z*z*z*y+125.0*ONETHIRD*z*y-125.0*ONETHIRD*z*y*y-2125.0*ONESIXTH*z*z*y-3125.0*ONESIXTH*z*z*z*y*y+312.5*z*z*y*y;
-    phi[50] = -312.5*z*z*y*x+125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*z*z*y*x;
-    phi[51] = -625.0/12.0*z*z*z*y-25.0*ONESIXTH*z*y+125.0*ONESIXTH*z*y*y+125.0*0.25*z*z*y+3125.0/12.0*z*z*z*y*y-625.0*0.25*z*z*y*y;
-    phi[52] = -3125.0/24.0*z*z*z*z*z-25.0*0.25*z-3125.0/24.0*z*z*z*z*y+625.0*0.25*z*z*z*y+25.0*0.25*z*y-1375.0/24.0*z*z*y-3125.0/24.0*z*z*z*z*x+625.0*0.25*z*z*z*x-1375.0/24.0*z*z*x+1525.0/24.0*z*z+25.0*0.25*z*x+6875.0/24.0*z*z*z*z-5125.0/24.0*z*z*z;
-    phi[53] = 3125.0/24.0*z*z*z*z*x-625.0*0.25*z*z*z*x+1375.0/24.0*z*z*x-25.0*0.25*z*x;
-    phi[54] = 3125.0/24.0*z*z*z*z*y-625.0*0.25*z*z*z*y-25.0*0.25*z*y+1375.0/24.0*z*z*y;
-    phi[55] = z-125.0/12.0*z*z+875.0/24.0*z*z*z-625.0/12.0*z*z*z*z+625.0/24.0*z*z*z*z*z;
+    {
+        DT x4 = x*x*x*x;
+        DT x3 = x*x*x;
+        DT y4 = y*y*y*y;
+        DT y3 = y*y*y;
+        DT z4 = z*z*z*z;
+        DT z3 = z*z*z;
 
-    return 0;
+        MapleGenVar1 = 1.0-3125.0*ONESIXTH*z*y*x*x*x-137.0/12.0*x-137.0/12.0*y-3125.0*ONESIXTH*z*y*y*y*x-2125.0*0.25*z*y*x+1875.0*0.25*y*y*x*x-137.0/12.0*z-3125.0/24.0*z*z*z*z*y-3125.0/12.0*z*z*z*y*y+375.0/8.0*x*x+312.5*y*y*y*x+312.5*z*x*x*x+1875.0*0.25*z*z*y*y+1875.0*0.25*z*z*x*x+312.5*z*y*y*y+312.5*z*z*z*y+375.0*0.25*z*y-2125.0/8.0*z*z*y-2125.0/24.0*x*x*x-3125.0/24.0*z*x*x*x*x-3125.0/12.0*y*y*x*x*x-3125.0/24.0*z*y*y*y*y-2125.0/8.0*y*y*x-3125.0/12.0*z*z*x*x*x-2125.0/8.0*y*x*x-2125.0/8.0*z*x*x-3125.0/12.0*z*z*y*y*y;
+        phi[0] = -2125.0/8.0*z*y*y-3125.0/24.0*z*z*z*z*x+312.5*z*z*z*x-3125.0*0.25*z*y*y*x*x-3125.0*0.25*z*z*y*x*x-3125.0/12.0*z*z*z*x*x+937.5*z*y*x*x-3125.0*0.25*z*z*y*y*x+MapleGenVar1-2125.0/8.0*z*z*x+312.5*y*x*x*x-3125.0/24.0*y*x*x*x*x+937.5*z*z*y*x+937.5*z*y*y*x+375.0*0.25*z*x-3125.0/12.0*y*y*y*x*x+375.0/8.0*z*z+375.0/8.0*y*y-2125.0/24.0*z*z*z-2125.0/24.0*y*y*y+625.0/8.0*z*z*z*z+625.0/8.0*y*y*y*y-625.0/24.0*z*z*z*z*z-625.0/24.0*y*y*y*y*y-625.0/24.0*x*x*x*x*x-3125.0*ONESIXTH*z*z*z*y*x+375.0*0.25*y*x+625.0/8.0*x*x*x*x-3125.0/24.0*y*y*y*y*x;
+        phi[1] = 1562.5*z*y*x*x*x+25.0*x+3125.0*ONESIXTH*z*y*y*y*x+8875.0/12.0*z*y*x-4375.0*0.25*y*y*x*x-1925.0/12.0*x*x-4375.0/12.0*y*y*y*x-4375.0*0.25*z*x*x*x-4375.0*0.25*z*z*x*x+8875.0/24.0*x*x*x+3125.0*ONESIXTH*z*x*x*x*x+3125.0*0.25*y*y*x*x*x+8875.0/24.0*y*y*x+3125.0*0.25*z*z*x*x*x+8875.0/12.0*y*x*x+8875.0/12.0*z*x*x+3125.0/24.0*z*z*z*z*x-4375.0/12.0*z*z*z*x+1562.5*z*y*y*x*x+1562.5*z*z*y*x*x+3125.0*ONESIXTH*z*z*z*x*x-2187.5*z*y*x*x+3125.0*0.25*z*z*y*y*x+8875.0/24.0*z*z*x-4375.0*0.25*y*x*x*x+3125.0*ONESIXTH*y*x*x*x*x-4375.0*0.25*z*z*y*x-4375.0*0.25*z*y*y*x-1925.0/12.0*z*x+3125.0*ONESIXTH*y*y*y*x*x+3125.0/24.0*x*x*x*x*x+3125.0*ONESIXTH*z*z*z*y*x-1925.0/12.0*y*x-4375.0/12.0*x*x*x*x+3125.0/24.0*y*y*y*y*x;
+        phi[2] = -1562.5*z*y*x*x*x-25.0*x-250.0*z*y*x+3125.0*0.25*y*y*x*x+2675.0/12.0*x*x+625.0/12.0*y*y*y*x+5625.0*0.25*z*x*x*x+3125.0*0.25*z*z*x*x-7375.0/12.0*x*x*x-3125.0*0.25*z*x*x*x*x-3125.0*0.25*y*y*x*x*x-125.0*y*y*x-3125.0*0.25*z*z*x*x*x-8875.0/12.0*y*x*x-8875.0/12.0*z*x*x+625.0/12.0*z*z*z*x-3125.0*0.25*z*y*y*x*x-3125.0*0.25*z*z*y*x*x-3125.0/12.0*z*z*z*x*x+1562.5*z*y*x*x-125.0*z*z*x+5625.0*0.25*y*x*x*x-3125.0*0.25*y*x*x*x*x+625.0*0.25*z*z*y*x+625.0*0.25*z*y*y*x+1175.0/12.0*z*x-3125.0/12.0*y*y*y*x*x-3125.0/12.0*x*x*x*x*x+1175.0/12.0*y*x+8125.0/12.0*x*x*x*x;
+        phi[3] = 125.0*ONETHIRD*z*y*x+50.0*ONETHIRD*x-312.5*z*y*x*x-162.5*x*x+6125.0/12.0*x*x*x+3125.0*ONESIXTH*z*y*x*x*x-625.0*x*x*x*x+3875.0/12.0*y*x*x+125.0*ONESIXTH*y*y*x-37.5*y*x-37.5*z*x-625.0*0.25*z*z*x*x+3125.0/12.0*x*x*x*x*x+3125.0*ONESIXTH*y*x*x*x*x+3125.0/12.0*y*y*x*x*x-3125.0*0.25*y*x*x*x-625.0*0.25*y*y*x*x-3125.0*0.25*z*x*x*x+3875.0/12.0*z*x*x+125.0*ONESIXTH*z*z*x+3125.0*ONESIXTH*z*x*x*x*x+3125.0/12.0*z*z*x*x*x;
+        phi[4] = -25.0*0.25*x+1525.0/24.0*x*x-5125.0/24.0*x*x*x+6875.0/24.0*x*x*x*x-1375.0/24.0*y*x*x+25.0*0.25*y*x+25.0*0.25*z*x-3125.0/24.0*x*x*x*x*x-3125.0/24.0*y*x*x*x*x+625.0*0.25*y*x*x*x+625.0*0.25*z*x*x*x-1375.0/24.0*z*x*x-3125.0/24.0*z*x*x*x*x;
+        phi[5] = x-125.0/12.0*x*x+875.0/24.0*x*x*x-625.0/12.0*x*x*x*x+625.0/24.0*x*x*x*x*x;
+        phi[6] = 3125.0*ONESIXTH*z*y*x*x*x+25.0*y+1562.5*z*y*y*y*x+8875.0/12.0*z*y*x-4375.0*0.25*y*y*x*x+3125.0/24.0*z*z*z*z*y+3125.0*ONESIXTH*z*z*z*y*y-4375.0*0.25*y*y*y*x-4375.0*0.25*z*z*y*y-4375.0*0.25*z*y*y*y-4375.0/12.0*z*z*z*y-1925.0/12.0*z*y+8875.0/24.0*z*z*y+3125.0*ONESIXTH*y*y*x*x*x+3125.0*ONESIXTH*z*y*y*y*y+8875.0/12.0*y*y*x+8875.0/24.0*y*x*x+3125.0*0.25*z*z*y*y*y+8875.0/12.0*z*y*y+1562.5*z*y*y*x*x+3125.0*0.25*z*z*y*x*x-4375.0*0.25*z*y*x*x+1562.5*z*z*y*y*x-4375.0/12.0*y*x*x*x+3125.0/24.0*y*x*x*x*x-4375.0*0.25*z*z*y*x-2187.5*z*y*y*x+3125.0*0.25*y*y*y*x*x-1925.0/12.0*y*y+8875.0/24.0*y*y*y-4375.0/12.0*y*y*y*y+3125.0/24.0*y*y*y*y*y+3125.0*ONESIXTH*z*z*z*y*x-1925.0/12.0*y*x+3125.0*ONESIXTH*y*y*y*y*x;
+        phi[7] = -5875.0*ONESIXTH*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-1562.5*z*z*y*y*x-1562.5*z*y*y*y*x-1562.5*z*z*y*x*x+2500.0*z*y*y*x+1250.0*z*z*y*x+2500.0*z*y*x*x-3125.0*z*y*y*x*x-3125.0*ONESIXTH*y*y*y*y*x-1562.5*z*y*x*x*x-5875.0*ONESIXTH*y*x*x-5875.0*ONESIXTH*y*y*x+250.0*y*x-3125.0*ONESIXTH*y*x*x*x*x-1562.5*y*y*y*x*x-1562.5*y*y*x*x*x+1250.0*y*x*x*x+2500.0*y*y*x*x+1250.0*y*y*y*x;
+        phi[8] = 1125.0*0.25*z*y*x+3125.0*0.25*z*z*y*x*x-312.5*z*y*y*x-625.0*0.25*z*z*y*x-6875.0*0.25*z*y*x*x+1562.5*z*y*y*x*x+1562.5*z*y*x*x*x+3625.0*0.25*y*x*x+1125.0*0.25*y*y*x-125.0*y*x+3125.0*0.25*y*x*x*x*x+3125.0*0.25*y*y*y*x*x+1562.5*y*y*x*x*x-1562.5*y*x*x*x-6875.0*0.25*y*y*x*x-625.0*0.25*y*y*y*x;
+        phi[9] = -125.0*ONETHIRD*z*y*x+312.5*z*y*x*x-3125.0*ONESIXTH*z*y*x*x*x-2125.0*ONESIXTH*y*x*x-125.0*ONETHIRD*y*y*x+125.0*ONETHIRD*y*x-3125.0*ONESIXTH*y*x*x*x*x-3125.0*ONESIXTH*y*y*x*x*x+2500.0*ONETHIRD*y*x*x*x+312.5*y*y*x*x;
+        phi[10] = 1375.0/24.0*y*x*x-25.0*0.25*y*x+3125.0/24.0*y*x*x*x*x-625.0*0.25*y*x*x*x;
+        phi[11] = -25.0*y-1562.5*z*y*y*y*x-250.0*z*y*x+3125.0*0.25*y*y*x*x-3125.0/12.0*z*z*z*y*y+5625.0*0.25*y*y*y*x+3125.0*0.25*z*z*y*y+5625.0*0.25*z*y*y*y+625.0/12.0*z*z*z*y+1175.0/12.0*z*y-125.0*z*z*y-3125.0/12.0*y*y*x*x*x-3125.0*0.25*z*y*y*y*y-8875.0/12.0*y*y*x-125.0*y*x*x-3125.0*0.25*z*z*y*y*y-8875.0/12.0*z*y*y-3125.0*0.25*z*y*y*x*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*z*y*y*x+625.0/12.0*y*x*x*x+625.0*0.25*z*z*y*x+1562.5*z*y*y*x-3125.0*0.25*y*y*y*x*x+2675.0/12.0*y*y-7375.0/12.0*y*y*y+8125.0/12.0*y*y*y*y-3125.0/12.0*y*y*y*y*y+1175.0/12.0*y*x-3125.0*0.25*y*y*y*y*x;
+        phi[12] = 1125.0*0.25*z*y*x+1562.5*z*y*y*y*x+3125.0*0.25*z*z*y*y*x+3125.0*0.25*y*y*y*y*x-6875.0*0.25*z*y*y*x-625.0*0.25*z*z*y*x-312.5*z*y*x*x+1562.5*z*y*y*x*x+1125.0*0.25*y*x*x+3625.0*0.25*y*y*x-125.0*y*x+1562.5*y*y*y*x*x+3125.0*0.25*y*y*x*x*x-625.0*0.25*y*x*x*x-6875.0*0.25*y*y*x*x-1562.5*y*y*y*x;
+        phi[13] = -125.0*0.25*z*y*x+625.0*0.25*z*y*y*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*y*y*x*x-187.5*y*x*x-187.5*y*y*x+125.0*0.25*y*x-3125.0*0.25*y*y*y*x*x-3125.0*0.25*y*y*x*x*x+625.0*0.25*y*x*x*x+4375.0*0.25*y*y*x*x+625.0*0.25*y*y*y*x;
+        phi[14] = 125.0*0.25*y*x*x+125.0*ONESIXTH*y*y*x-25.0*ONESIXTH*y*x+3125.0/12.0*y*y*x*x*x-625.0/12.0*y*x*x*x-625.0*0.25*y*y*x*x;
+        phi[15] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*y*y*x+3125.0*ONESIXTH*y*y*y*y*x+50.0*ONETHIRD*y-312.5*z*y*y*x+3875.0/12.0*z*y*y-162.5*y*y+6125.0/12.0*y*y*y-625.0*y*y*y*y+3125.0/12.0*y*y*y*y*y+3125.0*ONESIXTH*z*y*y*y*y+3125.0/12.0*z*z*y*y*y-3125.0*0.25*z*y*y*y+125.0*ONESIXTH*z*z*y-625.0*0.25*z*z*y*y-37.5*z*y+125.0*ONESIXTH*y*x*x+3875.0/12.0*y*y*x-37.5*y*x+3125.0/12.0*y*y*y*x*x-625.0*0.25*y*y*x*x-3125.0*0.25*y*y*y*x;
+        phi[16] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*y*y*x-3125.0*ONESIXTH*y*y*y*y*x+312.5*z*y*y*x-125.0*ONETHIRD*y*x*x-2125.0*ONESIXTH*y*y*x+125.0*ONETHIRD*y*x-3125.0*ONESIXTH*y*y*y*x*x+312.5*y*y*x*x+2500.0*ONETHIRD*y*y*y*x;
+        phi[17] = 125.0*ONESIXTH*y*x*x+125.0*0.25*y*y*x-25.0*ONESIXTH*y*x+3125.0/12.0*y*y*y*x*x-625.0*0.25*y*y*x*x-625.0/12.0*y*y*y*x;
+        phi[18] = -3125.0/24.0*y*y*y*y*x-25.0*0.25*y-1375.0/24.0*z*y*y+1525.0/24.0*y*y-5125.0/24.0*y*y*y+6875.0/24.0*y*y*y*y-3125.0/24.0*y*y*y*y*y-3125.0/24.0*z*y*y*y*y+625.0*0.25*z*y*y*y+25.0*0.25*z*y-1375.0/24.0*y*y*x+25.0*0.25*y*x+625.0*0.25*y*y*y*x;
+        phi[19] = 3125.0/24.0*y*y*y*y*x+1375.0/24.0*y*y*x-25.0*0.25*y*x-625.0*0.25*y*y*y*x;
+        phi[20] = y-125.0/12.0*y*y+875.0/24.0*y*y*y-625.0/12.0*y*y*y*y+625.0/24.0*y*y*y*y*y;
+        phi[21] = 3125.0*ONESIXTH*z*y*x*x*x+3125.0*ONESIXTH*z*y*y*y*x+8875.0/12.0*z*y*x+25.0*z+3125.0*ONESIXTH*z*z*z*z*y+3125.0*0.25*z*z*z*y*y-4375.0/12.0*z*x*x*x-4375.0*0.25*z*z*y*y-4375.0*0.25*z*z*x*x-4375.0/12.0*z*y*y*y-4375.0*0.25*z*z*z*y-1925.0/12.0*z*y+8875.0/12.0*z*z*y+3125.0/24.0*z*x*x*x*x+3125.0/24.0*z*y*y*y*y+3125.0*ONESIXTH*z*z*x*x*x+8875.0/24.0*z*x*x+3125.0*ONESIXTH*z*z*y*y*y+8875.0/24.0*z*y*y+3125.0*ONESIXTH*z*z*z*z*x-4375.0*0.25*z*z*z*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*x*x+3125.0*0.25*z*z*z*x*x-4375.0*0.25*z*y*x*x+1562.5*z*z*y*y*x+8875.0/12.0*z*z*x-2187.5*z*z*y*x-4375.0*0.25*z*y*y*x-1925.0/12.0*z*x-1925.0/12.0*z*z+8875.0/24.0*z*z*z-4375.0/12.0*z*z*z*z+3125.0/24.0*z*z*z*z*z+1562.5*z*z*z*y*x;
+        phi[22] = -5875.0*ONESIXTH*z*y*x-1562.5*z*y*x*x*x-1562.5*z*y*y*x*x-3125.0*z*z*y*x*x-1562.5*z*z*y*y*x-1562.5*z*z*z*y*x+2500.0*z*y*x*x+2500.0*z*z*y*x-3125.0*ONESIXTH*z*y*y*y*x-5875.0*ONESIXTH*z*z*x+1250.0*z*y*y*x+250.0*z*x+2500.0*z*z*x*x-1562.5*z*z*x*x*x-3125.0*ONESIXTH*z*x*x*x*x-1562.5*z*z*z*x*x-3125.0*ONESIXTH*z*z*z*z*x+1250.0*z*x*x*x+1250.0*z*z*z*x-5875.0*ONESIXTH*z*x*x;
+        phi[23] = 1125.0*0.25*z*y*x+1562.5*z*y*x*x*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*x*x-6875.0*0.25*z*y*x*x-312.5*z*z*y*x+1125.0*0.25*z*z*x-625.0*0.25*z*y*y*x-125.0*z*x-6875.0*0.25*z*z*x*x+1562.5*z*z*x*x*x+3125.0*0.25*z*x*x*x*x+3125.0*0.25*z*z*z*x*x-1562.5*z*x*x*x-625.0*0.25*z*z*z*x+3625.0*0.25*z*x*x;
+        phi[24] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*x*x*x+312.5*z*y*x*x-125.0*ONETHIRD*z*z*x+125.0*ONETHIRD*z*x+312.5*z*z*x*x-3125.0*ONESIXTH*z*z*x*x*x-3125.0*ONESIXTH*z*x*x*x*x+2500.0*ONETHIRD*z*x*x*x-2125.0*ONESIXTH*z*x*x;
+        phi[25] = -25.0*0.25*z*x+3125.0/24.0*z*x*x*x*x-625.0*0.25*z*x*x*x+1375.0/24.0*z*x*x;
+        phi[26] = -5875.0*ONESIXTH*z*y*x-3125.0*ONESIXTH*z*y*x*x*x-1562.5*z*y*y*x*x-1562.5*z*z*y*x*x-3125.0*z*z*y*y*x-1562.5*z*z*z*y*x+1250.0*z*y*x*x+2500.0*z*z*y*x-1562.5*z*y*y*y*x+2500.0*z*y*y*x+1250.0*z*z*z*y-1562.5*z*z*y*y*y+250.0*z*y-1562.5*z*z*z*y*y-5875.0*ONESIXTH*z*y*y-3125.0*ONESIXTH*z*z*z*z*y-5875.0*ONESIXTH*z*z*y-3125.0*ONESIXTH*z*y*y*y*y+1250.0*z*y*y*y+2500.0*z*z*y*y;
+        phi[27] = 1250.0*z*y*x+1562.5*z*y*x*x*x+3125.0*z*y*y*x*x+3125.0*z*z*y*x*x+3125.0*z*z*y*y*x+1562.5*z*z*z*y*x-2812.5*z*y*x*x-2812.5*z*z*y*x+1562.5*z*y*y*y*x-2812.5*z*y*y*x;
+        phi[28] = -312.5*z*y*x-1562.5*z*y*x*x*x-1562.5*z*y*y*x*x-1562.5*z*z*y*x*x+1875.0*z*y*x*x+312.5*z*z*y*x+312.5*z*y*y*x;
+        phi[29] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*x*x*x-312.5*z*y*x*x;
+        phi[30] = 1125.0*0.25*z*y*x+3125.0*0.25*z*y*y*x*x+1562.5*z*z*y*y*x-625.0*0.25*z*y*x*x-312.5*z*z*y*x+1562.5*z*y*y*y*x-6875.0*0.25*z*y*y*x-625.0*0.25*z*z*z*y+1562.5*z*z*y*y*y-125.0*z*y+3125.0*0.25*z*z*z*y*y+3625.0*0.25*z*y*y+1125.0*0.25*z*z*y+3125.0*0.25*z*y*y*y*y-1562.5*z*y*y*y-6875.0*0.25*z*z*y*y;
+        phi[31] = -312.5*z*y*x-1562.5*z*y*y*x*x-1562.5*z*z*y*y*x+312.5*z*y*x*x+312.5*z*z*y*x-1562.5*z*y*y*y*x+1875.0*z*y*y*x;
+        phi[32] = 125.0*0.25*z*y*x+3125.0*0.25*z*y*y*x*x-625.0*0.25*z*y*x*x-625.0*0.25*z*y*y*x;
+        phi[33] = -125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*y*y*y*x+312.5*z*y*y*x-3125.0*ONESIXTH*z*z*y*y*y+125.0*ONETHIRD*z*y-2125.0*ONESIXTH*z*y*y-125.0*ONETHIRD*z*z*y-3125.0*ONESIXTH*z*y*y*y*y+2500.0*ONETHIRD*z*y*y*y+312.5*z*z*y*y;
+        phi[34] = 125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*y*y*y*x-312.5*z*y*y*x;
+        phi[35] = -25.0*0.25*z*y+1375.0/24.0*z*y*y+3125.0/24.0*z*y*y*y*y-625.0*0.25*z*y*y*y;
+        phi[36] = -250.0*z*y*x-25.0*z-3125.0*0.25*z*z*z*z*y-3125.0*0.25*z*z*z*y*y+625.0/12.0*z*x*x*x+3125.0*0.25*z*z*y*y+3125.0*0.25*z*z*x*x+625.0/12.0*z*y*y*y+5625.0*0.25*z*z*z*y+1175.0/12.0*z*y-8875.0/12.0*z*z*y-3125.0/12.0*z*z*x*x*x-125.0*z*x*x-3125.0/12.0*z*z*y*y*y-125.0*z*y*y-3125.0*0.25*z*z*z*z*x+5625.0*0.25*z*z*z*x-3125.0*0.25*z*z*y*x*x-3125.0*0.25*z*z*z*x*x+625.0*0.25*z*y*x*x-3125.0*0.25*z*z*y*y*x-8875.0/12.0*z*z*x+1562.5*z*z*y*x+625.0*0.25*z*y*y*x+1175.0/12.0*z*x+2675.0/12.0*z*z-7375.0/12.0*z*z*z+8125.0/12.0*z*z*z*z-3125.0/12.0*z*z*z*z*z-1562.5*z*z*z*y*x;
+        phi[37] = 1562.5*z*z*y*x*x+3125.0*0.25*z*z*y*y*x+1562.5*z*z*z*y*x-6875.0*0.25*z*z*y*x+1125.0*0.25*z*y*x-312.5*z*y*x*x-625.0*0.25*z*x*x*x-625.0*0.25*z*y*y*x-6875.0*0.25*z*z*x*x-1562.5*z*z*z*x+3125.0*0.25*z*z*x*x*x+1125.0*0.25*z*x*x-125.0*z*x+3625.0*0.25*z*z*x+1562.5*z*z*z*x*x+3125.0*0.25*z*z*z*z*x;
+        phi[38] = -3125.0*0.25*z*z*y*x*x+625.0*0.25*z*z*y*x-125.0*0.25*z*y*x+625.0*0.25*z*y*x*x+625.0*0.25*z*x*x*x+4375.0*0.25*z*z*x*x+625.0*0.25*z*z*z*x-3125.0*0.25*z*z*x*x*x-187.5*z*x*x+125.0*0.25*z*x-187.5*z*z*x-3125.0*0.25*z*z*z*x*x;
+        phi[39] = -625.0/12.0*z*x*x*x-625.0*0.25*z*z*x*x+3125.0/12.0*z*z*x*x*x+125.0*0.25*z*x*x-25.0*ONESIXTH*z*x+125.0*ONESIXTH*z*z*x;
+        phi[40] = 3125.0*0.25*z*z*y*x*x+1562.5*z*z*y*y*x+1562.5*z*z*z*y*x-6875.0*0.25*z*z*y*x+1125.0*0.25*z*y*x-625.0*0.25*z*y*x*x-312.5*z*y*y*x-1562.5*z*z*z*y+3125.0*0.25*z*z*y*y*y-125.0*z*y+1125.0*0.25*z*y*y+3625.0*0.25*z*z*y+1562.5*z*z*z*y*y+3125.0*0.25*z*z*z*z*y-625.0*0.25*z*y*y*y-6875.0*0.25*z*z*y*y;
+        phi[41] = -1562.5*z*z*y*x*x-1562.5*z*z*y*y*x-1562.5*z*z*z*y*x+1875.0*z*z*y*x-312.5*z*y*x+312.5*z*y*x*x+312.5*z*y*y*x;
+        phi[42] = 3125.0*0.25*z*z*y*x*x-625.0*0.25*z*z*y*x+125.0*0.25*z*y*x-625.0*0.25*z*y*x*x;
+        phi[43] = -3125.0*0.25*z*z*y*y*x+625.0*0.25*z*z*y*x-125.0*0.25*z*y*x+625.0*0.25*z*y*y*x+625.0*0.25*z*z*z*y-3125.0*0.25*z*z*y*y*y+125.0*0.25*z*y-187.5*z*y*y-187.5*z*z*y-3125.0*0.25*z*z*z*y*y+625.0*0.25*z*y*y*y+4375.0*0.25*z*z*y*y;
+        phi[44] = 3125.0*0.25*z*z*y*y*x-625.0*0.25*z*z*y*x+125.0*0.25*z*y*x-625.0*0.25*z*y*y*x;
+        phi[45] = 3125.0/12.0*z*z*y*y*y-25.0*ONESIXTH*z*y+125.0*0.25*z*y*y+125.0*ONESIXTH*z*z*y-625.0/12.0*z*y*y*y-625.0*0.25*z*z*y*y;
+        phi[46] = -312.5*z*z*y*x+125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*z*z*y*x+3125.0/12.0*z*z*z*x*x+50.0*ONETHIRD*z+3125.0*ONESIXTH*z*z*z*z*y+3125.0*ONESIXTH*z*z*z*z*x-3125.0*0.25*z*z*z*y-162.5*z*z+6125.0/12.0*z*z*z-625.0*z*z*z*z-37.5*z*y+125.0*ONESIXTH*z*y*y+3125.0/12.0*z*z*z*z*z-625.0*0.25*z*z*x*x+3875.0/12.0*z*z*y-3125.0*0.25*z*z*z*x+3125.0/12.0*z*z*z*y*y+125.0*ONESIXTH*z*x*x-625.0*0.25*z*z*y*y+3875.0/12.0*z*z*x-37.5*z*x;
+        phi[47] = 312.5*z*z*y*x-125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-3125.0*ONESIXTH*z*z*z*x*x-3125.0*ONESIXTH*z*z*z*z*x+312.5*z*z*x*x+2500.0*ONETHIRD*z*z*z*x-125.0*ONETHIRD*z*x*x-2125.0*ONESIXTH*z*z*x+125.0*ONETHIRD*z*x;
+        phi[48] = 3125.0/12.0*z*z*z*x*x-625.0*0.25*z*z*x*x-625.0/12.0*z*z*z*x+125.0*ONESIXTH*z*x*x+125.0*0.25*z*z*x-25.0*ONESIXTH*z*x;
+        phi[49] = 312.5*z*z*y*x-125.0*ONETHIRD*z*y*x-3125.0*ONESIXTH*z*z*z*y*x-3125.0*ONESIXTH*z*z*z*z*y+2500.0*ONETHIRD*z*z*z*y+125.0*ONETHIRD*z*y-125.0*ONETHIRD*z*y*y-2125.0*ONESIXTH*z*z*y-3125.0*ONESIXTH*z*z*z*y*y+312.5*z*z*y*y;
+        phi[50] = -312.5*z*z*y*x+125.0*ONETHIRD*z*y*x+3125.0*ONESIXTH*z*z*z*y*x;
+        phi[51] = -625.0/12.0*z*z*z*y-25.0*ONESIXTH*z*y+125.0*ONESIXTH*z*y*y+125.0*0.25*z*z*y+3125.0/12.0*z*z*z*y*y-625.0*0.25*z*z*y*y;
+        phi[52] = -3125.0/24.0*z*z*z*z*z-25.0*0.25*z-3125.0/24.0*z*z*z*z*y+625.0*0.25*z*z*z*y+25.0*0.25*z*y-1375.0/24.0*z*z*y-3125.0/24.0*z*z*z*z*x+625.0*0.25*z*z*z*x-1375.0/24.0*z*z*x+1525.0/24.0*z*z+25.0*0.25*z*x+6875.0/24.0*z*z*z*z-5125.0/24.0*z*z*z;
+        phi[53] = 3125.0/24.0*z*z*z*z*x-625.0*0.25*z*z*z*x+1375.0/24.0*z*z*x-25.0*0.25*z*x;
+        phi[54] = 3125.0/24.0*z*z*z*z*y-625.0*0.25*z*z*z*y-25.0*0.25*z*y+1375.0/24.0*z*z*y;
+        phi[55] = z-125.0/12.0*z*z+875.0/24.0*z*z*z-625.0/12.0*z*z*z*z+625.0/24.0*z*z*z*z*z;
+
+        return 0;
+    }
 #endif
   default:
     return -1;
@@ -1179,7 +1177,6 @@ PXShapeLagrange3d_Solution(const int porder, const DT * RESTRICT xref, DT * REST
 template <typename DT> ELVIS_DEVICE int
 PXShapeHexUniformLagrange3d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 {
-  int ierr;
   int i,j,k,l;
   DT phi_i[6]; // 1d uniform lagrange basis functions
   DT phi_j[6]; // 1d uniform lagrange basis functions
@@ -1208,7 +1205,6 @@ PXShapeHexUniformLagrange3d(const int porder, const DT * RESTRICT xref, DT * RES
 template <typename DT> ELVIS_DEVICE int
 PXShapeHexSpectralLagrange3d(const int porder, const DT * RESTRICT xref, DT * RESTRICT phi)
 {
-  int ierr;
   int i,j,k,l;
   DT phi_i[6]; // 1d spectral lagrange basis functions
   DT phi_j[6]; // 1d spectral lagrange basis functions
@@ -1283,12 +1279,10 @@ PXGradientsHierarch1d(const int porder, const DT * RESTRICT xref, DT * RESTRICT 
 template <typename DT> ELVIS_DEVICE int
 PXGradientsUniformLagrange1d(const int porder, const DT * RESTRICT xref, DT * RESTRICT gphi)
 {
-  DT x;
-  DT xx, xxx, xxxx;
+  DT x = xref[0];
 
-  x = xref[0];
-
-  switch ( porder ) {
+  switch ( porder )
+  {
 #if GEOM_USE_P0    
   case 0:
     gphi[0] = 0.0;
@@ -1309,36 +1303,42 @@ PXGradientsUniformLagrange1d(const int porder, const DT * RESTRICT xref, DT * RE
 #endif
 #if GEOM_USE_P3
   case 3:
-    xx = x*x;
-    gphi[0] = -5.5 + 18.0*x - 13.5*xx;
-    gphi[1] =  9.0 - 45.0*x + 40.5*xx;
-    gphi[2] = -4.5 + 36.0*x - 40.5*xx;
-    gphi[3] =  1.0 -  9.0*x + 13.5*xx;
-    return 0;
+    {
+        xx = x*x;
+        gphi[0] = -5.5 + 18.0*x - 13.5*xx;
+        gphi[1] =  9.0 - 45.0*x + 40.5*xx;
+        gphi[2] = -4.5 + 36.0*x - 40.5*xx;
+        gphi[3] =  1.0 -  9.0*x + 13.5*xx;
+        return 0;
+    }
 #endif
 #if GEOM_USE_P4
   case 4:
-    xx = x*x;
-    xxx = xx*x;
-    gphi[0] = ( - 25.0 + 140.0*x - 240.0*xx + 128.0*xxx )*ONETHIRD;
-    gphi[1] = (   48.0 - 416.0*x + 864.0*xx - 512.0*xxx )*ONETHIRD;
-    gphi[2] = ( - 36.0 + 456.0*x -1152.0*xx + 768.0*xxx )*ONETHIRD;
-    gphi[3] = (   16.0 - 224.0*x + 672.0*xx - 512.0*xxx )*ONETHIRD;
-    gphi[4] = ( -  3.0 +  44.0*x - 144.0*xx + 128.0*xxx )*ONETHIRD;   
-    return 0;
+    {
+        DT xx = x*x;
+        DT xxx = xx*x;
+        gphi[0] = ( - 25.0 + 140.0*x - 240.0*xx + 128.0*xxx )*ONETHIRD;
+        gphi[1] = (   48.0 - 416.0*x + 864.0*xx - 512.0*xxx )*ONETHIRD;
+        gphi[2] = ( - 36.0 + 456.0*x -1152.0*xx + 768.0*xxx )*ONETHIRD;
+        gphi[3] = (   16.0 - 224.0*x + 672.0*xx - 512.0*xxx )*ONETHIRD;
+        gphi[4] = ( -  3.0 +  44.0*x - 144.0*xx + 128.0*xxx )*ONETHIRD;
+        return 0;
+    }
 #endif
 #if GEOM_USE_P5
   case 5:
-    xx = x*x;
-    xxx = xx*x;
-    xxxx = xxx*x;
-    gphi[0] = ( - 274.0 + 2250.0*x -  6375.0*xx +  7500.0*xxx - 3125.0*xxxx ) * ONETWENTYFOURTH;
-    gphi[1] = (   600.0 - 7700.0*x + 26625.0*xx - 35000.0*xxx +15625.0*xxxx ) * ONETWENTYFOURTH;
-    gphi[2] = ( - 600.0 +10700.0*x - 44250.0*xx + 65000.0*xxx -31250.0*xxxx ) * ONETWENTYFOURTH;
-    gphi[3] = (   400.0 - 7800.0*x + 36750.0*xx - 60000.0*xxx +31250.0*xxxx ) * ONETWENTYFOURTH;
-    gphi[4] = ( - 150.0 + 3050.0*x - 15375.0*xx + 27500.0*xxx -15625.0*xxxx ) * ONETWENTYFOURTH;
-    gphi[5] = (    24.0 -  500.0*x +  2625.0*xx -  5000.0*xxx + 3125.0*xxxx ) * ONETWENTYFOURTH;
-    return 0;
+    {
+        DT xx = x*x;
+        DT xxx = xx*x;
+        DT xxxx = xxx*x;
+        gphi[0] = ( - 274.0 + 2250.0*x -  6375.0*xx +  7500.0*xxx - 3125.0*xxxx ) * ONETWENTYFOURTH;
+        gphi[1] = (   600.0 - 7700.0*x + 26625.0*xx - 35000.0*xxx +15625.0*xxxx ) * ONETWENTYFOURTH;
+        gphi[2] = ( - 600.0 +10700.0*x - 44250.0*xx + 65000.0*xxx -31250.0*xxxx ) * ONETWENTYFOURTH;
+        gphi[3] = (   400.0 - 7800.0*x + 36750.0*xx - 60000.0*xxx +31250.0*xxxx ) * ONETWENTYFOURTH;
+        gphi[4] = ( - 150.0 + 3050.0*x - 15375.0*xx + 27500.0*xxx -15625.0*xxxx ) * ONETWENTYFOURTH;
+        gphi[5] = (    24.0 -  500.0*x +  2625.0*xx -  5000.0*xxx + 3125.0*xxxx ) * ONETWENTYFOURTH;
+        return 0;
+    }
 #endif
   default:
     return -1;
@@ -1350,10 +1350,8 @@ PXGradientsUniformLagrange1d(const int porder, const DT * RESTRICT xref, DT * RE
 template <typename DT> ELVIS_DEVICE int
 PXGradientsSpectralLagrange1d(const int porder, const DT * RESTRICT xref, DT * RESTRICT gphi)
 {
-  DT x;
-  DT xx, xxx, xxxx;
   
-  x = xref[0];
+  DT x = xref[0];
 
   switch ( porder ) {
 #if GEOM_USE_P0
@@ -1376,38 +1374,44 @@ PXGradientsSpectralLagrange1d(const int porder, const DT * RESTRICT xref, DT * R
 #endif
 #if GEOM_USE_P3
   case 3:
-    xx=x*x;
-    gphi[0] = ( - 19.0 + 64.0*x - 48.0*xx)*ONETHIRD;
-    gphi[1] = (   24.0 -112.0*x + 96.0*xx)*ONETHIRD;
-    gphi[2] = ( -  8.0 + 80.0*x - 96.0*xx)*ONETHIRD;
-    gphi[3] = (    3.0 - 32.0*x + 48.0*xx)*ONETHIRD;
-    return 0;
+    {
+        DT xx=x*x;
+        gphi[0] = ( - 19.0 + 64.0*x - 48.0*xx)*ONETHIRD;
+        gphi[1] = (   24.0 -112.0*x + 96.0*xx)*ONETHIRD;
+        gphi[2] = ( -  8.0 + 80.0*x - 96.0*xx)*ONETHIRD;
+        gphi[3] = (    3.0 - 32.0*x + 48.0*xx)*ONETHIRD;
+        return 0;
+      }
 #endif
 #if GEOM_USE_P4
   case 4:
-    xx=x*x;
-    xxx=xx*x;
-    gphi[ 0] = - 11.0 + 68.0*x - 120.0*xx + 64.0*xxx;
-    gphi[ 1] = 4.0*(2.0+SQUAREROOT2) - (24.0*SQUAREROOT2+80.0)*x + ( 24.0*SQUAREROOT2+192.0)*xx - 128.0*xxx;
-    gphi[ 2] = -4.0 + 72.0*x - 192.0*xx + 128.0*xxx;
-    gphi[ 3] = 4.0*(2.0-SQUAREROOT2) + (24.0*SQUAREROOT2-80.0)*x + (-24.0*SQUAREROOT2+192.0)*xx - 128.0*xxx;
-    gphi[ 4] = -1.0 + 20.0*x - 72.0*xx + 64.0*xxx;
- 
-    return 0;
+    {
+        DT xx=x*x;
+        DT xxx=xx*x;
+        gphi[ 0] = - 11.0 + 68.0*x - 120.0*xx + 64.0*xxx;
+        gphi[ 1] = 4.0*(2.0+SQUAREROOT2) - (24.0*SQUAREROOT2+80.0)*x + ( 24.0*SQUAREROOT2+192.0)*xx - 128.0*xxx;
+        gphi[ 2] = -4.0 + 72.0*x - 192.0*xx + 128.0*xxx;
+        gphi[ 3] = 4.0*(2.0-SQUAREROOT2) + (24.0*SQUAREROOT2-80.0)*x + (-24.0*SQUAREROOT2+192.0)*xx - 128.0*xxx;
+        gphi[ 4] = -1.0 + 20.0*x - 72.0*xx + 64.0*xxx;
+
+        return 0;
+    }
 #endif
 #if GEOM_USE_P5
   case 5:
-    xx=x*x;
-    xxx=xx*x;
-    xxxx=xxx*x;
-    
-    gphi[0] = - 17.0 + 166.4*x - 508.8*xx + 614.4*xxx - 256.0*xxxx;
-    gphi[1] = 4.0*(SQUAREROOT5+3.0) - (40.0*SQUAREROOT5+184.0)*x + ( 86.4*SQUAREROOT5+739.2)*xx - (51.2*SQUAREROOT5+1075.2)*xxx + 512.0*xxxx;
-    gphi[2] =-0.8*(SQUAREROOT5+5.0) + (20.8*SQUAREROOT5+116.8)*x - ( 67.2*SQUAREROOT5+585.6)*xx + (51.2*SQUAREROOT5+ 972.8)*xxx - 512.0*xxxx;
-    gphi[3] =-4.0*(SQUAREROOT5-3.0) + (40.0*SQUAREROOT5-184.0)*x + (-86.4*SQUAREROOT5+739.2)*xx + (51.2*SQUAREROOT5-1075.2)*xxx + 512.0*xxxx;
-    gphi[4] = 0.8*(SQUAREROOT5-5.0) - (20.8*SQUAREROOT5-116.8)*x - (-67.2*SQUAREROOT5+585.6)*xx - (51.2*SQUAREROOT5- 972.8)*xxx - 512.0*xxxx;
-    gphi[5] =  1.0 - 32.0*x + 201.6*xx - 409.6*xxx + 256.0*xxxx;
-    return 0;
+    {
+        DT xx=x*x;
+        DT xxx=xx*x;
+        DT xxxx=xxx*x;
+
+        gphi[0] = - 17.0 + 166.4*x - 508.8*xx + 614.4*xxx - 256.0*xxxx;
+        gphi[1] = 4.0*(SQUAREROOT5+3.0) - (40.0*SQUAREROOT5+184.0)*x + ( 86.4*SQUAREROOT5+739.2)*xx - (51.2*SQUAREROOT5+1075.2)*xxx + 512.0*xxxx;
+        gphi[2] =-0.8*(SQUAREROOT5+5.0) + (20.8*SQUAREROOT5+116.8)*x - ( 67.2*SQUAREROOT5+585.6)*xx + (51.2*SQUAREROOT5+ 972.8)*xxx - 512.0*xxxx;
+        gphi[3] =-4.0*(SQUAREROOT5-3.0) + (40.0*SQUAREROOT5-184.0)*x + (-86.4*SQUAREROOT5+739.2)*xx + (51.2*SQUAREROOT5-1075.2)*xxx + 512.0*xxxx;
+        gphi[4] = 0.8*(SQUAREROOT5-5.0) - (20.8*SQUAREROOT5-116.8)*x - (-67.2*SQUAREROOT5+585.6)*xx - (51.2*SQUAREROOT5- 972.8)*xxx - 512.0*xxxx;
+        gphi[5] =  1.0 - 32.0*x + 201.6*xx - 409.6*xxx + 256.0*xxxx;
+        return 0;
+    }
 #endif
 
   default:
@@ -3046,7 +3050,6 @@ PXGradientsHexSpectralLagrange3d(const int porder, const DT * RESTRICT xref, DT 
 template <typename DT> ELVIS_DEVICE int
 PXShapeElem(enum PXE_SolutionOrder order, int porder, DT const * RESTRICT xref, DT * RESTRICT phi)
 {
-  int ierr;      // error code
   //int porder;    // polynomial interpolation order
 
   if ( unlikely(order==PXE_OrderDummy) ){
@@ -3105,7 +3108,6 @@ PXShapeElem(enum PXE_SolutionOrder order, int porder, DT const * RESTRICT xref, 
 template <typename DT> ELVIS_DEVICE int
 PXShapeElem_Solution(enum PXE_SolutionOrder order, int porder, DT const * RESTRICT xref, DT * RESTRICT phi)
 {
-  int ierr;      // error code
   //int porder;    // polynomial interpolation order
 
   if ( unlikely(order==PXE_OrderDummy) ){
@@ -3164,7 +3166,6 @@ PXShapeElem_Solution(enum PXE_SolutionOrder order, int porder, DT const * RESTRI
 template <typename DT> ELVIS_DEVICE int
 PXShapeFace(enum PXE_SolutionOrder order, int porder, DT const * RESTRICT xref, DT * RESTRICT phi)
 {
-  int ierr;      // error code
   //int porder;    // polynomial interpolation order
 
   if ( unlikely(order==PXE_OrderDummy) ){
@@ -3354,7 +3355,6 @@ PXShapeFace(enum PXE_SolutionOrder order, int porder, DT const * RESTRICT xref, 
 template <typename DT> ELVIS_DEVICE int
 PXGradientsElem(enum PXE_SolutionOrder order, int porder, DT const * RESTRICT xref, DT * RESTRICT gphi)
 {
-  int ierr;      // error code
   //int porder;    // polynomial interpolation order
 
   /* get porder */
@@ -3408,7 +3408,6 @@ PXGradientsElem(enum PXE_SolutionOrder order, int porder, DT const * RESTRICT xr
 template <typename DT> ELVIS_DEVICE int
 PXGradientsElem_Solution(enum PXE_SolutionOrder order, int porder, DT const * RESTRICT xref, DT * RESTRICT gphi)
 {
-  int ierr;      // error code
   //int porder;    // polynomial interpolation order
 
   /* get porder */
@@ -3463,7 +3462,6 @@ PXGradientsElem_Solution(enum PXE_SolutionOrder order, int porder, DT const * RE
 template <typename DT> ELVIS_DEVICE int
 PXGradientsFace(enum PXE_SolutionOrder order, int porder, DT const * RESTRICT xref, DT * RESTRICT gphi)
 {
-  int ierr;      // error code
   //int porder;    // polynomial interpolation order
 
   /* get porder */
@@ -3598,9 +3596,7 @@ PXMatrixDetInverse3(DT const * RESTRICT jac, DT * RESTRICT J, DT * RESTRICT ijac
 template <typename DT> ELVIS_DEVICE int 
 PXPhysicalGradientsGivenGradients(enum PXE_SolutionOrder order, int nbf, DT const * RESTRICT iJac, DT const * RESTRICT gphi, DT * RESTRICT phix)
 {
-  int d;  // Dimension
   const int Dim = DIM3D;
-  int di, dj; // dimension
   int k;  // number of basis functions
    DT const * RESTRICT gphix;
    DT const * RESTRICT gphiy;
@@ -3691,7 +3687,6 @@ LinearSimplexGlob2Ref(int Dim, ElVisFloat const * RESTRICT vertices, PX_REAL con
   //PX_REAL J;         // Jacobian Determinant
   PX_REAL iJac[9];   // Inverse of Jacobian
   ElVisFloat const * x0;       // Coordinates on Node0
-  int ierr;
 
   /* Set x0 to node 0 */
   x0 = vertices;

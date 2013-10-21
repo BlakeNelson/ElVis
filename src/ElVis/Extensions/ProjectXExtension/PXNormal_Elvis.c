@@ -154,8 +154,6 @@ PXOutwardNormal( enum PXE_SolutionOrder orderQ, int qorder, int nbfQ, PX_FaceDat
 */
 
   int d;                 // dimension
-
-  int k,nbf,nnode;         // number of nodes on face 
   PX_REAL xfacelocal[2];         // reference coordinates on element face
   PX_REAL gphi[DIM3D*MAX_NBF_FACE];
 

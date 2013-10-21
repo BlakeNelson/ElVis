@@ -65,10 +65,17 @@
 // #define PXErrorReturnCode(X) (X)
 // #define PXErrorReturnSilent(X) (X)
 
+#ifdef __CUDACC__
 ELVIS_DEVICE void PXErrorReport( const char *file, const int line, const char *call, const int ierr){
-  //ELVIS_PRINTF("Error %d has occured.\n File : %s  Line : %d\n Call : %s\n", ierr, file, line, call); 
-  ELVIS_PRINTF("Error %d has occured.\n Line : %d\n", ierr, line); 
+  //ELVIS_PRINTF("Error %d has occured.\n File : %s  Line : %d\n Call : %s\n", ierr, file, line, call);
+  ELVIS_PRINTF("Error %d has occured.\n Line : %d\n", ierr, line);
 }
+#else
+void PXErrorReport( const char *file, const int line, const char *call, const int ierr){
+  //ELVIS_PRINTF("Error %d has occured.\n File : %s  Line : %d\n Call : %s\n", ierr, file, line, call);
+  printf("Error %d has occured.\n Line : %d\n", ierr, line);
+}
+#endif
 
 #if PX_DEBUG_MODE == 1
 #define PXErrorDebug(X) PXError(X)
@@ -165,7 +172,7 @@ ELVIS_DEVICE void EvaluateFieldGradient(PX_EgrpData const * egrpData, PX_Solutio
     /* compute derived quantities */
     PX_REAL gmi = SpecificHeatRatio - 1.0;
     PX_REAL irho = 1.0/state[0];
-    PX_REAL vmag, p, M; //magnitude of velocity, pressure, speed of sound
+    PX_REAL vmag, p; //magnitude of velocity, pressure, speed of sound
     PX_REAL v2, q, E, e, a, a2, ia;
     PX_REAL vel[DIM3D] = {state[1]*irho, state[2]*irho, state[3]*irho};
     
@@ -182,8 +189,6 @@ ELVIS_DEVICE void EvaluateFieldGradient(PX_EgrpData const * egrpData, PX_Solutio
     a = sqrt(a2);
     ia = 1.0/a;
     vmag = sqrt(v2);
-
-    M = vmag*ia;
 
     /* done if physicality check fails */
     if(p>0.0 && state[0] > 0.0){ //if not, leave result as 0.0

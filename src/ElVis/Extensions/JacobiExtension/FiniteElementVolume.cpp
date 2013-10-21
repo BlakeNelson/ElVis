@@ -159,10 +159,10 @@ namespace ElVis
             }
 
             char buf2[200];
-            fread(buf2, sizeof(char), strlen(headerData)+1, in);
+            size_t readBytes = fread(buf2, sizeof(char), strlen(headerData)+1, in);
             fclose(in);
 
-            return strcmp(headerData, buf2) == 0;
+            return readBytes > 0 && strcmp(headerData, buf2) == 0;
         }
 
         void FiniteElementVolume::init()
@@ -190,9 +190,9 @@ namespace ElVis
             }
 
             char buf2[200];
-            fread(buf2, sizeof(char), strlen(headerData)+1, in);
+            size_t readBytes = fread(buf2, sizeof(char), strlen(headerData)+1, in);
 
-            if(strcmp(headerData, buf2) != 0)
+            if(readBytes ==0 || strcmp(headerData, buf2) != 0)
             {
                 throw std::runtime_error(m_fileName + " is not a valid FiniteElementVolume file");
             }

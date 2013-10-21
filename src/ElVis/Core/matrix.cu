@@ -33,6 +33,7 @@
 #include <optixu/optixu_math_namespace.h>
 #include <optix_math.h>
 #include <assert.h>
+#include <ElVis/Core/Cuda.h>
 #include <ElVis/Core/Float.cu>
 
 #define MATRIX_ACCESS(m,i,j) m[i*N+j]
@@ -50,29 +51,31 @@ namespace ElVis
 
   template <unsigned int M, unsigned int N> class Matrix;
 
-  template <unsigned int M> Matrix<M,M>& operator*=(Matrix<M,M>& m1, const Matrix<M,M>& m2);
-  MAT_DECL Matrix<M,N>& operator-=(Matrix<M,N>& m1, const Matrix<M,N>& m2);
-  MAT_DECL Matrix<M,N>& operator+=(Matrix<M,N>& m1, const Matrix<M,N>& m2);
-  MAT_DECL Matrix<M,N>& operator*=(Matrix<M,N>& m1, ElVisFloat f);
-  MAT_DECL Matrix<M,N>& operator/=(Matrix<M,N>& m1, ElVisFloat f);
-  MAT_DECL Matrix<M,N> operator-(const Matrix<M,N>& m1, const Matrix<M,N>& m2);
-  MAT_DECL Matrix<M,N> operator+(const Matrix<M,N>& m1, const Matrix<M,N>& m2);
-  MAT_DECL Matrix<M,N> operator/(const Matrix<M,N>& m, ElVisFloat f);
-  MAT_DECL Matrix<M,N> operator*(const Matrix<M,N>& m, ElVisFloat f);
-  MAT_DECL Matrix<M,N> operator*(ElVisFloat f, const Matrix<M,N>& m);
-  MAT_DECL typename Matrix<M,N>::floatM operator*(const Matrix<M,N>& m, const typename Matrix<M,N>::floatN& v );
-  MAT_DECL typename Matrix<M,N>::floatN operator*(const typename Matrix<M,N>::floatM& v, const Matrix<M,N>& m);
-  template<unsigned int M, unsigned int N, unsigned int R> Matrix<M,R> operator*(const Matrix<M,N>& m1, const Matrix<N,R>& m2);
+  template <unsigned int M> Matrix<M,M>&
+    ELVIS_DEVICE operator*=(Matrix<M,M>& m1, const Matrix<M,M>& m2);
+  MAT_DECL ELVIS_DEVICE Matrix<M,N>& operator-=(Matrix<M,N>& m1, const Matrix<M,N>& m2);
+  MAT_DECL ELVIS_DEVICE Matrix<M,N>& operator+=(Matrix<M,N>& m1, const Matrix<M,N>& m2);
+  MAT_DECL ELVIS_DEVICE Matrix<M,N>& operator*=(Matrix<M,N>& m1, ElVisFloat f);
+  MAT_DECL ELVIS_DEVICE Matrix<M,N>& operator/=(Matrix<M,N>& m1, ElVisFloat f);
+  MAT_DECL ELVIS_DEVICE Matrix<M,N> operator-(const Matrix<M,N>& m1, const Matrix<M,N>& m2);
+  MAT_DECL ELVIS_DEVICE Matrix<M,N> operator+(const Matrix<M,N>& m1, const Matrix<M,N>& m2);
+  MAT_DECL ELVIS_DEVICE Matrix<M,N> operator/(const Matrix<M,N>& m, ElVisFloat f);
+  MAT_DECL ELVIS_DEVICE Matrix<M,N> operator*(const Matrix<M,N>& m, ElVisFloat f);
+  MAT_DECL ELVIS_DEVICE Matrix<M,N> operator*(ElVisFloat f, const Matrix<M,N>& m);
+  MAT_DECL ELVIS_DEVICE typename Matrix<M,N>::floatM operator*(const Matrix<M,N>& m, const typename Matrix<M,N>::floatN& v );
+  MAT_DECL ELVIS_DEVICE typename Matrix<M,N>::floatN operator*(const typename Matrix<M,N>::floatM& v, const Matrix<M,N>& m);
+  template<unsigned int M, unsigned int N, unsigned int R> ELVIS_DEVICE Matrix<M,R>
+    operator*(const Matrix<M,N>& m1, const Matrix<N,R>& m2);
 
 
   // Partial specializations to make matrix vector multiplication more efficient
   template <unsigned int N>
-  RT_HOSTDEVICE ElVisFloat2 operator*(const Matrix<2,N>& m, const typename Matrix<2,N>::floatN& vec );
+  ELVIS_DEVICE ElVisFloat2 operator*(const Matrix<2,N>& m, const typename Matrix<2,N>::floatN& vec );
   template <unsigned int N>
-  RT_HOSTDEVICE ElVisFloat3 operator*(const Matrix<3,N>& m, const typename Matrix<3,N>::floatN& vec );
+  ELVIS_DEVICE ElVisFloat3 operator*(const Matrix<3,N>& m, const typename Matrix<3,N>::floatN& vec );
   template <unsigned int N>
-  RT_HOSTDEVICE ElVisFloat4 operator*(const Matrix<4,N>& m, const typename Matrix<4,N>::floatN& vec );
-  RT_HOSTDEVICE ElVisFloat4 operator*(const Matrix<4,4>& m, const ElVisFloat4& vec );
+  ELVIS_DEVICE ElVisFloat4 operator*(const Matrix<4,N>& m, const typename Matrix<4,N>::floatN& vec );
+  ELVIS_DEVICE ElVisFloat4 operator*(const Matrix<4,4>& m, const ElVisFloat4& vec );
 
   // A matrix with M rows and N columns
   template <unsigned int M, unsigned int N>
@@ -83,64 +86,64 @@ namespace ElVis
     typedef typename VectorDim<M>::VectorType  floatM; // A column of the matrix
 
     // Create an unitialized matrix.
-    RT_HOSTDEVICE              Matrix();
+    ELVIS_DEVICE              Matrix();
 
     // Create a matrix from the specified float array.
-    RT_HOSTDEVICE explicit     Matrix( const ElVisFloat data[M*N] ) { for(unsigned int i = 0; i < M*N; ++i) _data[i] = data[i]; }
+    ELVIS_DEVICE explicit     Matrix( const ElVisFloat data[M*N] ) { for(unsigned int i = 0; i < M*N; ++i) _data[i] = data[i]; }
 
     // Copy the matrix.
-    RT_HOSTDEVICE              Matrix( const Matrix& m );
+    ELVIS_DEVICE              Matrix( const Matrix& m );
 
     // Assignment operator.
-    RT_HOSTDEVICE Matrix&      operator=( const Matrix& b );
+    ELVIS_DEVICE Matrix&      operator=( const Matrix& b );
 
     // Access the specified element 0..N*M-1
-    RT_HOSTDEVICE const ElVisFloat&        operator[]( unsigned int i )const { return _data[i]; }
+    ELVIS_DEVICE const ElVisFloat&        operator[]( unsigned int i )const { return _data[i]; }
 
     // Access the specified element 0..N*M-1
-    RT_HOSTDEVICE ElVisFloat&       operator[]( unsigned int i )      { return _data[i]; }
+    ELVIS_DEVICE ElVisFloat&       operator[]( unsigned int i )      { return _data[i]; }
 
     // Access the specified row 0..M.  Returns float, float2, float3 or float4 depending on the matrix size.
-    RT_HOSTDEVICE floatN       getRow( unsigned int m )const;
+    ELVIS_DEVICE floatN       getRow( unsigned int m )const;
 
     // Access the specified column 0..N.  Returns float, float2, float3 or float4 depending on the matrix size.
-    RT_HOSTDEVICE floatM       getCol( unsigned int n )const;
+    ELVIS_DEVICE floatM       getCol( unsigned int n )const;
 
     // Returns a pointer to the internal data array.  The data array is stored in row-major order.
-    RT_HOSTDEVICE ElVisFloat*       getData();
+    ELVIS_DEVICE ElVisFloat*       getData();
 
     // Returns a const pointer to the internal data array.  The data array is stored in row-major order.
-    RT_HOSTDEVICE const ElVisFloat* getData()const;
+    ELVIS_DEVICE const ElVisFloat* getData()const;
 
     // Assign the specified row 0..M.  Takes a float, float2, float3 or float4 depending on the matrix size.
-    RT_HOSTDEVICE void         setRow( unsigned int m, const floatN &r );
+    ELVIS_DEVICE void         setRow( unsigned int m, const floatN &r );
 
     // Assign the specified column 0..N.  Takes a float, float2, float3 or float4 depending on the matrix size.
-    RT_HOSTDEVICE void         setCol( unsigned int n, const floatM &c );
+    ELVIS_DEVICE void         setCol( unsigned int n, const floatM &c );
 
     // Returns the transpose of the matrix.
-    RT_HOSTDEVICE Matrix<N,M>         transpose() const;
+    ELVIS_DEVICE Matrix<N,M>         transpose() const;
 
     // Returns the inverse of the matrix.
-    RT_HOSTDEVICE Matrix<4,4>         inverse() const;
+    ELVIS_DEVICE Matrix<4,4>         inverse() const;
 
     // Returns the determinant of the matrix.
-    RT_HOSTDEVICE ElVisFloat               det() const;
+    ELVIS_DEVICE ElVisFloat               det() const;
 
     // Returns a rotation matrix.
-    RT_HOSTDEVICE static Matrix<4,4>  rotate(const ElVisFloat radians, const ElVisFloat3& axis);
+    ELVIS_DEVICE static Matrix<4,4>  rotate(const ElVisFloat radians, const ElVisFloat3& axis);
 
     // Returns a translation matrix.
-    RT_HOSTDEVICE static Matrix<4,4>  translate(const ElVisFloat3& vec);
+    ELVIS_DEVICE static Matrix<4,4>  translate(const ElVisFloat3& vec);
 
     // Returns a scale matrix.
-    RT_HOSTDEVICE static Matrix<4,4>  scale(const ElVisFloat3& vec);
+    ELVIS_DEVICE static Matrix<4,4>  scale(const ElVisFloat3& vec);
 
     // Returns the identity matrix.
-    RT_HOSTDEVICE static Matrix<N,N>  identity();
+    ELVIS_DEVICE static Matrix<N,N>  identity();
 
     // Ordered comparison operator so that the matrix can be used in an STL container.
-    RT_HOSTDEVICE bool         operator<( const Matrix<M, N>& rhs ) const;
+    ELVIS_DEVICE bool         operator<( const Matrix<M, N>& rhs ) const;
   private:
     ElVisFloat _data[M*N]; // The data array is stored in row-major order.
   };
@@ -148,19 +151,19 @@ namespace ElVis
 
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N>::Matrix()
+  ELVIS_DEVICE Matrix<M,N>::Matrix()
   {
   }
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N>::Matrix( const Matrix<M,N>& m )
+  ELVIS_DEVICE Matrix<M,N>::Matrix( const Matrix<M,N>& m )
   {
     for(unsigned int i = 0; i < M*N; ++i)
       _data[i] = m._data[i];
   }
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N>&  Matrix<M,N>::operator=( const Matrix& b )
+  ELVIS_DEVICE Matrix<M,N>&  Matrix<M,N>::operator=( const Matrix& b )
   {
     for(unsigned int i = 0; i < M*N; ++i)
       _data[i] = b._data[i];
@@ -170,7 +173,7 @@ namespace ElVis
 
   /*
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE float Matrix<M,N>::operator[]( unsigned int i )const
+  ELVIS_DEVICE float Matrix<M,N>::operator[]( unsigned int i )const
   {
   assert( i < M*N );
   return _data[i];
@@ -178,14 +181,14 @@ namespace ElVis
 
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE float& Matrix<M,N>::operator[]( unsigned int i )
+  ELVIS_DEVICE float& Matrix<M,N>::operator[]( unsigned int i )
   {
   return _data[i];
   }
   */
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE typename Matrix<M,N>::floatN Matrix<M,N>::getRow( unsigned int m )const
+  ELVIS_DEVICE typename Matrix<M,N>::floatN Matrix<M,N>::getRow( unsigned int m )const
   {
     typename Matrix<M,N>::floatN temp;
     ElVisFloat* v = reinterpret_cast<ElVisFloat*>( &temp );
@@ -198,7 +201,7 @@ namespace ElVis
 
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE typename Matrix<M,N>::floatM Matrix<M,N>::getCol( unsigned int n )const
+  ELVIS_DEVICE typename Matrix<M,N>::floatM Matrix<M,N>::getCol( unsigned int n )const
   {
     typename Matrix<M,N>::floatM temp;
     ElVisFloat* v = reinterpret_cast<ElVisFloat*>( &temp );
@@ -210,21 +213,21 @@ namespace ElVis
 
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE ElVisFloat* Matrix<M,N>::getData()
+  ELVIS_DEVICE ElVisFloat* Matrix<M,N>::getData()
   {
     return _data;
   }
 
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE const ElVisFloat* Matrix<M,N>::getData() const
+  ELVIS_DEVICE const ElVisFloat* Matrix<M,N>::getData() const
   {
     return _data;
   }
 
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE void Matrix<M,N>::setRow( unsigned int m, const typename Matrix<M,N>::floatN &r )
+  ELVIS_DEVICE void Matrix<M,N>::setRow( unsigned int m, const typename Matrix<M,N>::floatN &r )
   {
     const ElVisFloat* v = reinterpret_cast<const ElVisFloat*>( &r );
     ElVisFloat* row = &( _data[m*N] );
@@ -234,7 +237,7 @@ namespace ElVis
 
 
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE void Matrix<M,N>::setCol( unsigned int n, const typename Matrix<M,N>::floatM &c )
+  ELVIS_DEVICE void Matrix<M,N>::setCol( unsigned int n, const typename Matrix<M,N>::floatM &c )
   {
     const ElVisFloat* v = reinterpret_cast<const ElVisFloat*>( &c );
     for ( unsigned int i = 0; i < M; ++i )
@@ -244,7 +247,7 @@ namespace ElVis
 
   // Subtract two matrices of the same size.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N> operator-(const Matrix<M,N>& m1, const Matrix<M,N>& m2)
+  ELVIS_DEVICE Matrix<M,N> operator-(const Matrix<M,N>& m1, const Matrix<M,N>& m2)
   {
     Matrix<M,N> temp( m1 );
     temp -= m2;
@@ -254,7 +257,7 @@ namespace ElVis
 
   // Subtract two matrices of the same size.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N>& operator-=(Matrix<M,N>& m1, const Matrix<M,N>& m2)
+  ELVIS_DEVICE Matrix<M,N>& operator-=(Matrix<M,N>& m1, const Matrix<M,N>& m2)
   {
     for ( unsigned int i = 0; i < M*N; ++i )
       m1[i] -= m2[i];
@@ -264,7 +267,7 @@ namespace ElVis
 
   // Add two matrices of the same size.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N> operator+(const Matrix<M,N>& m1, const Matrix<M,N>& m2)
+  ELVIS_DEVICE Matrix<M,N> operator+(const Matrix<M,N>& m1, const Matrix<M,N>& m2)
   {
     Matrix<M,N> temp( m1 );
     temp += m2;
@@ -274,7 +277,7 @@ namespace ElVis
 
   // Add two matrices of the same size.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N>& operator+=(Matrix<M,N>& m1, const Matrix<M,N>& m2)
+  ELVIS_DEVICE Matrix<M,N>& operator+=(Matrix<M,N>& m1, const Matrix<M,N>& m2)
   {
     for ( unsigned int i = 0; i < M*N; ++i )
       m1[i] += m2[i];
@@ -284,7 +287,7 @@ namespace ElVis
 
   // Multiply two compatible matrices.
   template<unsigned int M, unsigned int N, unsigned int R>
-  RT_HOSTDEVICE Matrix<M,R> operator*( const Matrix<M,N>& m1, const Matrix<N,R>& m2)
+  ELVIS_DEVICE Matrix<M,R> operator*( const Matrix<M,N>& m1, const Matrix<N,R>& m2)
   {
     Matrix<M,R> temp;
 
@@ -305,7 +308,7 @@ namespace ElVis
 
   // Multiply two compatible matrices.
   template<unsigned int M>
-  RT_HOSTDEVICE Matrix<M,M>& operator*=(Matrix<M,M>& m1, const Matrix<M,M>& m2)
+  ELVIS_DEVICE Matrix<M,M>& operator*=(Matrix<M,M>& m1, const Matrix<M,M>& m2)
   {
     m1 = m1*m2;
     return m1;
@@ -314,7 +317,7 @@ namespace ElVis
 
   // Multiply matrix by vector
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE typename Matrix<M,N>::floatM operator*(const Matrix<M,N>& m, const typename Matrix<M,N>::floatN& vec )
+  ELVIS_DEVICE typename Matrix<M,N>::floatM operator*(const Matrix<M,N>& m, const typename Matrix<M,N>::floatN& vec )
   {
     typename Matrix<M,N>::floatM temp;
     ElVisFloat* t = reinterpret_cast<ElVisFloat*>( &temp );
@@ -333,7 +336,7 @@ namespace ElVis
 
   // Multiply matrix2xN by floatN
   template<unsigned int N>
-  RT_HOSTDEVICE ElVisFloat2 operator*(const Matrix<2,N>& m, const typename Matrix<2,N>::floatN& vec )
+  ELVIS_DEVICE ElVisFloat2 operator*(const Matrix<2,N>& m, const typename Matrix<2,N>::floatN& vec )
   {
     ElVisFloat2 temp = { MAKE_FLOAT(0.0), MAKE_FLOAT(0.0) };
     const ElVisFloat* v = reinterpret_cast<const ElVisFloat*>( &vec );
@@ -350,7 +353,7 @@ namespace ElVis
 
   // Multiply matrix3xN by floatN
   template<unsigned int N>
-  RT_HOSTDEVICE ElVisFloat3 operator*(const Matrix<3,N>& m, const typename Matrix<3,N>::floatN& vec )
+  ELVIS_DEVICE ElVisFloat3 operator*(const Matrix<3,N>& m, const typename Matrix<3,N>::floatN& vec )
   {
     ElVisFloat3 temp = { MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0) };
     const ElVisFloat* v = reinterpret_cast<const ElVisFloat*>( &vec );
@@ -370,7 +373,7 @@ namespace ElVis
 
   // Multiply matrix4xN by floatN
   template<unsigned int N>
-  RT_HOSTDEVICE ElVisFloat4 operator*(const Matrix<4,N>& m, const typename Matrix<4,N>::floatN& vec )
+  ELVIS_DEVICE ElVisFloat4 operator*(const Matrix<4,N>& m, const typename Matrix<4,N>::floatN& vec )
   {
     ElVisFloat4 temp = { MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0) };
 
@@ -393,7 +396,7 @@ namespace ElVis
   }
 
   // Multiply matrix4x4 by float4
-  RT_HOSTDEVICE inline ElVisFloat4 operator*(const Matrix<4,4>& m, const ElVisFloat4& vec )
+  ELVIS_DEVICE inline ElVisFloat4 operator*(const Matrix<4,4>& m, const ElVisFloat4& vec )
   {
     ElVisFloat4 temp;
     temp.x  = m[ 0] * vec.x +
@@ -418,7 +421,7 @@ namespace ElVis
 
   // Multiply vector by matrix
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE typename Matrix<M,N>::floatN operator*(const typename Matrix<M,N>::floatM& vec, const Matrix<M,N>& m)
+  ELVIS_DEVICE typename Matrix<M,N>::floatN operator*(const typename Matrix<M,N>::floatM& vec, const Matrix<M,N>& m)
   {
     typename Matrix<M,N>::floatN  temp;
     ElVisFloat* t = reinterpret_cast<ElVisFloat*>( &temp );
@@ -438,7 +441,7 @@ namespace ElVis
 
   // Multply matrix by a scalar.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N> operator*(const Matrix<M,N>& m, ElVisFloat f)
+  ELVIS_DEVICE Matrix<M,N> operator*(const Matrix<M,N>& m, ElVisFloat f)
   {
     Matrix<M,N> temp( m );
     temp *= f;
@@ -448,7 +451,7 @@ namespace ElVis
 
   // Multply matrix by a scalar.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N>& operator*=(Matrix<M,N>& m, ElVisFloat f)
+  ELVIS_DEVICE Matrix<M,N>& operator*=(Matrix<M,N>& m, ElVisFloat f)
   {
     for ( unsigned int i = 0; i < M*N; ++i )
       m[i] *= f;
@@ -458,7 +461,7 @@ namespace ElVis
 
   // Multply matrix by a scalar.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N>  operator*(ElVisFloat f, const Matrix<M,N>& m)
+  ELVIS_DEVICE Matrix<M,N>  operator*(ElVisFloat f, const Matrix<M,N>& m)
   {
     Matrix<M,N> temp;
 
@@ -471,7 +474,7 @@ namespace ElVis
 
   // Divide matrix by a scalar.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N> operator/(const Matrix<M,N>& m, ElVisFloat f)
+  ELVIS_DEVICE Matrix<M,N> operator/(const Matrix<M,N>& m, ElVisFloat f)
   {
     Matrix<M,N> temp( m );
     temp /= f;
@@ -481,7 +484,7 @@ namespace ElVis
 
   // Divide matrix by a scalar.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<M,N>& operator/=(Matrix<M,N>& m, ElVisFloat f)
+  ELVIS_DEVICE Matrix<M,N>& operator/=(Matrix<M,N>& m, ElVisFloat f)
   {
     ElVisFloat inv_f = MAKE_FLOAT(1.0) / f;
     for ( unsigned int i = 0; i < M*N; ++i )
@@ -491,7 +494,7 @@ namespace ElVis
 
   // Returns the transpose of the matrix.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE inline Matrix<N,M> Matrix<M,N>::transpose() const
+  ELVIS_DEVICE inline Matrix<N,M> Matrix<M,N>::transpose() const
   {
     Matrix<N,M> ret;
     for( unsigned int row = 0; row < M; ++row )
@@ -502,7 +505,7 @@ namespace ElVis
 
   // Returns the determinant of the matrix.
   template<>
-  RT_HOSTDEVICE inline ElVisFloat Matrix<3,3>::det() const
+  ELVIS_DEVICE inline ElVisFloat Matrix<3,3>::det() const
   {
     const ElVisFloat* m   = _data;
     ElVisFloat d = m[0]*m[4]*m[8] + m[1]*m[5]*m[6] + m[2]*m[3]*m[7]
@@ -512,7 +515,7 @@ namespace ElVis
 
   // Returns the determinant of the matrix.
   template<>
-  RT_HOSTDEVICE inline ElVisFloat Matrix<4,4>::det() const
+  ELVIS_DEVICE inline ElVisFloat Matrix<4,4>::det() const
   {
     const ElVisFloat* m   = _data;
     ElVisFloat d =
@@ -533,7 +536,7 @@ namespace ElVis
 
   // Returns the inverse of the matrix.
   template<>
-  RT_HOSTDEVICE inline Matrix<4,4> Matrix<4,4>::inverse() const
+  ELVIS_DEVICE inline Matrix<4,4> Matrix<4,4>::inverse() const
   {
     Matrix<4,4> dst;
     const ElVisFloat* m   = _data;
@@ -558,7 +561,7 @@ namespace ElVis
     return dst;
   }
 
-  RT_HOSTDEVICE inline void Invert(const Matrix<3,3>& matrix, Matrix<3,3>& dst)
+  ELVIS_DEVICE inline void Invert(const Matrix<3,3>& matrix, Matrix<3,3>& dst)
   {
     const ElVisFloat* rhs   = matrix.getData();
     const ElVisFloat InvDeterm = MAKE_FLOAT(1.0) / matrix.det();
@@ -576,7 +579,7 @@ namespace ElVis
     dst[8] = InvDeterm* (rhs[0]*rhs[4] - rhs[1]*rhs[3]);
   }
 
-  RT_HOSTDEVICE inline Matrix<3,3> Invert(const Matrix<3,3>& matrix)
+  ELVIS_DEVICE inline Matrix<3,3> Invert(const Matrix<3,3>& matrix)
   {
     Matrix<3,3> dst;
     const ElVisFloat* rhs   = matrix.getData();
@@ -600,7 +603,7 @@ namespace ElVis
   // Returns a rotation matrix.
   // This is a static member.
   template<>
-  RT_HOSTDEVICE Matrix<4,4> inline Matrix<4,4>::rotate(const ElVisFloat radians, const ElVisFloat3& axis)
+  ELVIS_DEVICE Matrix<4,4> inline Matrix<4,4>::rotate(const ElVisFloat radians, const ElVisFloat3& axis)
   {
     Matrix<4,4> Mat = Matrix<4,4>::identity();
     ElVisFloat *m = Mat.getData();
@@ -638,7 +641,7 @@ namespace ElVis
   // Returns a translation matrix.
   // This is a static member.
   template<>
-  RT_HOSTDEVICE Matrix<4,4> inline Matrix<4,4>::translate(const ElVisFloat3& vec)
+  ELVIS_DEVICE Matrix<4,4> inline Matrix<4,4>::translate(const ElVisFloat3& vec)
   {
     Matrix<4,4> Mat = Matrix<4,4>::identity();
     ElVisFloat *m = Mat.getData();
@@ -653,7 +656,7 @@ namespace ElVis
   // Returns a scale matrix.
   // This is a static member.
   template<>
-  RT_HOSTDEVICE Matrix<4,4> inline Matrix<4,4>::scale(const ElVisFloat3& vec)
+  ELVIS_DEVICE Matrix<4,4> inline Matrix<4,4>::scale(const ElVisFloat3& vec)
   {
     Matrix<4,4> Mat = Matrix<4,4>::identity();
     ElVisFloat *m = Mat.getData();
@@ -668,7 +671,7 @@ namespace ElVis
   // Returns the identity matrix.
   // This is a static member.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE Matrix<N,N> Matrix<M,N>::identity()
+  ELVIS_DEVICE Matrix<N,N> Matrix<M,N>::identity()
   {
     ElVisFloat temp[N*N];
     for(unsigned int i = 0; i < N*N; ++i)
@@ -680,7 +683,7 @@ namespace ElVis
 
   // Ordered comparison operator so that the matrix can be used in an STL container.
   template<unsigned int M, unsigned int N>
-  RT_HOSTDEVICE bool Matrix<M,N>::operator<( const Matrix<M, N>& rhs ) const
+  ELVIS_DEVICE bool Matrix<M,N>::operator<( const Matrix<M, N>& rhs ) const
   {
     for( unsigned int i = 0; i < N*M; ++i ) {
       if( _data[i] < rhs._data[i] )

@@ -164,9 +164,6 @@ __device__ __forceinline__ ElementFinderPayload FindElementFromFace(const ElVisF
     //ELVIS_PRINTF("FindElementFromFace: ReferenceIntersectionPoint = (%f, %f, %f).\n", findElementPayload.ReferenceIntersectionPoint.x, findElementPayload.ReferenceIntersectionPoint.y, findElementPayload.ReferenceIntersectionPoint.z);
 
 
-    return findElementPayload;
-
-
 //    ElVisFloat3 faceNormal;
 //    ElVisFloat3 pointOnFace = p + payload_v.IntersectionT*direction;
 //    GetFaceNormal(pointOnFace, payload_v.FaceId, faceNormal);

@@ -41,26 +41,26 @@ namespace ElVis
     {
         // Evaluates the nth Jacobi polynomial at point x.
         template<typename DataType>
-            DataType Legendre(int n, const DataType& x);
+           ELVIS_HOST_DEVICE DataType Legendre(int n, const DataType& x);
 
         template<typename DataType>
-            DataType P(int n, int a, int b, const DataType& x);
+            ELVIS_HOST_DEVICE DataType P(int n, int a, int b, const DataType& x);
 
         template<typename DataType>
-            DataType dP(int n, int a, int b, const DataType& x);
+            ELVIS_HOST_DEVICE DataType dP(int n, int a, int b, const DataType& x);
 
         template<typename DataType>
-            DataType ddP(int n, int a, int b, const DataType& x);
+            ELVIS_HOST_DEVICE DataType ddP(int n, int a, int b, const DataType& x);
 
         template<typename DataType>
-            DataType Legendre(int n, const DataType& x)
+            ELVIS_HOST_DEVICE DataType Legendre(int n, const DataType& x)
         {
             return P(n, 0, 0, x);
         }
 
         // Evaluates the nth Jacobi polynomial at point x.
         template<typename DataType>
-        ELVIS_DEVICE DataType P(int n, int a, int b, const DataType& x)
+        ELVIS_HOST_DEVICE DataType P(int n, int a, int b, const DataType& x)
         {
             // From spectral methods page 351.
             if( n == 0 )
@@ -102,7 +102,7 @@ namespace ElVis
         }
 
         template<typename DataType>
-        ELVIS_DEVICE  void P(int n, int a, int b, const DataType& x, DataType* out)
+        ELVIS_HOST_DEVICE  void P(int n, int a, int b, const DataType& x, DataType* out)
         {
             out[0] = DataType(MAKE_FLOAT(1.0));
 
@@ -131,7 +131,7 @@ namespace ElVis
 
 
         template<typename DataType>
-        ELVIS_DEVICE DataType dP(int n, int a, int b, const DataType& x)
+        ELVIS_HOST_DEVICE DataType dP(int n, int a, int b, const DataType& x)
         {
             if( n != 0 )
             {
@@ -141,7 +141,7 @@ namespace ElVis
         }
 
         template<typename DataType>
-        ELVIS_DEVICE void dP(int n, int a, int b, const DataType& x, DataType* out)
+        ELVIS_HOST_DEVICE void dP(int n, int a, int b, const DataType& x, DataType* out)
         {
             for(int i = 0; i <= n; ++i)
             {
@@ -150,7 +150,7 @@ namespace ElVis
         }
 
         template<typename DataType>
-        ELVIS_DEVICE DataType ddP(int n, int a, int b, const DataType& x)
+        ELVIS_HOST_DEVICE DataType ddP(int n, int a, int b, const DataType& x)
         {
             if( n >= 2 )
             {

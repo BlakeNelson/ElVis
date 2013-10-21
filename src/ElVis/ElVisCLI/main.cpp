@@ -49,8 +49,13 @@
 #include <ElVis/Core/DynamicLib.h>
 #include <ElVis/Core/ElVisConfig.h>
 
-#define png_infopp_NULL (png_infopp)NULL
-#define int_p_NULL (int*)NULL
+//#ifndef png_infopp_NULL
+//#define png_infopp_NULL (png_infopp)NULL
+//#endif
+
+//#ifndef int_p_NULL
+//#define int_p_NULL (int*)NULL
+//#endif
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/io/png_io.hpp>

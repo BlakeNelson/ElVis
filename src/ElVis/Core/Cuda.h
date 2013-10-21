@@ -16,7 +16,7 @@
 // The above copyright notice and this permission notice shall be included
 // in all copies or substantial portions of the Software.
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTELVIS_HOST_DEVICEY OF ANY KIND, EXPRESS
 // OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -30,11 +30,14 @@
 #define ELVIS_CORE_CUDA_H
 
 #if defined(ELVIS_OPTIX_MODULE)
-    #define ELVIS_DEVICE __device__ __forceinline__
+    #define ELVIS_DEVICE __device__
+    #define ELVIS_HOST_DEVICE __host__ __device__
 #elif defined(__CUDACC__)
     #define ELVIS_DEVICE __device__
+    #define ELVIS_HOST_DEVICE __host__ __device__
 #else
     #define ELVIS_DEVICE
+    #define ELVIS_HOST_DEVICE
 #endif
 
 enum ElVisError
