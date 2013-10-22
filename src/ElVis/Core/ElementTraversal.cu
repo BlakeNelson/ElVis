@@ -125,8 +125,6 @@ __device__ bool ValidateSegment(const Segment& seg)
   ElVisFloat b = seg.End;
   ElVisFloat d = (b-a);
 
-  ELVIS_PRINTF("ValidateSegment: Ray Direction (%2.10f, %2.10f, %2.10f), segment distance %2.10f and endopints [%2.10f, %2.10f]\n", rayDirection.x, rayDirection.y, rayDirection.z, d, a, b);
-
   if( d == MAKE_FLOAT(0.0) )
   {
     return false;

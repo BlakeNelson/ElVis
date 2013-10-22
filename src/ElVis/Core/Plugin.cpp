@@ -31,6 +31,7 @@
 
 #include <ElVis/Core/Plugin.h>
 #include <ElVis/Core/Util.hpp>
+#include <boost/make_shared.hpp>
 
 namespace ElVis
 {
@@ -40,30 +41,61 @@ namespace ElVis
 
     Plugin::Plugin(const boost::filesystem::path& pluginPath) :
         m_path(pluginPath),
-        m_dynamicLib(pluginPath),
+        m_dynamicLib(),
         m_name(),
         m_volumeFileFilter(),
         m_getNameFunction(0),
         m_loadModelFunction(0),
         m_getVolumeFileFilterFunction(0)
     {
-        m_getNameFunction = m_dynamicLib.GetFunction<GetNameFunction>(GetNameFunctionName);
-        m_loadModelFunction = m_dynamicLib.GetFunction<LoadModelFunction>(LoadModelFunctionName);
-        m_getVolumeFileFilterFunction = m_dynamicLib.GetFunction<GetVolumeFileFilterFunction>(GetVolumeFileFilterFunctionName);
+        BOOST_AUTO(stem, pluginPath.stem().string());
+#ifndef NDEBUG
+        // If we already have a -g, do nothing.  Otherwise, add it.
+        if( stem.size() >= 2 && stem.substr(stem.size()-2, 2) != "-g" )
+        {
+          BOOST_AUTO(extension, pluginPath.extension());
+          std::string newFileName = stem + "-g" + extension.string();
+          BOOST_AUTO(parentPath, pluginPath.parent_path());
+          m_path = parentPath / newFileName;
+        }
+#else
+        // Don't have =-g, add it.
+        if( stem.size() < 2 || stem.substr(stem.size()-2, 2) == "-g" )
+        {
+          BOOST_AUTO(extension, pluginPath.extension());
+          std::string newFileName;
+          if( stem.size() < 2 )
+          {
+            newFileName = stem;
+          }
+          else
+          {
+            newFileName = stem.substr(0, stem.size()-2);
+          }
+          newFileName += extension.string();
+          BOOST_AUTO(parentPath, pluginPath.parent_path());
+          m_path = parentPath / newFileName;
+        }
+#endif
+
+        m_dynamicLib = boost::make_shared<DynamicLib>(m_path);
+        m_getNameFunction = m_dynamicLib->GetFunction<GetNameFunction>(GetNameFunctionName);
+        m_loadModelFunction = m_dynamicLib->GetFunction<LoadModelFunction>(LoadModelFunctionName);
+        m_getVolumeFileFilterFunction = m_dynamicLib->GetFunction<GetVolumeFileFilterFunction>(GetVolumeFileFilterFunctionName);
 
         if( !m_getNameFunction )
         {
-            throw UnableToLoadDynamicLibException("Extenstion at " + pluginPath.string() + " does not have " + GetNameFunctionName);
+            throw UnableToLoadDynamicLibException("Extenstion at " + m_path.string() + " does not have " + GetNameFunctionName);
         }
 
         if( !m_loadModelFunction )
         {
-            throw UnableToLoadDynamicLibException("Extenstion at " + pluginPath.string() + " does not have " + LoadModelFunctionName);
+            throw UnableToLoadDynamicLibException("Extenstion at " + m_path.string() + " does not have " + LoadModelFunctionName);
         }
 
         if( !m_getVolumeFileFilterFunction )
         {
-            throw UnableToLoadDynamicLibException("Extenstion at " + pluginPath.string() + " does not have " + GetVolumeFileFilterFunctionName);
+            throw UnableToLoadDynamicLibException("Extenstion at " + m_path.string() + " does not have " + GetVolumeFileFilterFunctionName);
         }
 
         m_name = m_getNameFunction();

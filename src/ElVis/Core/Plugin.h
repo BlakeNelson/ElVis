@@ -70,7 +70,7 @@ namespace ElVis
             typedef ElVis::Model* (*LoadModelFunction)(const char* path);
 
             boost::filesystem::path m_path;
-            DynamicLib m_dynamicLib;
+            boost::shared_ptr<DynamicLib> m_dynamicLib;
             std::string m_name;
             std::string m_volumeFileFilter;
 
