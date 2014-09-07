@@ -145,38 +145,38 @@ namespace ElVis
             void do_serialize(Archive& ar, const unsigned int version,
                 typename boost::enable_if<typename Archive::is_saving>::type* p = 0)
             {
-                // On output, write the path to the model.  If possible, make
-                // it relative to the execution directory for maximum portability.
-                auto path = m_model->GetPath();
+//                // On output, write the path to the model.  If possible, make
+//                // it relative to the execution directory for maximum portability.
+//                auto path = m_model->GetPath();
 
-                QDir dir;
-                std::string relativeModelPath = dir.relativeFilePath(QString(path.c_str())).toStdString();
-                ar & BOOST_SERIALIZATION_NVP(relativeModelPath);
+//                QDir dir;
+//                std::string relativeModelPath = dir.relativeFilePath(QString(path.c_str())).toStdString();
+//                ar & BOOST_SERIALIZATION_NVP(relativeModelPath);
 
-                auto pluginName = m_model->GetPlugin()->GetName();
-                ar & BOOST_SERIALIZATION_NVP(pluginName);
+//                auto pluginName = m_model->GetPlugin()->GetName();
+//                ar & BOOST_SERIALIZATION_NVP(pluginName);
             }
 
             template<typename Archive>
             void do_serialize(Archive& ar, const unsigned int version,
                 typename boost::enable_if<typename Archive::is_loading>::type* p = 0)
             {
-                // On input, if there is a model defined, load it.  We will need the
-                // plugin pointer as well.  Get it by name, and assume it is already
-                // loaded.  Future iterations can relax this restriction.
+//                // On input, if there is a model defined, load it.  We will need the
+//                // plugin pointer as well.  Get it by name, and assume it is already
+//                // loaded.  Future iterations can relax this restriction.
 
 
-                // When serializing, we expect a model to already be loaded.
-                if( m_model )
-                {
-                    throw new std::runtime_error("Can't load state with a model already loaded.");
-                }
+//                // When serializing, we expect a model to already be loaded.
+//                if( m_model )
+//                {
+//                    throw new std::runtime_error("Can't load state with a model already loaded.");
+//                }
 
 
-                m_optixDataDirty = true;
-                m_tracePixelDirty = true;
-                m_enableTraceDirty = true;
-                OnSceneChanged(*this);
+//                m_optixDataDirty = true;
+//                m_tracePixelDirty = true;
+//                m_enableTraceDirty = true;
+//                OnSceneChanged(*this);
             }
 
             template<typename Archive>
