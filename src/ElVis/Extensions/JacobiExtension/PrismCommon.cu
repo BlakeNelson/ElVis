@@ -191,7 +191,8 @@ ELVIS_DEVICE void CalculateInversePrismJacobian(const ElVisFloat4* prismVertexBu
     inverse[8] = -(J[0]*J[4]-J[1]*J[3])/determinant;
 }
 
-ELVIS_DEVICE TensorPoint TransformPrismReferenceToTensor(const ReferencePoint& p)
+ELVIS_DEVICE ElVisError TransformPrismReferenceToTensor(const ReferencePoint& p,
+                                                         TensorPoint& result)
 {
     ElVisFloat r = p.x;
     ElVisFloat s = p.y;
@@ -203,7 +204,7 @@ ELVIS_DEVICE TensorPoint TransformPrismReferenceToTensor(const ReferencePoint& p
         ElVisFloat b = s;
         ElVisFloat c = t;
 
-        return MakeFloat3(a,b,c);
+        result = MakeFloat3(a,b,c);
     }
     else
     {
@@ -211,8 +212,9 @@ ELVIS_DEVICE TensorPoint TransformPrismReferenceToTensor(const ReferencePoint& p
         // Pick a tensor point on the corresponding
         // face.
         // So just pick a.
-        return MakeFloat3(MAKE_FLOAT(0.0), s, t);
+        result = MakeFloat3(MAKE_FLOAT(0.0), s, t);
     }
+    return eNoError;
 
 }
 
@@ -377,11 +379,12 @@ ELVIS_DEVICE ReferencePoint TransformPrismWorldToReference(const ElVisFloat4* pr
     return result;
 }
 
-ELVIS_DEVICE TensorPoint TransformPrismWorldToTensor(const ElVisFloat4* prismVertexBuffer, int prismId, const WorldPoint& p)
+ELVIS_DEVICE ElVisError TransformPrismWorldToTensor(const ElVisFloat4* prismVertexBuffer, int prismId, const WorldPoint& p,
+                                                     TensorPoint& result)
 {
+    if( prismId < 0 ) return eInvalidElementId;
     ReferencePoint ref = TransformPrismWorldToReference(prismVertexBuffer, prismId, p);
-    TensorPoint result = TransformPrismReferenceToTensor(ref);
-    return result;
+    return TransformPrismReferenceToTensor(ref, result);
 }
 
 

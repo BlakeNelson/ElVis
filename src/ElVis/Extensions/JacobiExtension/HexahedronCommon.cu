@@ -184,8 +184,10 @@ __device__ void calculateInverseJacobian(const ElVisFloat4* hexVertexBuffer, int
 
 }
 
-__device__ __forceinline__ ReferencePoint TransformWorldToReference(const ElVisFloat4* hexVertexBuffer, int hexId, const WorldPoint& p)
+__device__ __forceinline__ ElVisError TransformWorldToReference(const ElVisFloat4* hexVertexBuffer, int hexId, const WorldPoint& p,
+                                                                    ReferencePoint& result)
 {
+    ElVisError errorCode = eNoError;
     //int exact = 0;
     //int runs = 0;
     //int iteration = 0;
@@ -197,7 +199,7 @@ __device__ __forceinline__ ReferencePoint TransformWorldToReference(const ElVisF
 
     // So we first need an initial guess.  We can probably make this smarter, but
     // for now let's go with 0,0,0.
-    ReferencePoint result = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
+    result = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
 
     //ElVisFloat AlignmentTestMatrix[64];
 
@@ -223,7 +225,7 @@ __device__ __forceinline__ ReferencePoint TransformWorldToReference(const ElVisF
         bool test = fabsf(r_adjust) < tolerance;
         test &= fabsf(s_adjust) < tolerance;
         test &= fabsf(t_adjust) < tolerance;
-        if( test ) return result;
+        if( test ) return eNoError;
 
         //ReferencePoint pointAdjust = MakeFloat3(r_adjust, s_adjust, t_adjust);
         //ReferencePoint tempResult = result - pointAdjust;
@@ -252,13 +254,17 @@ __device__ __forceinline__ ReferencePoint TransformWorldToReference(const ElVisF
     }
     while( numIterations < MAX_ITERATIONS);
 
-    return result;
+    if( numIterations >= MAX_ITERATIONS )
+    {
+        errorCode =eConvergenceFailure;
+    }
+    return errorCode;
 }
 
-__device__ __forceinline__ TensorPoint TransformWorldToTensor(const ElVisFloat4* hexVertexBuffer, int hexId, const WorldPoint& p)
+__device__ __forceinline__ ElVisError TransformWorldToTensor(const ElVisFloat4* hexVertexBuffer, int hexId, const WorldPoint& p, TensorPoint& result)
 {
-    ReferencePoint ref = TransformWorldToReference(hexVertexBuffer, hexId, p);
-    return ref;
+    if( hexId < 0 ) return eInvalidElementId;
+    return TransformWorldToReference(hexVertexBuffer, hexId, p, result);
 }
 
 template<typename T>

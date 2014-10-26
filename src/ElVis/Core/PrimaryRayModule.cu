@@ -123,7 +123,6 @@ RT_PROGRAM void PrimaryRayMissed()
 
 RT_PROGRAM void ExceptionProgram()
 {
-  rtPrintf("Handling OptiX exception.  Details:\n");
   rtPrintExceptionDetails();
 }
 

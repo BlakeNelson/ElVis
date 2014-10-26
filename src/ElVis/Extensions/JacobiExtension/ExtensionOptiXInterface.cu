@@ -80,19 +80,31 @@ ELVIS_DEVICE ElVisError EvaluateFace(GlobalFaceIdx globalFaceIdx, const FaceRefe
 ELVIS_DEVICE ElVisError ConvertWorldToReferenceSpaceOptiX(int elementId, int elementType, const WorldPoint& wp,
                                                           ElVis::ReferencePointParameterType referenceType, ReferencePoint& result)
 {
+    if( elementId < 0 ) return eInvalidElementId;
     ElVisError returnVal = eNoError;
     if( elementType == 0 )
     {
-        result = TransformWorldToTensor(&HexVertexBuffer[0], elementId, wp);
+        returnVal = TransformWorldToTensor(&HexVertexBuffer[0], elementId, wp, result);
     }
     else if( elementType == 1 )
     {
-        result = TransformPrismWorldToTensor(&PrismVertexBuffer[0],elementId, wp);
+        returnVal = TransformPrismWorldToTensor(&PrismVertexBuffer[0],elementId, wp, result);
     }
     else
     {
         returnVal = eInvalidElementType;
     }
+
+    if( result.x < MAKE_FLOAT(-1.0) ||
+        result.y < MAKE_FLOAT(-1.0) ||
+        result.z < MAKE_FLOAT(-1.0) ||
+        result.x > MAKE_FLOAT(1.0) ||
+        result.y > MAKE_FLOAT(1.0) ||
+        result.z > MAKE_FLOAT(1.0) )
+    {
+        returnVal = ePointOutsideElement;
+    }
+
     return returnVal;
 }
 
