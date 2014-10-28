@@ -90,9 +90,10 @@ MACRO( ADD_ELVIS_BOOST_TEST_OBJECTS UNIT_TEST BOOST_UNIT_TEST_OBJECTS )
   #Add the coverage target
   ADD_COVERAGE_TEST( ${UNIT_TEST}_coverage ${UNIT_TEST} )
   
-  #Add the callgrind target
-  ADD_CALLGRIND_TEST( ${UNIT_TEST} )
-   
+  IF( NOT WIN32 )
+    #Add the callgrind target
+    ADD_CALLGRIND_TEST( ${UNIT_TEST} )
+  ENDIF() 
 ENDMACRO()
 
 

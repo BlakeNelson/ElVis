@@ -95,12 +95,12 @@ ELVIS_DEVICE ElVisError ConvertWorldToReferenceSpaceOptiX(int elementId, int ele
         returnVal = eInvalidElementType;
     }
 
-    if( result.x < MAKE_FLOAT(-1.0) ||
-        result.y < MAKE_FLOAT(-1.0) ||
-        result.z < MAKE_FLOAT(-1.0) ||
-        result.x > MAKE_FLOAT(1.0) ||
-        result.y > MAKE_FLOAT(1.0) ||
-        result.z > MAKE_FLOAT(1.0) )
+    if( result.x < MAKE_FLOAT(-1.1) ||
+        result.y < MAKE_FLOAT(-1.1) ||
+        result.z < MAKE_FLOAT(-1.1) ||
+        result.x > MAKE_FLOAT(1.1) ||
+        result.y > MAKE_FLOAT(1.1) ||
+        result.z > MAKE_FLOAT(1.1) )
     {
         returnVal = ePointOutsideElement;
     }

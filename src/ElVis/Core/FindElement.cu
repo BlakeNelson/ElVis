@@ -113,13 +113,19 @@ ElementFinderPayload findElementFromFace(const ElVisFloat3& p, const ElVisFloat3
 //        id[0] = id[1];
 //    }
 
+    if( id[0].Id == -1 && id[1].Id == -1 )
+    {
+      return findElementPayload;
+    }
+
     ReferencePoint invertedPoint;
 
     unsigned int foundIdx = 0;
+    ELVIS_PRINTF("Checking point inversion for element %d type %d and element %d, type %d.\n", 
+      id[0].Id, id[0].Type, id[1].Id, id[1].Type);
     ElVisError element0Result = ConvertWorldToReferenceSpaceOptiX(
                 id[0].Id, id[0].Type, p, ElVis::eReferencePointIsInvalid,
                 invertedPoint);
-    ELVIS_PRINTF("Looking for face. %d", 1);
     if( element0Result != eNoError )
     {
         ElVisError element1Result = ConvertWorldToReferenceSpaceOptiX(
@@ -133,6 +139,7 @@ ElementFinderPayload findElementFromFace(const ElVisFloat3& p, const ElVisFloat3
         {
             ELVIS_PRINTF("Inversion failed.  Id[0] = %d, Id[1] = %d, error[0] = %d, error[1] = %d.\n",
                          id[0].Id, id[1].Id, element0Result, element1Result);
+            return findElementPayload;
             //rtThrow(RT_EXCEPTION_USER + 200);
         }
     }
