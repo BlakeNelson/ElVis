@@ -26,34 +26,50 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-FIND_PACKAGE(OptiX REQUIRED)
-
-macro(OPTIX_add_sample_shared_library target_name)
-  ADD_ELVIS_LIBRARY(${target_name} SHARED
-    ${ARGN}
-    )
-
-  set(cuda_file_list $ENV{cuda_file_list})
-  foreach(file ${ARGN})
-    #message("file = ${file}")
-    if(file MATCHES ".*cu$")
-      list(APPEND cuda_file_list ${file})
+function(postBuildCopy theTarget copyList toPath)
+  if(IS_ABSOLUTE ${toPath}) # absolute toPath
+    set(dest ${toPath})
+  else() # toPath is relative to target location
+    set(dest $<TARGET_FILE_DIR:${theTarget}>/${toPath})
+  endif()
+  if(NOT EXISTS ${dest})
+    add_custom_command(TARGET ${theTarget} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${dest})
+  endif()
+  foreach(_item ${copyList})
+    # Handle target separately.
+    if(TARGET ${_item})
+      set(_item $<TARGET_FILE:${_item}>)
+    endif()
+    if(${_item} STREQUAL optimized)
+      if(CMAKE_CONFIGURATION_TYPES)
+        set(CONDITION1 IF $(Configuration)==Release)
+        set(CONDITION2 IF $(Configuration)==RelWithDebInfo)
+      endif()
+    elseif(${_item} STREQUAL debug)
+      if(CMAKE_CONFIGURATION_TYPES)
+        set(CONDITION1 IF $(Configuration)==Debug)
+      endif()
+    else()
+      if(IS_DIRECTORY ${_item})
+        get_filename_component(dir ${_item} NAME)
+        if(NOT EXISTS ${dest}/${dir})
+          add_custom_command(TARGET ${theTarget} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${_item} ${dest}/${dir})
+        endif()
+      else()
+        set(COPY_CMD ${CMAKE_COMMAND} -E copy_if_different ${_item} ${dest})
+        if(CONDITION2)
+          list(APPEND CONDITION1 "(")
+          set(ELSECONDITION ")" ELSE "(" ${CONDITION2} "(" ${COPY_CMD} "))")
+          set(CONDITION2)
+        else()
+          set(ELSECONDITION)
+        endif()
+        add_custom_command(TARGET ${theTarget} POST_BUILD
+          COMMAND ${CONDITION1} ${COPY_CMD} ${ELSECONDITION})
+      endif()
+      set(CONDITION1)
     endif()
   endforeach()
-  # Remove duplicates to keep the list small
-  list(REMOVE_DUPLICATES cuda_file_list)
-  # Don't forget the quotes around ${cuda_file_list}, otherwise you will only
-  # get the first item in the list set.
-  set(ENV{cuda_file_list} "${cuda_file_list}")
-
-  target_link_libraries( ${target_name}
-    ${SUTIL_LIB}
-    optix
-    )
-
-  #add_dependencies(${target_name} sample-ptx)
-
-  #add_perforce_to_target( ${target_name} )
-
-endmacro()
-set(ENV{cuda_file_list})
+endfunction()
