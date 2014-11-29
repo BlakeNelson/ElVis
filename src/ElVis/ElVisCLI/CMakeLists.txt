@@ -267,6 +267,44 @@ IF( ELVIS_ENABLE_ProjectX_EXTENSION )
     )
 ENDIF()
 
+IF( ELVIS_ENABLE_ProjectX_EXTENSION )
+    #GET_PROPERTY(PXExtensionPath TARGET ProjectXExtension PROPERTY RELEASE_LOCATION)
+    SET( PXExtensionPath $<TARGET_FILE:ProjectXExtension> )
+    
+    ADD_ELVIS_REGTEST(Delta
+        --TestName Generic
+        --ModelPath "/home/bnelson/Volumes/delta_P2_a10_Dual_3.pxa"
+        --Module ${PXExtensionPath}
+        --Width 785
+        --Height 535
+        --Eye 0.46861881 0.15136441 0.85699716 --Up 0.13421315 0.49216154 -0.00539880 --At 0.62935914 0.12552177 -0.01092594
+        --ColorMap "${CMAKE_SOURCE_DIR}/../ColorMaps/Rainbow.xml"
+        --ColorMapMin 0.99
+        --ColorMapMax 1.01
+        --CutPlaneNormal 0.0 0.0 1.0
+        --CutPlanePoint 0.1 2.7 0.0
+        --OutFile Delta
+        --CompareFile "${BaselineDir}/Delta"
+    )
+
+    ADD_ELVIS_REGTEST(TwoD
+        --TestName Generic
+        --ModelPath "/home/bnelson/Volumes/naca_Euler2d_TEST_P0_Primal_0.pxa"
+        --Module ${PXExtensionPath}
+        --Width 785
+        --Height 535
+        --Eye 0.30413063 0.55470730 0.88456224 --At 0.27821326 0.02186687 -0.02083301 --Up 0.13154831 2.86757187 -1.72860828
+        --ColorMap "${CMAKE_SOURCE_DIR}/../ColorMaps/Rainbow.xml"
+        --ColorMapMin 0.98
+        --ColorMapMax 1.04
+        --CutPlaneNormal 0.0 0.0 1.0
+        --CutPlanePoint 0.0 0.0 0.0
+        --OutFile TwoD
+        --CompareFile "${BaselineDir}/TwoD"
+    )
+
+ENDIF()
+
 IF( ELVIS_ENABLE_NEKTAR++_EXTENSION )
     #GET_PROPERTY(ExtensionPath TARGET NektarPlusPlusExtension PROPERTY RELEASE_LOCATION)
     SET( ExtensionPath $<TARGET_FILE:NektarPlusPlusExtension> )
