@@ -41,7 +41,7 @@ namespace ElVis
     }
 
 
-    optixu::Geometry Cylinder::DoCreateOptiXGeometry(SceneView* view)
+    optixu::Geometry Cylinder::CreateOptiXGeometry(SceneView* view)
     {
         optixu::Context context = view->GetContext();
         optixu::Geometry result = context->createGeometry();
@@ -69,7 +69,7 @@ namespace ElVis
             return;
         }
         
-        optixu::Geometry geom = DoCreateOptiXGeometry(view);
+        optixu::Geometry geom = CreateOptiXGeometry(view);
         transform = context->createTransform();
         transform->setMatrix(false, m_transformationMatrix.getData(), 0);
         

@@ -69,7 +69,7 @@ namespace ElVis
     }
 
 
-    optixu::Geometry Plane::DoCreateOptiXGeometry(SceneView* view)
+    optixu::Geometry Plane::CreateOptiXGeometry(SceneView* view)
     {
         optixu::Context context = view->GetContext();
         optixu::Geometry result = context->createGeometry();
@@ -109,7 +109,7 @@ namespace ElVis
 
         group->setChildCount(1);
         optixu::GeometryInstance instance = context->createGeometryInstance();
-        optixu::Geometry geom = DoCreateOptiXGeometry(view);
+        optixu::Geometry geom = CreateOptiXGeometry(view);
         instance->setGeometry(geom);
 
         m_group = group;

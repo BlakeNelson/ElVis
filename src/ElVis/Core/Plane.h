@@ -62,8 +62,6 @@ namespace ElVis
             ELVIS_EXPORT void SetPoint(const WorldPoint& value) { m_point = value; }
 
         protected:
-
-            ELVIS_EXPORT virtual optixu::Geometry DoCreateOptiXGeometry(SceneView* view);
             ELVIS_EXPORT virtual optixu::Material DoCreateMaterial(SceneView* view);
             ELVIS_EXPORT virtual void DoCreateNode(SceneView* view,
                 optixu::Transform& transform, optixu::GeometryGroup& group);
@@ -74,6 +72,7 @@ namespace ElVis
             static bool Initialized;
             static bool InitializeStatic();
             static void LoadPrograms(const std::string& prefix, optixu::Context context);
+            optixu::Geometry CreateOptiXGeometry(SceneView* view);
 
             void CopyDataToOptiX();
             void HandlePointChanged(const WorldPoint& p);

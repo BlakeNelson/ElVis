@@ -61,14 +61,6 @@ namespace ElVis
     }
 
 
-    optixu::Geometry FaceObject::DoCreateOptiXGeometry(SceneView* view)
-    {
-        // TODO - the fact that this should not be called indicates an error in
-        // class structure here.
-        assert(0);
-        return optixu::Geometry();
-    }
-
     optixu::Material FaceObject::DoCreateMaterial(SceneView* view)
     {
         optixu::Context context = view->GetContext();

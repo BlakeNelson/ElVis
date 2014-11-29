@@ -64,9 +64,6 @@ namespace ElVis
             Object& operator=(const Object&);
 
             // Deprecated
-            ELVIS_EXPORT virtual optixu::Geometry DoCreateOptiXGeometry(SceneView* view) = 0;
-
-            // Deprecated
             ELVIS_EXPORT virtual optixu::Material DoCreateMaterial(SceneView* view) = 0;
 
             // Creates the geometry and instances required for this object to enter 

@@ -65,7 +65,7 @@ namespace ElVis
             
         protected:
             
-            virtual optixu::Geometry DoCreateOptiXGeometry(SceneView* view);
+            
             virtual optixu::Material DoCreateMaterial(SceneView* view);
             virtual void DoCreateNode(SceneView* view, 
                 optixu::Transform& transform, optixu::GeometryGroup& group);
@@ -73,6 +73,7 @@ namespace ElVis
         private:
             ELVIS_EXPORT Cylinder(const Cylinder& rhs);
             Cylinder& operator=(const Cylinder& rhs);
+            optixu::Geometry CreateOptiXGeometry(SceneView* view);
 
             template<typename Archive>
             void serialize(Archive& ar, const unsigned int version)

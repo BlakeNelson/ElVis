@@ -64,7 +64,7 @@ namespace ElVis
 
         protected:
             
-            ELVIS_EXPORT virtual optixu::Geometry DoCreateOptiXGeometry(SceneView* view);
+            
             ELVIS_EXPORT virtual optixu::Material DoCreateMaterial(SceneView* view);
             ELVIS_EXPORT virtual void DoCreateNode(SceneView* view, 
                 optixu::Transform& transform, optixu::GeometryGroup& group);
@@ -72,6 +72,7 @@ namespace ElVis
         private:
             Triangle& operator=(const Triangle& rhs);
             ELVIS_EXPORT Triangle(const Triangle& rhs);
+            ELVIS_EXPORT virtual optixu::Geometry CreateOptiXGeometry(SceneView* view);
 
             optixu::GeometryGroup m_group;
             optixu::GeometryInstance m_instance;
