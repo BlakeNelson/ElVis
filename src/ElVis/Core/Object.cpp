@@ -32,11 +32,6 @@
 
 namespace ElVis
 {
-    optixu::Geometry Object::CreateOptiXGeometry(SceneView* view)
-    {
-        return DoCreateOptiXGeometry(view);
-    }
-
     optixu::Material Object::CreateMaterial(SceneView* view)
     {
         return DoCreateMaterial(view);

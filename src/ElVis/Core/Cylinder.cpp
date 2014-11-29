@@ -69,7 +69,7 @@ namespace ElVis
             return;
         }
         
-        optixu::Geometry geom = CreateOptiXGeometry(view);
+        optixu::Geometry geom = DoCreateOptiXGeometry(view);
         transform = context->createTransform();
         transform->setMatrix(false, m_transformationMatrix.getData(), 0);
         

@@ -199,7 +199,7 @@ IF( ELVIS_ENABLE_JACOBI_EXTENSION )
         --CompareFile "${BaselineDir}/BulletCutSurfaceP3Baseline"
     )
 
-    ADD_TEST( VolumeRenderBulletFull 
+    ADD_ELVIS_REGTEST( VolumeRenderBulletFull 
         --TestName VolumeRenderBullet
         --ModelPath "${CMAKE_SOURCE_DIR}/../volumes/bulletH1P2.dat"
         --Module ${JacobiExtensionPath}

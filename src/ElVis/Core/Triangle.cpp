@@ -83,7 +83,7 @@ namespace ElVis
 
         group->setChildCount(1);
         optixu::GeometryInstance instance = context->createGeometryInstance();
-        optixu::Geometry geom = CreateOptiXGeometry(view);
+        optixu::Geometry geom = DoCreateOptiXGeometry(view);
         instance->setGeometry(geom);
 
         SetFloat(instance["TriangleVertex0"], static_cast<ElVisFloat>(m_p0.x()), static_cast<ElVisFloat>(m_p0.y()), static_cast<ElVisFloat>(m_p0.z()));

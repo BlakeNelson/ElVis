@@ -49,7 +49,6 @@ namespace ElVis
 
             virtual ~Object() {}
 
-            ELVIS_EXPORT optixu::Geometry CreateOptiXGeometry(SceneView* view);
             ELVIS_EXPORT optixu::Material CreateMaterial(SceneView* view);
 
             // Creates a single branch in the tree for this object.  The return is anticipated

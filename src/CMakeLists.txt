@@ -55,7 +55,7 @@ ENDIF()
 SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMake )
 
 INCLUDE(CMake/SetupOptiX.cmake)
-
+INCLUDE(CMake/ElVisCommon.cmake)
 #Need to set compiler flags after SetupOptix
 INCLUDE(CMake/CompilerFlags.cmake)
 
