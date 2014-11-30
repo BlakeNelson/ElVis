@@ -51,16 +51,6 @@ namespace ElVis
         return result;
     }
 
-    optixu::Material Triangle::DoCreateMaterial(SceneView* view)
-    {
-        optixu::Context context = view->GetContext();
-        m_material = context->createMaterial();
-        // This material and ray type 0 uses the cut surface closest hit program.
-        optixu::Program closestHit = PtxManager::LoadProgram(context, view->GetPTXPrefix(), "TriangleClosestHit");
-        m_material->setClosestHitProgram(0, closestHit);
-        //m_material["ObjectLightingType"]->setInt(static_cast<int>(GetLightingType()));
-        return m_material;
-    }
 
     void Triangle::DoCreateNode(SceneView* view, 
                 optixu::Transform& transform, optixu::GeometryGroup& group)

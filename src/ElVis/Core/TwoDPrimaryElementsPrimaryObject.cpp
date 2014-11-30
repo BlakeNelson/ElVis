@@ -34,6 +34,8 @@
 
 namespace ElVis
 {
+    optixu::Material TwoDPrimaryElementsPrimaryObject::Material;
+
     TwoDPrimaryElementsPrimaryObject::TwoDPrimaryElementsPrimaryObject()
     {
     }
@@ -46,7 +48,12 @@ namespace ElVis
 
     optixu::Material TwoDPrimaryElementsPrimaryObject::GetMaterial(SceneView* view)
     {
-        return PrimaryRayObject::GetObject()->CreateMaterial(view);
+      if( !Material.get() ) 
+      {
+          auto model = view->GetScene()->GetModel();
+          Material = model->Get2DPrimaryGeometryMaterial(view);
+      }
+      return Material;
     }
 }
 

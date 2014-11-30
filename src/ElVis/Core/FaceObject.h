@@ -59,7 +59,6 @@ namespace ElVis
 
         protected:
 
-            ELVIS_EXPORT virtual optixu::Material DoCreateMaterial(SceneView* view);
             ELVIS_EXPORT virtual void DoCreateNode(SceneView* view,
                 optixu::Transform& transform, optixu::GeometryGroup& group);
 

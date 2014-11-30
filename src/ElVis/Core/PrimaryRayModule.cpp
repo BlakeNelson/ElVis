@@ -107,13 +107,12 @@ namespace ElVis
 
                 (*iter)->CreateNode(view, transform, geometryGroup);
 
-                bool test = true;
-                if( transform.get() && test )
+                if( transform.get() )
                 {
                     m_group->setChild(curChild, transform);
                     ++curChild;
                 }
-                else if ( geometryGroup.get() && test )
+                else if ( geometryGroup.get())
                 {
                     m_group->setChild(curChild, geometryGroup);
                     ++curChild;
@@ -123,9 +122,6 @@ namespace ElVis
                     --numSurfaces;
                     m_group->setChildCount(static_cast<unsigned int>(numSurfaces));
                 }
-
-
-                
             }
 
             m_group->getAcceleration()->markDirty();

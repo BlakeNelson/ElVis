@@ -66,7 +66,6 @@ namespace ElVis
         protected:
             
             
-            virtual optixu::Material DoCreateMaterial(SceneView* view);
             virtual void DoCreateNode(SceneView* view, 
                 optixu::Transform& transform, optixu::GeometryGroup& group);
 

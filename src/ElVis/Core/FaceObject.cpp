@@ -60,17 +60,6 @@ namespace ElVis
     {
     }
 
-
-    optixu::Material FaceObject::DoCreateMaterial(SceneView* view)
-    {
-        optixu::Context context = view->GetContext();
-        m_material = context->createMaterial();
-        // This material and ray type 0 uses the cut surface closest hit program.
-//        optixu::Program closestHit = PtxManager::LoadProgram(context, view->GetPTXPrefix(), "FaceObjectClosestHit");
-//        m_material->setClosestHitProgram(0, closestHit);
-        return m_material;
-    }
-
     void FaceObject::EnableFace(int faceId)
     {
         if( m_faceIds.find(faceId) != m_faceIds.end() )

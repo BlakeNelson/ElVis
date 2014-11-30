@@ -32,10 +32,12 @@
 
 namespace ElVis
 {
-    optixu::Material Object::CreateMaterial(SceneView* view)
+    Object::Object() :
+      OnObjectChanged()
     {
-        return DoCreateMaterial(view);
     }
+
+    Object::~Object() {}
 
     void Object::CreateNode(SceneView* view, 
                 optixu::Transform& transform, optixu::GeometryGroup& group)

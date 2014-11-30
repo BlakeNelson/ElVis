@@ -95,17 +95,6 @@ namespace ElVis
     {
     }
 
-    optixu::Material TwoDPrimaryElements::DoCreateMaterial(SceneView* view)
-    {
-        if( !m_material.get() ) 
-        {
-            optixu::Context context = view->GetContext();
-            auto model = m_scene->GetModel();
-            m_material = model->Get2DPrimaryGeometryMaterial(view);
-        }
-        return m_material;
-    }
-
     void TwoDPrimaryElements::DoCreateNode(SceneView* view,
                 optixu::Transform& transform, optixu::GeometryGroup& group)
     {

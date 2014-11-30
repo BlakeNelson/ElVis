@@ -77,20 +77,7 @@ namespace ElVis
 
         result->setBoundingBoxProgram(BoundingProgram);
         result->setIntersectionProgram(IntersectionProgram);
-//        result->setBoundingBoxProgram( PtxManager::LoadProgram(context, view->GetPTXPrefix(), "Plane_bounding") );
-//        result->setIntersectionProgram( PtxManager::LoadProgram(context, view->GetPTXPrefix(), "Plane_intersect") );
         return result;
-    }
-
-    optixu::Material Plane::DoCreateMaterial(SceneView* view)
-    {
-        optixu::Context context = view->GetContext();
-        m_material = context->createMaterial();
-        // This material and ray type 0 uses the cut surface closest hit program.
-        optixu::Program closestHit = PtxManager::LoadProgram(context, view->GetPTXPrefix(), "PlaneClosestHit");
-        m_material->setClosestHitProgram(0, closestHit);
-        //m_material["ObjectLightingType"]->setInt(static_cast<int>(GetLightingType()));
-        return m_material;
     }
 
     void Plane::DoCreateNode(SceneView* view,

@@ -52,6 +52,8 @@ namespace ElVis
         private:
             TwoDPrimaryElementsPrimaryObject& operator=(const TwoDPrimaryElementsPrimaryObject& rhs);
             ELVIS_EXPORT TwoDPrimaryElementsPrimaryObject(const TwoDPrimaryElementsPrimaryObject& rhs);
+
+            static optixu::Material Material;
     };
 }
 

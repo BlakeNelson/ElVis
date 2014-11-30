@@ -52,12 +52,6 @@ namespace ElVis
         return result;
     }
 
-    optixu::Material Cylinder::DoCreateMaterial(SceneView* view)
-    {
-        optixu::Context context = view->GetContext();
-        return context->createMaterial();
-    }
-
     void Cylinder::DoCreateNode(SceneView* view, 
                 optixu::Transform& transform, optixu::GeometryGroup& group)
     {

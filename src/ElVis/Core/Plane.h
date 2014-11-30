@@ -49,6 +49,8 @@ namespace ElVis
     {
         public:
             friend class boost::serialization::access;
+
+        public:
             ELVIS_EXPORT Plane();
             ELVIS_EXPORT Plane(const WorldPoint& normal, const WorldPoint& p);
             ELVIS_EXPORT virtual ~Plane() {}
@@ -57,18 +59,17 @@ namespace ElVis
             ELVIS_EXPORT const WorldPoint& GetPoint() const { return m_point; }
             ELVIS_EXPORT WorldPoint& GetNormal() { return m_normal; }
             ELVIS_EXPORT WorldPoint& GetPoint() { return m_point; }
-
             ELVIS_EXPORT void SetNormal(const WorldPoint& value) { m_normal = value; }
             ELVIS_EXPORT void SetPoint(const WorldPoint& value) { m_point = value; }
 
         protected:
-            ELVIS_EXPORT virtual optixu::Material DoCreateMaterial(SceneView* view);
             ELVIS_EXPORT virtual void DoCreateNode(SceneView* view,
                 optixu::Transform& transform, optixu::GeometryGroup& group);
 
         private:
             Plane& operator=(const Plane& rhs);
             ELVIS_EXPORT Plane(const Plane& rhs);
+
             static bool Initialized;
             static bool InitializeStatic();
             static void LoadPrograms(const std::string& prefix, optixu::Context context);

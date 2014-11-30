@@ -39,21 +39,24 @@
 namespace ElVis
 {
     class SceneView;
+
+    // An Object rougly corresponds to an OptiX geometry node.  It represents
+    // a geometric primitive against which rays can be intersected.
     class Object
     {
         public:
             friend class boost::serialization::access;
-            Object()
-            {
-            }
 
-            virtual ~Object() {}
+        public:
+            Object();
+            virtual ~Object() = 0;
 
-            ELVIS_EXPORT optixu::Material CreateMaterial(SceneView* view);
-
-            // Creates a single branch in the tree for this object.  The return is anticipated
-            // to be either the group or the transform, and will be added to an optixu::Group
-            // as a child.
+            /// Creates a node in the OptiX graph.  
+            /// \param[in] view The view for which this node will be created.
+            /// \param[out] transform If set, the return value of this method
+            ///             is a transform node.
+            /// \param[out] group If set, the return value of this method is a 
+            ///             geometry group.
             ELVIS_EXPORT void CreateNode(SceneView* view, 
                 optixu::Transform& transform, optixu::GeometryGroup& group);
 
@@ -63,15 +66,9 @@ namespace ElVis
             Object(const Object& rhs);
             Object& operator=(const Object&);
 
-            // Deprecated
-            ELVIS_EXPORT virtual optixu::Material DoCreateMaterial(SceneView* view) = 0;
-
-            // Creates the geometry and instances required for this object to enter 
-            // the scene graph.  Subclasses can fill in a default geometry if desired, 
-            // but callers may replace it.
+            /// See CreateNode
             ELVIS_EXPORT virtual void DoCreateNode(SceneView* view, 
                 optixu::Transform& transform, optixu::GeometryGroup& group) = 0;
-
 
         private:
             template<typename Archive>
