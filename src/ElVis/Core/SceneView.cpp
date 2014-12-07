@@ -335,14 +335,14 @@ namespace ElVis
             t.Start();
             GetScene()->GetContext()->compile();
             t.Stop();
-            //std::cout << "Time to Compile: " << t.TimePerTest(1) << std::endl;
+            std::cout << "Time to Compile: " << t.TimePerTest(1) << std::endl;
 
             BOOST_FOREACH(boost::shared_ptr<RenderModule>  module, m_allRenderModules)
             {
                 if( module->GetEnabled() )
                 {
                     std::string moduleName = typeid(*module).name();
-                    //printf("Starting Module %s.\n", moduleName.c_str());
+                    printf("Starting Module %s.\n", moduleName.c_str());
 
                     Timer t;
                     t.Start();
@@ -352,7 +352,7 @@ namespace ElVis
                     m_timings[module] = elapsed;
 
 
-                    //printf("Module %s time = %e.\n", moduleName.c_str(), elapsed);
+                    printf("Module %s time = %e.\n", moduleName.c_str(), elapsed);
                 }
             }
             result.Stop();

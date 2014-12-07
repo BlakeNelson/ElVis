@@ -287,6 +287,23 @@ IF( ELVIS_ENABLE_ProjectX_EXTENSION )
         --CompareFile "${BaselineDir}/Delta"
     )
 
+    ADD_ELVIS_REGTEST(DeltaFaces
+        --TestName Generic
+        --ModelPath "/home/bnelson/Volumes/delta_P2_a10_Dual_3.pxa"
+        --Module ${PXExtensionPath}
+        --Width 785
+        --Height 535
+        --Eye -0.41739773 0.26973858 0.10149950 --Up 0.08741374 0.16680370 -0.12352268 --At -0.10745678 0.04760942 0.01925294
+        --ColorMap "${CMAKE_SOURCE_DIR}/../ColorMaps/Rainbow.xml"
+        --RenderFaces 1 2 3
+        --ColorMapMin 0.99
+        --ColorMapMax 1.01
+        --CutPlaneNormal 0.0 0.0 1.0
+        --CutPlanePoint 0.1 2.7 0.0
+        --OutFile DeltaFaces
+        --CompareFile "${BaselineDir}/DeltaFaces"
+    )
+
     ADD_ELVIS_REGTEST(TwoD
         --TestName Generic
         --ModelPath "/home/bnelson/Volumes/naca_Euler2d_TEST_P0_Primal_0.pxa"

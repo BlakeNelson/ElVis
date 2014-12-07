@@ -93,12 +93,13 @@ namespace ElVis
         {
             optixu::Context context = view->GetContext();
             assert(context);
-
+            std::cout << "Synchronizing." << std::endl;
             auto numSurfaces = m_objects.size();
 
             assert(m_group);
             m_group->setChildCount(static_cast<unsigned int>(numSurfaces));
 
+            std::cout << "Total objects: " << m_objects.size() << std::endl;
             int curChild = 0;
             for(std::vector<boost::shared_ptr<PrimaryRayObject> >::const_iterator iter = m_objects.begin(); iter != m_objects.end(); ++iter)
             {
@@ -148,7 +149,9 @@ namespace ElVis
         try
         {      
             optixu::Context context = view->GetContext();
+            std::cout << "Launching ray tracer." << std::endl;
             context->launch(m_program.Index, view->GetWidth(), view->GetHeight());
+            std::cout << "Finished launching ray tracer." << std::endl;
         }
         catch(optixu::Exception& e)
         {

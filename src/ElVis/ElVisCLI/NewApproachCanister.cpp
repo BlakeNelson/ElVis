@@ -57,6 +57,8 @@
 #include <boost/filesystem.hpp>
 #include <ElVis/Core/ColorMapperModule.h>
 #include <ElVis/Core/SampleVolumeSamplerObject.h>
+#include <ElVis/Core/TwoDPrimaryElements.h>
+#include <ElVis/Core/TwoDPrimaryElementsPrimaryObject.h>
 
 #include <boost/make_shared.hpp>
 
@@ -333,22 +335,13 @@ int GenericCLIInterface(int argc, char** argv,
     boost::shared_ptr<ElVis::PrimaryRayModule> primaryRayModule(new ElVis::PrimaryRayModule());
     view->AddRenderModule(primaryRayModule);
 
-    if( cutPlaneNormal.size() == 3 &&
-        cutPlanePoint.size() == 3 )
-    {
-        ElVis::WorldPoint normal(cutPlaneNormal[0], cutPlaneNormal[1], cutPlaneNormal[2]);
-        ElVis::WorldPoint p(cutPlanePoint[0], cutPlanePoint[1], cutPlanePoint[2]);
-        
-        boost::shared_ptr<ElVis::Plane> cutPlane(new ElVis::Plane(normal, p));
-        boost::shared_ptr<ElVis::SampleVolumeSamplerObject> sampler(new ElVis::SampleVolumeSamplerObject(cutPlane));
-        primaryRayModule->AddObject(sampler);
-    }
-
+    boost::shared_ptr<ElVis::CutSurfaceContourModule> contourModule(new ElVis::CutSurfaceContourModule());
+    view->AddRenderModule(contourModule);
+    contourModule->SetEnabled(contourModuleEnabled);
     if( contourModuleEnabled )
     {
         std::cout << "Contour Module enabled.  Number of isovalues = " << isovalues.size() << std::endl;
-        boost::shared_ptr<ElVis::CutSurfaceContourModule> contourModule(new ElVis::CutSurfaceContourModule());
-        view->AddRenderModule(contourModule);
+
 
         for(unsigned int i = 0; i < isovalues.size(); ++i)
         {
@@ -356,16 +349,20 @@ int GenericCLIInterface(int argc, char** argv,
         }
     }
 
+    boost::shared_ptr<ElVis::CutSurfaceMeshModule> meshModule(new ElVis::CutSurfaceMeshModule());
+    view->AddRenderModule(meshModule);
+    meshModule->SetEnabled(meshModuleEnabled);
     if( meshModuleEnabled )
     {
-        boost::shared_ptr<ElVis::CutSurfaceMeshModule> meshModule(new ElVis::CutSurfaceMeshModule());
-        view->AddRenderModule(meshModule);
+        meshModule->SetEnabled(true);
     }
 
+    boost::shared_ptr<ElVis::IsosurfaceModule> isosurfaceModule(new ElVis::IsosurfaceModule());
+    view->AddRenderModule(isosurfaceModule);
+    isosurfaceModule->SetEnabled(isosurfaceModuleEnabled);
     if( isosurfaceModuleEnabled )
     {
-        boost::shared_ptr<ElVis::IsosurfaceModule> isosurfaceModule(new ElVis::IsosurfaceModule());
-        view->AddRenderModule(isosurfaceModule);
+
 
         for(unsigned int i = 0; i < isovalues.size(); ++i)
         {
@@ -407,6 +404,10 @@ int GenericCLIInterface(int argc, char** argv,
             obj->EnableFace(faces[i]);
         }
     }
+
+    boost::shared_ptr<ElVis::VolumeRenderingModule> m_volumeRenderingModule(new ElVis::VolumeRenderingModule());
+    view->AddRenderModule(m_volumeRenderingModule);
+    m_volumeRenderingModule->SetEnabled(volumeRenderingModuleEnabled);
     if( volumeRenderingModuleEnabled )
     {
         if( vm.count(integrationTypeLabel) == 0 )
@@ -454,7 +455,7 @@ int GenericCLIInterface(int argc, char** argv,
             enableEmptySpaceSkipping = (vm[emptySpaceSkippingLabel].as<int>() == 1);
         }
 
-        boost::shared_ptr<ElVis::VolumeRenderingModule> m_volumeRenderingModule(new ElVis::VolumeRenderingModule());
+
         m_volumeRenderingModule->SetIntegrationType(integrationType);
         m_volumeRenderingModule->SetCompositingStepSize(h);
         m_volumeRenderingModule->SetEpsilon(epsilon);
@@ -472,12 +473,21 @@ int GenericCLIInterface(int argc, char** argv,
             transferFunction->SetBreakpoint(breakpoints[i], c);
         }
 
-        view->AddRenderModule(m_volumeRenderingModule);
+
     }
 
     boost::shared_ptr<ElVis::LightingModule> lighting(new ElVis::LightingModule());
     view->AddRenderModule(lighting);
 
+
+    boost::shared_ptr<ElVis::FaceObject> faceObject(new ElVis::FaceObject(scene));
+    boost::shared_ptr<ElVis::SampleFaceObject> m_faceSampler;
+    m_faceSampler.reset(new ElVis::SampleFaceObject(faceObject));
+primaryRayModule->AddObject(m_faceSampler);
+
+boost::shared_ptr<ElVis::TwoDPrimaryElements> twoDObject(new ElVis::TwoDPrimaryElements(scene));
+boost::shared_ptr<ElVis::TwoDPrimaryElementsPrimaryObject> wrapper(new ElVis::TwoDPrimaryElementsPrimaryObject(twoDObject));
+primaryRayModule->AddObject(wrapper);
 
     view->SetScene(scene);
     view->Resize(width, height);
@@ -486,6 +496,19 @@ int GenericCLIInterface(int argc, char** argv,
     // Don't time to take care of initialization artifacts.
     view->Draw();
 
+    if( cutPlaneNormal.size() == 3 &&
+        cutPlanePoint.size() == 3 )
+    {
+        ElVis::WorldPoint normal(cutPlaneNormal[0], cutPlaneNormal[1], cutPlaneNormal[2]);
+        ElVis::WorldPoint p(cutPlanePoint[0], cutPlanePoint[1], cutPlanePoint[2]);
+
+        boost::shared_ptr<ElVis::Plane> cutPlane(new ElVis::Plane(normal, p));
+        boost::shared_ptr<ElVis::SampleVolumeSamplerObject> sampler(new ElVis::SampleVolumeSamplerObject(cutPlane));
+        primaryRayModule->AddObject(sampler);
+    }
+
+    view->OnSceneViewChanged(*view);
+    view->Draw();
 
     double* times = new double[numTests-1];
     for(unsigned int testNum = 1; testNum < numTests; ++testNum)
