@@ -65,6 +65,7 @@ namespace ElVis
 
             m_group = context->createGroup();
             m_group->setAcceleration( context->createAcceleration("NoAccel","NoAccel") );
+            std::cout << "Set SurfaceGeometryGroup" << std::endl;
             context["SurfaceGeometryGroup"]->set( m_group );
 
             m_program = view->AddRayGenerationProgram("GeneratePrimaryRays");
@@ -91,6 +92,7 @@ namespace ElVis
     {
         try
         {
+            std::cout << "PrimaryRayModule::DoSynchronize" << std::endl;
             optixu::Context context = view->GetContext();
             assert(context);
             std::cout << "Synchronizing." << std::endl;

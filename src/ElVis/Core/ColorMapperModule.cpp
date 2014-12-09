@@ -66,9 +66,13 @@ namespace ElVis
 
         // To use textures, comment out this line and uncomment the textureSampler code.
         // Testing has shown that textures are slightly slower and take longer to compile
+        std::cout << "Set ColorMapTexture" << std::endl;
         context["ColorMapTexture"]->set(m_data);
 
+        std::cout << "Set TextureMaxScalar" << std::endl;
         context["TextureMaxScalar"]->setFloat(m_min);
+
+        std::cout << "Set TextureMinScalar" << std::endl;
         context["TextureMinScalar"]->setFloat(m_max);
 
 //        m_textureSampler = context->createTextureSampler();

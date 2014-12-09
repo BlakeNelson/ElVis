@@ -172,6 +172,7 @@ namespace ElVis
           data[i] = 0;
       }
       m_facesEnabledBuffer->unmap();
+      std::cout << "Set FaceEnabled" << std::endl;
       context["FaceEnabled"]->set(m_facesEnabledBuffer);
     }
 
@@ -303,6 +304,7 @@ namespace ElVis
 
     void Model::createFaceIntersectionGeometry(optixu::Context context)
     {
+        std::cout << "createFaceIntersectionGeometry" << std::endl;
         // Geometry group collects nodes in a tree.
         auto planarFaceGroup = context->createGeometryGroup();
         auto curvedFaceGroup = context->createGeometryGroup();
@@ -352,6 +354,8 @@ namespace ElVis
         planarFaceGroup->setAcceleration(planarAcceleration);
         curvedFaceGroup->setAcceleration(curvedAcceleration);
 
+        std::cout << "Set PlanarFaceGroup" << std::endl;
+        std::cout << "Set CurvedFaceGroup" << std::endl;
         context["PlanarFaceGroup"]->set(planarFaceGroup);
         context["CurvedFaceGroup"]->set(curvedFaceGroup);
     }

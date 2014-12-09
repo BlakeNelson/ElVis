@@ -89,6 +89,7 @@ namespace ElVis
 
             boost::shared_array<T> Map()
             {
+                std::cout << "Mapping optix buffer " << m_name << " of size " << m_width << ", " << m_height << "." << std::endl;
                 return boost::shared_array<T>(static_cast<T*>(m_optixBuffer->map()),
                                                             boost::bind(&OptiXBuffer::Unmap, this, _1));
             }
@@ -149,6 +150,7 @@ namespace ElVis
               }
               m_optixBuffer->setFormat(FormatMapping<T>::value);
               FormatMapping<T>::SetElementSize(m_optixBuffer);
+              std::cout << "Set " << m_name.c_str() << std::endl;
               m_context[m_name.c_str()]->set(m_optixBuffer);
             }
 

@@ -90,6 +90,7 @@ namespace ElVis
         nrrdHeaderFile.close();
 
         optixu::Context context = view->GetContext();
+        std::cout << "Set SampleOntoNrrdH" << std::endl;
         SetFloat(context["SampleOntoNrrdH"], h);
 
         int bufferSize = n.x*n.y;
@@ -98,6 +99,8 @@ namespace ElVis
         sampleBuffer.SetDimensions(n.x, n.y);
 
         float* convertBuffer = new float[n.x*n.y];
+        std::cout << "Set SampleOntoNrrdMinExtent" << std::endl;
+        std::cout << "Set SampleOntoNrrdMissValue" << std::endl;
         SetFloat(context["SampleOntoNrrdMinExtent"], minExtent);
         SetFloat(context["SampleOntoNrrdMissValue"], std::numeric_limits<ElVisFloat>::signaling_NaN());
         std::cout << "Validating and compiling." << std::endl;
@@ -111,6 +114,7 @@ namespace ElVis
 
             for(unsigned int i = 0; i < n.z; ++i)
             {
+                std::cout << "Set SampleOntoNrrdPlane" << std::endl;
                 context["SampleOntoNrrdPlane"]->setInt(i);
                 std::cout << "Sampling " << i << " of " << n.z-1 << std::endl;
                 context->launch(Program.Index, n.x, n.y);

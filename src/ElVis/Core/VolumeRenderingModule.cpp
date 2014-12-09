@@ -94,6 +94,7 @@ namespace ElVis
               m_transferFunction->CopyToOptix(context, BlueBreakpoints, BlueValues, eBlue);
               m_transferFunction->Dirty() = true;
           }
+            std::cout << "Set desiredH" << std::endl;
           SetFloat(context["desiredH"], m_compositingStepSize);
           context->launch(m_PerformVolumeRendering.Index, view->GetWidth(), view->GetHeight());
         }

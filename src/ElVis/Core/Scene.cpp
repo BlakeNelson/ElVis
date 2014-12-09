@@ -81,6 +81,7 @@ namespace ElVis
     { 
         m_ambientLightColor = value; 
         if( !m_context.get() ) return;
+        std::cout << "Set ambientColor" << std::endl;
         m_context["ambientColor"]->setFloat(m_ambientLightColor.Red(), m_ambientLightColor.Green(), m_ambientLightColor.Blue());
     }
     
@@ -136,6 +137,7 @@ namespace ElVis
                 // Overall goal will be to have an OptixScene, which handles setting up the
                 // context and the lighting.  OptixSceneViews will allow different access to the
                 // same scene.
+                std::cout << "Set ambientColor" << std::endl;
                 m_context["ambientColor"]->setFloat(m_ambientLightColor.Red(), m_ambientLightColor.Green(), m_ambientLightColor.Blue());
 
                 std::list<boost::shared_ptr<DirectionalLight> > allDirectionalLights;
@@ -161,10 +163,12 @@ namespace ElVis
 
                 // Setup Point Lights.
                 optixu::Buffer lightPositionBuffer = m_context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT, allPointLights.size()*3);
+                std::cout << "Set lightPosition" << std::endl;
                 m_context["lightPosition"]->set(lightPositionBuffer);
                 float* positionData = static_cast<float*>(lightPositionBuffer->map());
 
                 optixu::Buffer lightColorBuffer = m_context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT, allPointLights.size()*3);
+                std::cout << "Set lightColor" << std::endl;
                 m_context["lightColor"]->set(lightColorBuffer);
                 float* colorData = static_cast<float*>(lightColorBuffer->map());
 
@@ -189,6 +193,9 @@ namespace ElVis
                 {
 
                     GetModel()->CalculateExtents();
+                    std::cout << "Set VolumeMinExtent" << std::endl;
+                    std::cout << "Set VolumeMaxExtent" << std::endl;
+                    std::cout << "Set ModelDimension" << std::endl;
                     SetFloat(m_context["VolumeMinExtent"], GetModel()->MinExtent());
                     SetFloat(m_context["VolumeMaxExtent"], GetModel()->MaxExtent());
                     m_context["ModelDimension"]->setInt(GetModel()->GetModelDimension());
@@ -238,6 +245,7 @@ namespace ElVis
         //std::cout << "m_tracePixelDirty " << (m_tracePixelDirty ? "true" : "false") << std::endl;
         if( m_tracePixelDirty )
         {
+            std::cout << "Set TracePixel" << std::endl;
             m_context["TracePixel"]->setInt(m_optixTraceIndex.x(), m_optixTraceIndex.y());
             m_tracePixelDirty = false;
         }
@@ -245,6 +253,7 @@ namespace ElVis
         //std::cout << "m_enableTraceDirty " << (m_enableTraceDirty ? "true" : "false") << std::endl;
         if( m_enableTraceDirty )
         {
+            std::cout << "Set EnableTrace" << std::endl;
             m_context["EnableTrace"]->setInt((m_enableOptiXTrace ? 1 : 0));
             m_enableTraceDirty = false;
         }
@@ -380,6 +389,7 @@ namespace ElVis
 
         if( m_context )
         {
+            std::cout << "Set EnableTrace" << std::endl;
             m_context["EnableTrace"]->setInt((m_enableOptiXTrace ? 1 : 0));
         }
         m_optixDataDirty = true;

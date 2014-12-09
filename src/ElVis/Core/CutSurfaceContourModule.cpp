@@ -59,9 +59,11 @@ namespace ElVis
         m_isovalueBuffer.SetDimensions(m_isovalues.size());
 
         m_elementIdAtIntersectionBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT, view->GetWidth()+1, view->GetHeight()+1);
+        std::cout << "Set ElementIdAtIntersectionBuffer" << std::endl;
         context["ElementIdAtIntersectionBuffer"]->set(m_elementIdAtIntersectionBuffer);
 
         m_elementTypeAtIntersectionBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT, view->GetWidth()+1, view->GetHeight()+1);
+        std::cout << "Set ElementTypeAtIntersectionBuffer" << std::endl;
         context["ElementTypeAtIntersectionBuffer"]->set(m_elementTypeAtIntersectionBuffer);
 
         m_referencePointAtIntersectionBuffer.SetContext(context);
@@ -87,7 +89,9 @@ namespace ElVis
             }
 
             optixu::Context context = view->GetContext();
+            std::cout << "Set TreatElementBoundariesAsDiscontinuous" << std::endl;
             context["TreatElementBoundariesAsDiscontinuous"]->setInt(m_treatElementBoundariesAsDiscontinuous ? 1 : 0);
+            std::cout << "Set MatchVisual3Contours" << std::endl;
             context["MatchVisual3Contours"]->setInt(m_matchVisual3Contours ? 1 : 0);
 
             m_dirty = false;

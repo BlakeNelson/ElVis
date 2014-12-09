@@ -157,6 +157,7 @@ namespace ElVis
 
                 std::string degreesName = variablePrefix + "Degrees";
                 optixu::Buffer DegreesBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3, numElements);
+                std::cout << "Set " << degreesName.c_str() << std::endl;
                 context[degreesName.c_str()]->set(DegreesBuffer);
                 unsigned int* degreeData = static_cast<unsigned int*>(DegreesBuffer->map());
 

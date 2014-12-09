@@ -113,6 +113,7 @@ namespace ElVis
     void FaceObject::DoCreateNode(SceneView* view,
                 optixu::Transform& transform, optixu::GeometryGroup& group)
     {
+        std::cout << "DoCreateNode" << std::endl;
         optixu::Context context = view->GetContext();
         if( m_group.get() )
         {

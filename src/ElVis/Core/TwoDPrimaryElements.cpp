@@ -98,6 +98,7 @@ namespace ElVis
     void TwoDPrimaryElements::DoCreateNode(SceneView* view,
                 optixu::Transform& transform, optixu::GeometryGroup& group)
     {
+        std::cout << "TwoDPrimaryElements::DoCreateNode" << std::endl;
         optixu::Context context = view->GetContext();
         auto model = m_scene->GetModel();
 

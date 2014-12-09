@@ -122,6 +122,7 @@ namespace ElVis
             optixu::Context m_context = GetScene()->GetContext();
             if( !m_context ) return;
 
+            std::cout << "Set DepthBits" << std::endl;
             m_context["DepthBits"]->setInt(m_depthBits);
         }
     }
@@ -138,6 +139,7 @@ namespace ElVis
             optixu::Context m_context = GetScene()->GetContext();
             if( !m_context ) return;
 
+            std::cout << "Set FieldId" << std::endl;
             m_context["FieldId"]->setInt(m_scalarFieldIndex);
         }
     }
@@ -619,6 +621,8 @@ namespace ElVis
             m_exceptionProgram = PtxManager::LoadProgram(m_context, GetPTXPrefix(), "ExceptionProgram");
             m_context->setPrintLaunchIndex(-1, -1, -1);
             SetupCamera();
+            std::cout << "Set DepthBits" << std::endl;
+            std::cout << "Set FieldId" << std::endl;
             m_context["DepthBits"]->setInt(m_depthBits);
             m_context["FieldId"]->setInt(m_scalarFieldIndex);
 
@@ -627,6 +631,7 @@ namespace ElVis
             bgColor.y = m_backgroundColor.Green();
             bgColor.z = m_backgroundColor.Blue();
 
+            std::cout << "Set BGColor" << std::endl;
             SetFloat(m_context["BGColor"], bgColor);
 
             m_passedInitialOptixSetup = true;
@@ -679,6 +684,7 @@ namespace ElVis
     {
         if( m_faceIntersectionToleranceDirty )
         {
+            std::cout << "Set FaceTolerance" << std::endl;
             SetFloat(context["FaceTolerance"], m_faceIntersectionTolerance);
             m_faceIntersectionToleranceDirty = false;
         }
@@ -690,6 +696,7 @@ namespace ElVis
             c.y = m_headlightColor.Green();
             c.z = m_headlightColor.Blue();
 
+            std::cout << "Set HeadlightColor" << std::endl;
             SetFloat(context["HeadlightColor"], c);
             m_headlightColorIsDirty = false;
         }
@@ -701,6 +708,7 @@ namespace ElVis
             bgColor.y = m_backgroundColor.Green();
             bgColor.z = m_backgroundColor.Blue();
 
+            std::cout << "Set BGColor" << std::endl;
             SetFloat(context["BGColor"], bgColor);
             m_backgroundColorIsDirty = false;
         }
@@ -708,6 +716,7 @@ namespace ElVis
         if( m_projectionType.IsDirty() )
         {
             ElVis::SceneViewProjection data = *m_projectionType;
+            std::cout << "Set ProjectionType" << std::endl;
             context["ProjectionType"]->setUserData(sizeof(ElVis::SceneViewProjection), &data);
             m_projectionType.MarkClean();
         }

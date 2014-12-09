@@ -412,6 +412,7 @@ namespace ElVis
   {
     PX_Grid *pg = m_pxa->pg;
     const int Dim = pg->Dim;
+    std::cout << "Set Dim" << std::endl;
     context["Dim"]->setInt(Dim);
 
 
@@ -420,6 +421,7 @@ namespace ElVis
     PXError( PXRetrieveTimeStepState( m_pxa, currentIndex, -1, NULL, &State, NULL ) );
 
     int StateRank = State->StateRank;
+    std::cout << "Set StateRank" << std::endl;
     context["StateRank"]->setInt(StateRank);
 
     int nbfS = 0, nbfQ = 0;
