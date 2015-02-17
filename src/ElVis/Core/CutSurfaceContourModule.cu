@@ -37,6 +37,7 @@
 #include <ElVis/Core/ConvertToColor.cu>
 #include <ElVis/Core/Float.h>
 #include <ElVis/Core/Interval.hpp>
+#include <ElVis/Core/IntervalPoint.cu>
 #include <ElVis/Core/ElementId.h>
 
 rtBuffer<ElVisFloat, 2> ContourSampleBuffer;
@@ -44,8 +45,6 @@ rtBuffer<ElVisFloat, 2> ContourSampleBuffer;
 rtBuffer<ElVisFloat3, 2> ReferencePointAtIntersectionBuffer;
 rtBuffer<unsigned int, 2> ElementIdAtIntersectionBuffer;
 rtBuffer<unsigned int, 2> ElementTypeAtIntersectionBuffer;
-
-rtDeclareVariable(rtObject, CutSurfaceContourGeometry, , );
 
 rtBuffer<ElVisFloat, 1> Isovalues;
 
@@ -98,6 +97,11 @@ RT_PROGRAM void SamplePixelCornersRayGeneratorForCategorization()
     payload.Color = MakeFloat3(MAKE_FLOAT(1.0), MAKE_FLOAT(1.0), MAKE_FLOAT(1.0));
     rtTrace(SurfaceGeometryGroup, ray, payload);
     
+    ELVIS_PRINTF("SamplePixelCornersRayGeneratorForCategorization: Scalar Value (%f)\n", payload.scalarValue);
+    ELVIS_PRINTF("SamplePixelCornersRayGeneratorForCategorization: Element Id (%d)\n", payload.elementId);
+    ELVIS_PRINTF("SamplePixelCornersRayGeneratorForCategorization: Element Type (%d)\n", payload.elementType);
+    ELVIS_PRINTF("SamplePixelCornersRayGeneratorForCategorization: Reference Point (%f, %f, %f)\n", payload.ReferenceIntersectionPoint.x,
+                 payload.ReferenceIntersectionPoint.y, payload.ReferenceIntersectionPoint.z);
     ContourSampleBuffer[launch_index] = payload.scalarValue;
     ReferencePointAtIntersectionBuffer[launch_index] = payload.ReferenceIntersectionPoint;
     ElementIdAtIntersectionBuffer[launch_index] = payload.elementId;
@@ -105,33 +109,32 @@ RT_PROGRAM void SamplePixelCornersRayGeneratorForCategorization()
 
 }
 
-__device__ __forceinline__ ElVis::Interval<ElVisFloat> EvaluatePrismBetweenReferencePoints(unsigned int elementId, const ElVisFloat3& p0, const ElVisFloat3& p1)
+__device__ __forceinline__ ElVis::Interval<ElVisFloat> EvaluateBetweenReferencePoints(unsigned int elementId, unsigned int elementType, const ElVisFloat3& p0, const ElVisFloat3& p1)
 {
-    // ElVis::Interval<ElVisFloat> r0(fminf(p0.x, p1.x), fmaxf(p0.x, p1.x));
-    // ElVis::Interval<ElVisFloat> s0(fminf(p0.y, p1.y), fmaxf(p0.y, p1.y));
-    // ElVis::Interval<ElVisFloat> t0(fminf(p0.z, p1.z), fmaxf(p0.z, p1.z));
-    // return EvaluatePrism(elementId, r0, s0, t0);
-  return ElVis::Interval<ElVisFloat>();
+     ElVis::Interval<ElVisFloat> r0(fminf(p0.x, p1.x), fmaxf(p0.x, p1.x));
+     ElVis::Interval<ElVisFloat> s0(fminf(p0.y, p1.y), fmaxf(p0.y, p1.y));
+     ElVis::Interval<ElVisFloat> t0(fminf(p0.z, p1.z), fmaxf(p0.z, p1.z));
+
+     IntervalPoint ip(r0, s0, t0);
+     ElVis::Interval<ElVisFloat> result;
+     SampleScalarFieldAtReferencePointOptiX(elementId, elementType, FieldId, ip, ip,
+                                            result);
+     return result;
 }
 
-__device__ __forceinline__ ElVis::Interval<ElVisFloat> EvaluatePrismEdge(unsigned int elementId, uint2 i0, uint2 i1)
+__device__ __forceinline__ ElVis::Interval<ElVisFloat> EvaluateEdge(unsigned int elementId, unsigned int elementType, uint2 i0, uint2 i1)
 {
-    // ElVisFloat3 p0 = ReferencePointAtIntersectionBuffer[i0];
-    // ElVisFloat3 p1 = ReferencePointAtIntersectionBuffer[i1];
-    
-    // return EvaluatePrismBetweenReferencePoints(elementId, p0, p1);
-  return ElVis::Interval<ElVisFloat>();
-}
+     ElVisFloat3 p0 = ReferencePointAtIntersectionBuffer[i0];
+     ElVisFloat3 p1 = ReferencePointAtIntersectionBuffer[i1];
 
-//__device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval1(unsigned int elementId,
-//                                  const ElVisFloat3& p0, const ElVisFloat3& p1, 
-//                                  const ElVisFloat2& cornerOffset0, const ElVisFloat2& cornerOffset1, int numSubdivisions)
-//{
-//}
+     ELVIS_PRINTF("EvaluateEdge: P0 = (%f, %f, %f), P1 = (%f, %f, %f).\n",
+                  p0.x, p0.y, p0.z, p1.x, p1.y, p1.z);
+     return EvaluateBetweenReferencePoints(elementId, elementType, p0, p1);
+}
 
 // p0 - The reference point at the beginning of the interval.
 // p1 - The reference point at the end of the interval.
-__device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval1(unsigned int elementId,
+__device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval1(unsigned int elementId, unsigned int elementType,
                                   const ElVisFloat3& p0, const ElVisFloat3& p1, 
                                   const ElVisFloat2& cornerOffset0, const ElVisFloat2& cornerOffset1)
 {
@@ -162,18 +165,18 @@ __device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval1(unsign
     payload.scalarValue = ELVIS_FLOAT_MAX;
     payload.Normal = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
     payload.Color = MakeFloat3(MAKE_FLOAT(1.0), MAKE_FLOAT(1.0), MAKE_FLOAT(1.0));
-    rtTrace(CutSurfaceContourGeometry, ray, payload);   
+    rtTrace(SurfaceGeometryGroup, ray, payload);
     
     // Now evaluate the interval math between p0-mid and mid-p1 to see if we can reject
     // this pixel.
     ElVisFloat3 mid = payload.ReferenceIntersectionPoint;
-    ElVis::Interval<ElVisFloat> i0 = EvaluatePrismBetweenReferencePoints(elementId, p0, mid);
-    ElVis::Interval<ElVisFloat> i1 = EvaluatePrismBetweenReferencePoints(elementId, mid, p1);
+    ElVis::Interval<ElVisFloat> i0 = EvaluateBetweenReferencePoints(elementId, elementType, p0, mid);
+    ElVis::Interval<ElVisFloat> i1 = EvaluateBetweenReferencePoints(elementId, elementType, mid, p1);
 
     return ElVis::Interval<ElVisFloat>(fminf(i0.GetLow(), i1.GetLow()), fmaxf(i0.GetHigh(), i1.GetHigh()));
 }
 
-__device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval2(unsigned int elementId,
+__device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval2(unsigned int elementId, unsigned int elementType,
                                   const ElVisFloat3& p0, const ElVisFloat3& p1, 
                                   const ElVisFloat2& cornerOffset0, const ElVisFloat2& cornerOffset1)
 {
@@ -214,15 +217,15 @@ __device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval2(unsign
         payload[i].scalarValue = ELVIS_FLOAT_MAX;
         payload[i].Normal = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
         payload[i].Color = MakeFloat3(MAKE_FLOAT(1.0), MAKE_FLOAT(1.0), MAKE_FLOAT(1.0));
-        rtTrace(CutSurfaceContourGeometry, ray, payload[i]);   
+        rtTrace(SurfaceGeometryGroup, ray, payload[i]);
     }
 
     // Now evaluate the interval math between p0-mid and mid-p1 to see if we can reject
     // this pixel.
-    ElVis::Interval<ElVisFloat> i0 = EvaluatePrismBetweenReferencePoints(elementId, p0, payload[0].ReferenceIntersectionPoint);
-    ElVis::Interval<ElVisFloat> i1 = EvaluatePrismBetweenReferencePoints(elementId, payload[0].ReferenceIntersectionPoint, payload[1].ReferenceIntersectionPoint);
-    ElVis::Interval<ElVisFloat> i2 = EvaluatePrismBetweenReferencePoints(elementId, payload[1].ReferenceIntersectionPoint, payload[2].ReferenceIntersectionPoint);
-    ElVis::Interval<ElVisFloat> i3 = EvaluatePrismBetweenReferencePoints(elementId, payload[2].ReferenceIntersectionPoint, p1);
+    ElVis::Interval<ElVisFloat> i0 = EvaluateBetweenReferencePoints(elementId, elementType, p0, payload[0].ReferenceIntersectionPoint);
+    ElVis::Interval<ElVisFloat> i1 = EvaluateBetweenReferencePoints(elementId, elementType, payload[0].ReferenceIntersectionPoint, payload[1].ReferenceIntersectionPoint);
+    ElVis::Interval<ElVisFloat> i2 = EvaluateBetweenReferencePoints(elementId, elementType, payload[1].ReferenceIntersectionPoint, payload[2].ReferenceIntersectionPoint);
+    ElVis::Interval<ElVisFloat> i3 = EvaluateBetweenReferencePoints(elementId, elementType, payload[2].ReferenceIntersectionPoint, p1);
 
     i0.Combine(i1);
     i0.Combine(i2);
@@ -230,7 +233,7 @@ __device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval2(unsign
     return i0;
 }
 
-__device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval3(unsigned int elementId,
+__device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval3(unsigned int elementId, unsigned int elementType,
                                   const ElVisFloat3& p0, const ElVisFloat3& p1, 
                                   const ElVisFloat2& cornerOffset0, const ElVisFloat2& cornerOffset1)
 {
@@ -275,18 +278,18 @@ __device__ __forceinline__ ElVis::Interval<ElVisFloat> SubdivideInterval3(unsign
         payload[i].scalarValue = ELVIS_FLOAT_MAX;
         payload[i].Normal = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
         payload[i].Color = MakeFloat3(MAKE_FLOAT(1.0), MAKE_FLOAT(1.0), MAKE_FLOAT(1.0));
-        rtTrace(CutSurfaceContourGeometry, ray, payload[i]);   
+        rtTrace(SurfaceGeometryGroup, ray, payload[i]);
     }
 
     // Now evaluate the interval math between p0-mid and mid-p1 to see if we can reject
     // this pixel.
-    ElVis::Interval<ElVisFloat> result = EvaluatePrismBetweenReferencePoints(elementId, p0, payload[0].ReferenceIntersectionPoint);
+    ElVis::Interval<ElVisFloat> result = EvaluateBetweenReferencePoints(elementId, elementType, p0, payload[0].ReferenceIntersectionPoint);
     for(unsigned int i = 0; i < 6; ++i)
     {
-        ElVis::Interval<ElVisFloat> i1 = EvaluatePrismBetweenReferencePoints(elementId, payload[i].ReferenceIntersectionPoint, payload[i+1].ReferenceIntersectionPoint);
+        ElVis::Interval<ElVisFloat> i1 = EvaluateBetweenReferencePoints(elementId, elementType, payload[i].ReferenceIntersectionPoint, payload[i+1].ReferenceIntersectionPoint);
         result.Combine(i1);
     }
-    ElVis::Interval<ElVisFloat> i3 = EvaluatePrismBetweenReferencePoints(elementId, payload[6].ReferenceIntersectionPoint, p1);
+    ElVis::Interval<ElVisFloat> i3 = EvaluateBetweenReferencePoints(elementId, elementType, payload[6].ReferenceIntersectionPoint, p1);
     result.Combine(i3);
     return result;
 }
@@ -311,9 +314,6 @@ RT_PROGRAM void CategorizeMeshPixels()
     ElVis::ElementId id1;
     ElVis::ElementId id2;
     ElVis::ElementId id3;
-
-
-
 
     id0.Id = ElementIdAtIntersectionBuffer[c0_index];
     id1.Id = ElementIdAtIntersectionBuffer[c1_index];
@@ -492,6 +492,7 @@ RT_PROGRAM void CategorizeContourPixels()
 
     if( !oneIsovalueIsValid )
     {
+        ELVIS_PRINTF("CategorizeContourPixels: No isovalues valid.\n");
         // If the element types are all different, then I can't use interval arithmetic.
         if( ElementIdAtIntersectionBuffer[c0_index] != ElementIdAtIntersectionBuffer[c1_index] ||
             ElementIdAtIntersectionBuffer[c0_index] != ElementIdAtIntersectionBuffer[c2_index] ||
@@ -506,142 +507,137 @@ RT_PROGRAM void CategorizeContourPixels()
             normal_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
             return;
         }
-        if( ElementTypeAtIntersectionBuffer[c0_index] == 0 )
+
+        // No Subdivisions
+        unsigned int id = ElementIdAtIntersectionBuffer[c0_index];
+        unsigned int type = ElementTypeAtIntersectionBuffer[c0_index];
+
+        ElVis::Interval<ElVisFloat> edge0 = EvaluateEdge(id, type, c0_index, c1_index);
+        ElVis::Interval<ElVisFloat> edge1 = EvaluateEdge(id, type, c0_index, c2_index);
+        ElVis::Interval<ElVisFloat> edge2 = EvaluateEdge(id, type, c1_index, c3_index);
+        ElVis::Interval<ElVisFloat> edge3 = EvaluateEdge(id, type, c2_index, c3_index);
+
+        bool mayContainAnIsovalue = false;
+        for(int isoValueIndex = 0; isoValueIndex < Isovalues.size(); ++isoValueIndex)
         {
-            // Hex
-            // Vertical
-            // White for NO
-            raw_color_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(1.0), MAKE_FLOAT(1.0));
+            float isovalue = Isovalues[isoValueIndex];
+            ELVIS_PRINTF("CategorizeContourPixels: Testing ambiguous %f: (%f, %f), (%f, %f), (%f, %f), (%f, %f).\n",
+                         isovalue, edge0.GetLow(), edge0.GetHigh(),
+                         edge1.GetLow(), edge1.GetHigh(),
+                         edge2.GetLow(), edge2.GetHigh(),
+                         edge3.GetLow(), edge3.GetHigh());
+
+            if(edge0.Contains(isovalue) || edge1.Contains(isovalue) ||
+                edge2.Contains(isovalue) || edge3.Contains(isovalue) )
+            {
+                ELVIS_PRINTF("CategorizeContourPixels: May contain isovalue %f: (%f, %f), (%f, %f), (%f, %f), (%f, %f).\n",
+                             isovalue, edge0.GetLow(), edge0.GetHigh(),
+                             edge1.GetLow(), edge1.GetHigh(),
+                             edge2.GetLow(), edge2.GetHigh(),
+                             edge3.GetLow(), edge3.GetHigh());
+                mayContainAnIsovalue = true;
+            }
+        }
+
+        if( !mayContainAnIsovalue )
+        {
+            // Definitely not: WHITE
+            raw_color_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(1.0), MAKE_FLOAT(1.0), MAKE_FLOAT(1.0));
+            color_buffer[launch_index] = ConvertToColor(raw_color_buffer[launch_index]);
+            normal_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
+            return;
+        }
+
+        const int numSubdivisions = 3;
+        if( numSubdivisions == 1 )
+        {
+            edge0 = SubdivideInterval1(id, type,
+                    ReferencePointAtIntersectionBuffer[c0_index],
+                    ReferencePointAtIntersectionBuffer[c2_index],
+                    make_float2(-1.0, -1.0), make_float2(-1.0, 1.0));
+            edge1 = SubdivideInterval1(id, type,
+                ReferencePointAtIntersectionBuffer[c1_index],
+                ReferencePointAtIntersectionBuffer[c3_index],
+                make_float2(1.0, -1.0), make_float2(1.0, 1.0));
+
+            edge2 = SubdivideInterval1(id, type,
+                ReferencePointAtIntersectionBuffer[c0_index],
+                ReferencePointAtIntersectionBuffer[c1_index],
+                make_float2(-1.0, -1.0), make_float2(1.0, -1.0));
+
+            edge3 = SubdivideInterval1(id, type,
+                ReferencePointAtIntersectionBuffer[c2_index],
+                ReferencePointAtIntersectionBuffer[c3_index],
+                make_float2(-1.0, 1.0), make_float2(1.0, 1.0));
+        }
+
+        if( numSubdivisions == 2 )
+        {
+            edge0 = SubdivideInterval2(id, type,
+                    ReferencePointAtIntersectionBuffer[c0_index],
+                    ReferencePointAtIntersectionBuffer[c2_index],
+                    make_float2(-1.0, -1.0), make_float2(-1.0, 1.0));
+            edge1 = SubdivideInterval2(id, type,
+                ReferencePointAtIntersectionBuffer[c1_index],
+                ReferencePointAtIntersectionBuffer[c3_index],
+                make_float2(1.0, -1.0), make_float2(1.0, 1.0));
+
+            edge2 = SubdivideInterval2(id, type,
+                ReferencePointAtIntersectionBuffer[c0_index],
+                ReferencePointAtIntersectionBuffer[c1_index],
+                make_float2(-1.0, -1.0), make_float2(1.0, -1.0));
+
+            edge3 = SubdivideInterval2(id, type,
+                ReferencePointAtIntersectionBuffer[c2_index],
+                ReferencePointAtIntersectionBuffer[c3_index],
+                make_float2(-1.0, 1.0), make_float2(1.0, 1.0));
+        }
+
+        if( numSubdivisions == 3 )
+        {
+            edge0 = SubdivideInterval3(id, type,
+                    ReferencePointAtIntersectionBuffer[c0_index],
+                    ReferencePointAtIntersectionBuffer[c2_index],
+                    make_float2(-1.0, -1.0), make_float2(-1.0, 1.0));
+            edge1 = SubdivideInterval3(id, type,
+                ReferencePointAtIntersectionBuffer[c1_index],
+                ReferencePointAtIntersectionBuffer[c3_index],
+                make_float2(1.0, -1.0), make_float2(1.0, 1.0));
+
+            edge2 = SubdivideInterval3(id, type,
+                ReferencePointAtIntersectionBuffer[c0_index],
+                ReferencePointAtIntersectionBuffer[c1_index],
+                make_float2(-1.0, -1.0), make_float2(1.0, -1.0));
+
+            edge3 = SubdivideInterval3(id, type,
+                ReferencePointAtIntersectionBuffer[c2_index],
+                ReferencePointAtIntersectionBuffer[c3_index],
+                make_float2(-1.0, 1.0), make_float2(1.0, 1.0));
+        }
+
+        mayContainAnIsovalue = false;
+        for(int isoValueIndex = 0; isoValueIndex < Isovalues.size(); ++isoValueIndex)
+        {
+            float isovalue = Isovalues[isoValueIndex];
+            if(edge0.Contains(isovalue) || edge1.Contains(isovalue) ||
+                edge2.Contains(isovalue) || edge3.Contains(isovalue) )
+            {
+                mayContainAnIsovalue = true;
+            }
+        }
+
+        if( mayContainAnIsovalue )
+        {
+            raw_color_buffer[launch_index] = ambiguousColor;
             color_buffer[launch_index] = ConvertToColor(raw_color_buffer[launch_index]);
             normal_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
         }
         else
         {
-            // No Subdivisions
-            ElVis::Interval<ElVisFloat> edge0 = EvaluatePrismEdge(ElementIdAtIntersectionBuffer[c0_index], c0_index, c1_index);
-            ElVis::Interval<ElVisFloat> edge1 = EvaluatePrismEdge(ElementIdAtIntersectionBuffer[c0_index], c0_index, c2_index);
-            ElVis::Interval<ElVisFloat> edge2 = EvaluatePrismEdge(ElementIdAtIntersectionBuffer[c0_index], c1_index, c3_index);
-            ElVis::Interval<ElVisFloat> edge3 = EvaluatePrismEdge(ElementIdAtIntersectionBuffer[c0_index], c2_index, c3_index);
-
-            bool mayContainAnIsovalue = false;
-            for(int isoValueIndex = 0; isoValueIndex < Isovalues.size(); ++isoValueIndex)
-            {       
-                float isovalue = Isovalues[isoValueIndex];
-                if(edge0.Contains(isovalue) || edge1.Contains(isovalue) || 
-                    edge2.Contains(isovalue) || edge3.Contains(isovalue) )
-                {
-                    mayContainAnIsovalue = true;
-                }
-            }
-
-            if( !mayContainAnIsovalue )
-            {
-                // Definitely not: WHITE
-                raw_color_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(1.0), MAKE_FLOAT(1.0), MAKE_FLOAT(1.0));
-                color_buffer[launch_index] = ConvertToColor(raw_color_buffer[launch_index]);
-                normal_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
-                return;
-            }
-
-            // Still not quite right, but at least the timings will be on the correct order now.
-
-            // 1 Subdivision
-            //edge0 = SubdivideInterval1(ElementIdAtIntersectionBuffer[c0_index], 
-            //        ReferencePointAtIntersectionBuffer[c0_index],
-            //        ReferencePointAtIntersectionBuffer[c2_index], 
-            //        make_float2(-1.0, -1.0), make_float2(-1.0, 1.0));
-            //edge1 = SubdivideInterval1(ElementIdAtIntersectionBuffer[c0_index], 
-            //    ReferencePointAtIntersectionBuffer[c1_index],
-            //    ReferencePointAtIntersectionBuffer[c3_index], 
-            //    make_float2(1.0, -1.0), make_float2(1.0, 1.0));
-
-            //edge2 = SubdivideInterval1(ElementIdAtIntersectionBuffer[c0_index], 
-            //    ReferencePointAtIntersectionBuffer[c0_index],
-            //    ReferencePointAtIntersectionBuffer[c1_index], 
-            //    make_float2(-1.0, -1.0), make_float2(1.0, -1.0));
-
-            //edge3 = SubdivideInterval1(ElementIdAtIntersectionBuffer[c0_index], 
-            //    ReferencePointAtIntersectionBuffer[c2_index],
-            //    ReferencePointAtIntersectionBuffer[c3_index], 
-            //    make_float2(-1.0, 1.0), make_float2(1.0, 1.0));
-
-
-            
-            // 2 Subdivisions
-            //edge0 = SubdivideInterval2(ElementIdAtIntersectionBuffer[c0_index], 
-            //        ReferencePointAtIntersectionBuffer[c0_index],
-            //        ReferencePointAtIntersectionBuffer[c2_index], 
-            //        make_float2(-1.0, -1.0), make_float2(-1.0, 1.0));
-            //edge1 = SubdivideInterval2(ElementIdAtIntersectionBuffer[c0_index], 
-            //    ReferencePointAtIntersectionBuffer[c1_index],
-            //    ReferencePointAtIntersectionBuffer[c3_index], 
-            //    make_float2(1.0, -1.0), make_float2(1.0, 1.0));
-
-            //edge2 = SubdivideInterval2(ElementIdAtIntersectionBuffer[c0_index], 
-            //    ReferencePointAtIntersectionBuffer[c0_index],
-            //    ReferencePointAtIntersectionBuffer[c1_index], 
-            //    make_float2(-1.0, -1.0), make_float2(1.0, -1.0));
-
-            //edge3 = SubdivideInterval2(ElementIdAtIntersectionBuffer[c0_index], 
-            //    ReferencePointAtIntersectionBuffer[c2_index],
-            //    ReferencePointAtIntersectionBuffer[c3_index], 
-            //    make_float2(-1.0, 1.0), make_float2(1.0, 1.0));
-
-            // 3 Subdivisions
-            //edge0 = SubdivideInterval3(ElementIdAtIntersectionBuffer[c0_index], 
-            //        ReferencePointAtIntersectionBuffer[c0_index],
-            //        ReferencePointAtIntersectionBuffer[c2_index], 
-            //        make_float2(-1.0, -1.0), make_float2(-1.0, 1.0));
-            //edge1 = SubdivideInterval3(ElementIdAtIntersectionBuffer[c0_index], 
-            //    ReferencePointAtIntersectionBuffer[c1_index],
-            //    ReferencePointAtIntersectionBuffer[c3_index], 
-            //    make_float2(1.0, -1.0), make_float2(1.0, 1.0));
-
-            //edge2 = SubdivideInterval3(ElementIdAtIntersectionBuffer[c0_index], 
-            //    ReferencePointAtIntersectionBuffer[c0_index],
-            //    ReferencePointAtIntersectionBuffer[c1_index], 
-            //    make_float2(-1.0, -1.0), make_float2(1.0, -1.0));
-
-            //edge3 = SubdivideInterval3(ElementIdAtIntersectionBuffer[c0_index], 
-            //    ReferencePointAtIntersectionBuffer[c2_index],
-            //    ReferencePointAtIntersectionBuffer[c3_index], 
-            //    make_float2(-1.0, 1.0), make_float2(1.0, 1.0));
-
-            //if( launch_index.x == 431 && launch_index.y == 166 )
-            //{
-            //    ELVIS_PRINTF("Original Edge (%f, %f), subdivided edge (%f, %f)\n",
-            //        edge1.GetLow(), edge1.GetHigh(), subdividedInterval0.GetLow(), subdividedInterval0.GetHigh());
-
-            //    ELVIS_PRINTF("Original Edge (%f, %f), subdivided edge (%f, %f)\n",
-            //        edge2.GetLow(), edge2.GetHigh(), subdividedInterval1.GetLow(), subdividedInterval1.GetHigh());
-
-            //}
-
-            mayContainAnIsovalue = false;
-            for(int isoValueIndex = 0; isoValueIndex < Isovalues.size(); ++isoValueIndex)
-            {       
-                float isovalue = Isovalues[isoValueIndex];
-                if(edge0.Contains(isovalue) || edge1.Contains(isovalue) || 
-                    edge2.Contains(isovalue) || edge3.Contains(isovalue) )
-                {
-                    mayContainAnIsovalue = true;
-                }
-            }
-
-            if( mayContainAnIsovalue )
-            {
-                raw_color_buffer[launch_index] = ambiguousColor;
-                color_buffer[launch_index] = ConvertToColor(raw_color_buffer[launch_index]);
-                normal_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
-            }
-            else
-            {
-                // Definitely not: WHITE
-                raw_color_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(1.0), MAKE_FLOAT(1.0), MAKE_FLOAT(1.0));
-                color_buffer[launch_index] = ConvertToColor(raw_color_buffer[launch_index]);
-                normal_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
-            }
-            
+            // Definitely not: WHITE
+            raw_color_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(1.0), MAKE_FLOAT(1.0), MAKE_FLOAT(1.0));
+            color_buffer[launch_index] = ConvertToColor(raw_color_buffer[launch_index]);
+            normal_buffer[launch_index] = MakeFloat3(MAKE_FLOAT(0.0), MAKE_FLOAT(0.0), MAKE_FLOAT(0.0));
         }
     }
 }

@@ -264,6 +264,10 @@ __device__ __forceinline__ TensorPoint TransformWorldToTensor(const ElVisFloat4*
 template<typename T>
 __device__ __forceinline__ T EvaluateHexFieldAtTensorPoint(uint3 degree, const T& x, const T& y, const T& z, const ElVisFloat* coeffs)
 {
+    PrintElement("EvaluateHexFieldAtTensorPoint: x = ", x);
+    PrintElement("EvaluateHexFieldAtTensorPoint: y = ", y);
+    PrintElement("EvaluateHexFieldAtTensorPoint: z = ", z);
+
     T result(MAKE_FLOAT(0.0));
 
     T phi_k[8];

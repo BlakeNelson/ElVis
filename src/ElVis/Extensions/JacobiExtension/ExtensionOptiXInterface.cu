@@ -102,6 +102,9 @@ ELVIS_DEVICE ElVisError SampleScalarFieldAtReferencePointOptiX(int elementId, in
                                                                const PointType& tp,
                                                                ResultType& result)
 {
+    ELVIS_PRINTF("SampleScalarFieldAtReferencePointOptiX: Element Id = %d, Element Type %d\n", elementId, elementType);
+    PrintPoint("SampleScalarFieldAtReferencePointOptiX: Tensor Point = ", tp);
+
     ElVisError returnVal = eNoError;
     if( elementType == 0 )
     {
@@ -110,7 +113,7 @@ ELVIS_DEVICE ElVisError SampleScalarFieldAtReferencePointOptiX(int elementId, in
         uint coefficientIndex = HexCoefficientIndices[elementId];
         ElVisFloat* coeffs = &(HexCoefficients[coefficientIndex]);
 
-        result = EvaluateHexFieldAtTensorPoint<ElVisFloat>(degree, tp.x, tp.y, tp.z, coeffs);
+        result = EvaluateHexFieldAtTensorPoint(degree, tp.x, tp.y, tp.z, coeffs);
     }
     else if( elementType == 1 )
     {

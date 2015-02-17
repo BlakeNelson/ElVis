@@ -43,6 +43,7 @@ RT_PROGRAM void SamplerVolumeClosestHit()
         payload.scalarValue = EvaluateFieldOptiX(findElementPayload.elementId, findElementPayload.elementType, FieldId, intersectionPoint, findElementPayload.ReferencePointType, findElementPayload.ReferenceIntersectionPoint);
         payload.isValid = true;
 
+        payload.ReferenceIntersectionPoint = findElementPayload.ReferenceIntersectionPoint;
         payload.Normal = normal;
         payload.IntersectionPoint = intersectionPoint;
         payload.IntersectionT = closest_t;

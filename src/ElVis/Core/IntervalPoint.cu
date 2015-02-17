@@ -162,4 +162,31 @@ ELVIS_DEVICE IntervalPoint Intersection(const IntervalPoint& lhs, const Interval
     return result;
 }
 
+ELVIS_DEVICE void PrintPoint(const char* str, const IntervalPoint& ip)
+{
+    ELVIS_PRINTF(str);
+    ELVIS_PRINTF("(%f, %f), (%f, %f), (%f, %f)\n", ip.x.GetLow(), ip.x.GetHigh(),
+                 ip.y.GetLow(), ip.y.GetHigh(), ip.z.GetLow(), ip.z.GetHigh());
+}
+
+
+ELVIS_DEVICE void PrintPoint(const char* str, const ElVisFloat3& ip)
+{
+    ELVIS_PRINTF(str);
+    ELVIS_PRINTF("(%f, %f, %f)\n", ip.x, ip.y, ip.z);
+}
+
+ELVIS_DEVICE void PrintElement(const char* str, const ElVis::Interval<ElVisFloat>& ip)
+{
+    ELVIS_PRINTF(str);
+    ELVIS_PRINTF("(%f, %f)\n", ip.GetLow(), ip.GetHigh());
+}
+
+
+ELVIS_DEVICE void PrintElement(const char* str, const ElVisFloat& ip)
+{
+    ELVIS_PRINTF(str);
+    ELVIS_PRINTF("%f\n", ip);
+}
+
 #endif
